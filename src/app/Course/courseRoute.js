@@ -10,7 +10,7 @@ module.exports = function(app){
     /** 여기서 부터 트립북 프로젝트
      * -발자국 보기 페이지
      */
-    //app.get('/app/course', )
+    app.get('/app/course', course.getCourse);
  
 
 
