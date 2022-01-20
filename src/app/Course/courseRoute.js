@@ -1,21 +1,17 @@
 module.exports = function(app){
-    const user = require('./userController');
     const jwtMiddleware = require('../../../config/jwtMiddleware');    
-    const course = require('./courseController.js');
+    const course = require('./courseController.js.js');
 
 
     // 0. 테스트 API
     app.get('/app/test/course', course.getTest);
-
     
     
     /** 여기서 부터 트립북 프로젝트
      * -발자국 보기 페이지
      */
-    //app.get('/app/')
-
-
-
+    //app.get('/app/course', )
+ 
 
 
 };
