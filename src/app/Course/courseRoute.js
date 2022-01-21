@@ -1,6 +1,6 @@
 module.exports = function(app){
     const jwtMiddleware = require('../../../config/jwtMiddleware');    
-    const course = require('./courseController.js.js');
+    const course = require('./courseController');
 
 
     // 0. 테스트 API
@@ -9,8 +9,9 @@ module.exports = function(app){
     
     /** 여기서 부터 트립북 프로젝트
      * -발자국 보기 페이지
+     * -파라미터
      */
-    app.get('/app/course', course.getCourse);
+    app.get('/app/course/:courseIdx', course.getCourseByIdx);
  
 
 
