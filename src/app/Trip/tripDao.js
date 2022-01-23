@@ -1,0 +1,17 @@
+// 새롭게 추가한 함수를 아래 부분에서 export 해줘야 외부의 Provider, Service 등에서 사용가능합니다.
+
+// 특정 여행 조회
+async function selectTrip(connection, tripIdx) {
+  const selectTripQuery = `
+    SELECT *
+    FROM trip
+    WHERE tripIdx = ?;
+    `;
+  const [tripRows] = await connection.query(selectTripQuery, tripIdx);
+  return tripRows[0];
+}
+
+
+module.exports = {
+  selectTrip,
+};
