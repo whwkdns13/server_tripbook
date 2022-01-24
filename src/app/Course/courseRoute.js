@@ -11,9 +11,9 @@ module.exports = function(app){
      * -발자국 보기 페이지
      * -파라미터
      */
+    //코스 가져오기 Idx이용
     app.get('/app/course/:courseIdx', course.getCourseByIdx);
- 
-
+    
 
 };
 
