@@ -13,7 +13,7 @@ module.exports = function(app){
      */
     app.get('/app/course/:courseIdx', course.getCourseByIdx);
  
-
+    app.post('/app/course', course.postCourse);
 
 };
 

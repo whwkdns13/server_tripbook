@@ -48,6 +48,41 @@ exports.getCourseByIdx = async function (req, res) {
     
 };
 
-exports.postCourse = async function(req,res){
+//발자국 정보 등록해주는 기능
+exports.postCourse = async function (req, res) {
+
+    /**
+     * Body: tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment
+     */
+    const {tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment} = req.body;
+
+    // 빈 값 체크
+    if (!tripIdx) return res.send(errResponse(baseResponse.COURSE_TRIPIDX_EMPTY));
+    if (!courseDate) return res.send(errResponse(baseResponse.COURSE_COURSEDATE_EMPTY));
+    if (!courseTime) return res.send(errResponse(baseResponse.COURSE_COURSETIME_EMPTY));
+    if (!courseTitle) return res.send(errResponse(baseResponse.COURSE_COURSETITLE_EMPTY));
     
-}
+    //코멘트, 이미지는 비어도 됨
+    //if (!courseImage) return res.send(errResponse(baseResponse.COURSE_COURSEIMAGE_EMPTY));
+    //if (!courseComment) return res.send(errResponse(baseResponse.COURSE_COURSECOMMENT_EMPTY));
+
+    // 길이 체크
+    if (courseTitle.length > 99)
+        return res.send(response(baseResponse.COURSE_COURSETITLE_LENGTH));
+        
+    if (courseComment.length > 254)
+        return res.send(response(baseResponse.COURSE_COURSECOMMENT_LENGTH));
+
+    // createUser 함수 실행을 통한 결과 값을 signUpResponse에 저장
+    const postCourseResponse = await courseService.createCourse(
+        tripIdx, 
+        courseImage, 
+        courseDate, 
+        courseTime, 
+        courseTitle, 
+        courseComment
+    );
+
+    // signUpResponse 값을 json으로 전달
+    return res.send(postCourseResponse);
+};

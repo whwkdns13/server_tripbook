@@ -17,15 +17,15 @@ const crypto = require("crypto");
 
 // Service: Create, Update, Delete 비즈니스 로직 처리
 
-exports.createCourse = async function (title, date, time, image, comment) {
+exports.createCourse = async function (tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment) {
     try {
         // 쿼리문에 사용할 변수 값을 배열 형태로 전달
-        const insertCourseInfoParams = [title, date, time, image, comment];
+        const insertCourseInfoParams = [tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment];
 
         const connection = await pool.getConnection(async (conn) => conn);
 
         const courseIdxResult = await courseDao.insertCourseInfo(connection, insertCourseInfoParams);
-        console.log(`추가된 회원 : ${courseIdxResult[0].insertId}`)
+        console.log(`추가된 코스idx : ${courseIdxResult[0].insertId}`)
         connection.release();
         return response(baseResponse.SUCCESS);
         
