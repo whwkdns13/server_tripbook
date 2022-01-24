@@ -47,3 +47,7 @@ exports.getCourseByIdx = async function (req, res) {
     */
     
 };
+
+exports.postCourse = async function(req,res){
+    
+}
