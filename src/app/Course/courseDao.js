@@ -13,14 +13,13 @@ async function selectCourseIdx(connection, courseIdx) {
   
 async function insertCourseInfo(connection, insertCourseInfoParams) {
   const insertCourseInfoQuery = `
-        INSERT INTO tripCourse(courseTitle, password, nickname)
-        VALUES (?, ?, ?);
+    INSERT INTO tripCourse (tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment) 
+    VALUE (?,?,?,?,?,?);
     `;
   const insertCourseInfoRow = await connection.query(
     insertCourseInfoQuery,
     insertCourseInfoParams
   );
-
   return insertCourseInfoRow;
 }
 

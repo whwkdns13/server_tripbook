@@ -23,12 +23,11 @@ exports.createCourse = async function (tripIdx, courseImage, courseDate, courseT
         const insertCourseInfoParams = [tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment];
 
         const connection = await pool.getConnection(async (conn) => conn);
-
         const courseIdxResult = await courseDao.insertCourseInfo(connection, insertCourseInfoParams);
         console.log(`추가된 코스idx : ${courseIdxResult[0].insertId}`)
         connection.release();
         return response(baseResponse.SUCCESS);
-        
+
     } catch (err) {
         logger.error(`App - createCourse Service error\n: ${err.message}`);
         return errResponse(baseResponse.DB_ERROR);
