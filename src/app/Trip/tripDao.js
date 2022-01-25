@@ -7,8 +7,8 @@ async function selectTrip(connection, tripIdx) {
     FROM trip
     WHERE tripIdx = ?;
     `;
-  const [tripRows] = await connection.query(selectTripQuery, tripIdx);
-  return tripRows[0];
+  const [tripRow] = await connection.query(selectTripQuery, tripIdx);
+  return tripRow[0];
 }
 
 // userIdx -> trips
@@ -36,17 +36,30 @@ async function selectCourses(connection, tripIdx) {
 // userIdx -> Latest tripIdx
 async function selectLatestTrip(connection, userIdx) {
   const selectLatestTripQuery = `
-    SELECT *
+    SELECT tripIdx
+    FROM trip
+    WHERE userIdx = ?
+    ORDER BY createAt DESC;
+    `;
+  const [latestTripIdx] = await connection.query(selectLatestTripQuery, userIdx);
+  return latestTripIdx[0];
+}
+
+// userIdx -> count trips
+async function selectTripsCount(connection, userIdx) {
+  const selectTripsCountQuery = `
+    SELECT COUNT(*) AS TRIPS_COUNT
     FROM trip
     WHERE userIdx = ?;
     `;
-  const latestTripIdx = await connection.query(selectLatestTripQuery, userIdx);
-  return latestTripIdx;
+    const [tripsCount] = await connection.query(selectTripsCountQuery, userIdx);
+    return tripsCount[0];
 }
 
 module.exports = {
   selectTrip,
   selectTrips,
   selectCourses,
-  selectLatestTrip
+  selectLatestTrip,
+  selectTripsCount
 };
