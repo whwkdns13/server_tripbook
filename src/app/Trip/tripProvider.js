@@ -5,6 +5,8 @@ const tripDao = require("./tripDao");
 
 // Provider: Read 비즈니스 로직 처리
 
+
+// 특정 여행 조회
 exports.retrieveTrip = async function (tripIdx){
 
     const connection = await pool.getConnection(async (conn) => conn);
@@ -14,6 +16,25 @@ exports.retrieveTrip = async function (tripIdx){
     return tripResult;
 }
 
+// 유저 전체 여행 조회
+exports.retrieveTrips = async function (userIdx){
+
+    const connection = await pool.getConnection(async (conn) => conn);
+    const tripsResult = await tripDao.selectTrips(connection, userIdx);
+    connection.release();
+
+    return tripsResult;
+}
+
+// 특정 여행의 발자국 조회
+exports.retrieveCourses = async function (tripIdx){
+
+    const connection = await pool.getConnection(async (conn) => conn);
+    const coursesResult = await tripDao.selectCourses(connection, tripIdx);
+    connection.release();
+
+    return coursesResult;
+}
 
 
 
