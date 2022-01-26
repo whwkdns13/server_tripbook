@@ -11,8 +11,10 @@ module.exports = function(app){
      * -발자국 보기 페이지
      * -파라미터
      */
+    //courseidx로 course 불러오는 api
     app.get('/app/course/:courseIdx', course.getCourseByIdx);
  
+    //course등록 api
     app.post('/app/course', course.postCourse);
 
 };

@@ -54,7 +54,7 @@ exports.postCourse = async function (req, res) {
     /**
      * Body: tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment
      */
-    const {tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment} = req.body;
+    const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment} = req.body;
 
     // 빈 값 체크
     if (!tripIdx) return res.send(errResponse(baseResponse.COURSE_TRIPIDX_EMPTY));
@@ -63,7 +63,7 @@ exports.postCourse = async function (req, res) {
     if (!courseTitle) return res.send(errResponse(baseResponse.COURSE_COURSETITLE_EMPTY));
     
     //코멘트, 이미지는 비어도 됨
-    //if (!courseImage) return res.send(errResponse(baseResponse.COURSE_COURSEIMAGE_EMPTY));
+    //if (!courseImg) return res.send(errResponse(baseResponse.COURSE_COURSEIMAGE_EMPTY));
     //if (!courseComment) return res.send(errResponse(baseResponse.COURSE_COURSECOMMENT_EMPTY));
 
     // 길이 체크
@@ -76,7 +76,7 @@ exports.postCourse = async function (req, res) {
     // createUser 함수 실행을 통한 결과 값을 signUpResponse에 저장
     const postCourseResponse = await courseService.createCourse(
         tripIdx, 
-        courseImage, 
+        courseImg, 
         courseDate, 
         courseTime, 
         courseTitle, 
