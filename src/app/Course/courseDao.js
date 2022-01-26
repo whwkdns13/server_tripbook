@@ -10,10 +10,10 @@ async function selectCourseIdx(connection, courseIdx) {
     const [courseRow] = await connection.query(selectCourseIdxQuery, courseIdx);
     return courseRow;
   }
-  
+
 async function insertCourseInfo(connection, insertCourseInfoParams) {
   const insertCourseInfoQuery = `
-    INSERT INTO tripCourse (tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment) 
+    INSERT INTO tripCourse (tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment) 
     VALUE (?,?,?,?,?,?);
     `;
   const insertCourseInfoRow = await connection.query(
