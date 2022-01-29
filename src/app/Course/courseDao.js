@@ -10,7 +10,7 @@ async function selectCourseIdx(connection, courseIdx) {
     const [courseRow] = await connection.query(selectCourseIdxQuery, courseIdx);
     return courseRow;
   }
-
+//course정보 받아와서 DB에 저장해주는 함수
 async function insertCourseInfo(connection, insertCourseInfoParams) {
   const insertCourseInfoQuery = `
     INSERT INTO tripCourse (tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment) 
