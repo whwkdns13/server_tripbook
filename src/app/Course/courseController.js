@@ -31,20 +31,6 @@ exports.getCourseByIdx = async function (req, res) {
     //최종 반환
     //const courseInfo = [tripByTripIdx, courseByCourseIdx];
     return res.send(response(baseResponse.SUCCESS, courseByCourseIdx));
-
-
-    /*
-    if (!email) {
-        // 유저 전체 조회
-        const userListResult = await userProvider.retrieveUserList();
-        // SUCCESS : { "isSuccess": true, "code": 1000, "message":"성공" }, 메세지와 함께 userListResult 호출
-        return res.send(response(baseResponse.SUCCESS, userListResult));
-    } else {
-        // 아메일을 통한 유저 검색 조회
-        const userListByEmail = await userProvider.retrieveUserList(email);
-        return res.send(response(baseResponse.SUCCESS, userListByEmail));
-    }
-    */
     
 };
 
@@ -61,10 +47,8 @@ exports.postCourse = async function (req, res) {
     if (!courseDate) return res.send(errResponse(baseResponse.COURSE_COURSEDATE_EMPTY));
     if (!courseTime) return res.send(errResponse(baseResponse.COURSE_COURSETIME_EMPTY));
     if (!courseTitle) return res.send(errResponse(baseResponse.COURSE_COURSETITLE_EMPTY));
-    
-    //코멘트, 이미지는 비어도 됨
-    //if (!courseImg) return res.send(errResponse(baseResponse.COURSE_COURSEIMAGE_EMPTY));
-    //if (!courseComment) return res.send(errResponse(baseResponse.COURSE_COURSECOMMENT_EMPTY));
+    if (!courseImg) return res.send(errResponse(baseResponse.COURSE_COURSEIMAGE_EMPTY));
+    if (!courseComment) return res.send(errResponse(baseResponse.COURSE_COURSECOMMENT_EMPTY));
 
     // 길이 체크
     if (courseTitle.length > 99)
