@@ -15,3 +15,22 @@ const crypto = require("crypto");
 
 // Service: Create, Update, Delete 비즈니스 로직 처리
 
+exports.createTrip = async function (userIdx, tripTitle, departureDate, arrivalDate, themeIdx) {
+    try {
+        // TODO themeIdx 가 user한테 없을경우 USER_THEMEIDX_NOEXISTS 필요
+
+        // 쿼리문에 사용할 변수 값을 배열 형태로 전달
+        const insertTripInfoParams = [userIdx, tripTitle, departureDate, arrivalDate, themeIdx];
+
+        const connection = await pool.getConnection(async (conn) => conn);
+
+        const tripResult = await tripDao.insertTripInfo(connection, insertTripInfoParams);
+        console.log(`tripIdx : ${tripResult[0].insertId}`)
+        connection.release();
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - createTrip Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};

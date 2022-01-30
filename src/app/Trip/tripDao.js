@@ -27,8 +27,10 @@ async function selectCourses(connection, tripIdx) {
   const selectCoursesQuery = `
     SELECT *
     FROM tripCourse
-    WHERE tripIdx = ?;
+    WHERE tripIdx = ?
+    ORDER BY courseDate, courseTime;
     `;
+    //TODO course 순서 정하기
   const [courseRows] = await connection.query(selectCoursesQuery, tripIdx);
   return courseRows;
 }
@@ -39,7 +41,7 @@ async function selectLatestTrip(connection, userIdx) {
     SELECT tripIdx
     FROM trip
     WHERE userIdx = ?
-    ORDER BY createAt DESC;
+    ORDER BY arrivalDate DESC;
     `;
   const [latestTripIdx] = await connection.query(selectLatestTripQuery, userIdx);
   return latestTripIdx[0];
@@ -56,10 +58,25 @@ async function selectTripsCount(connection, userIdx) {
     return tripsCount[0];
 }
 
+// create Trip
+async function insertTripInfo(connection, insertTripInfoParams) {
+  const insertTripInfoQuery = `
+        INSERT INTO trip(userIdx, tripTitle, departureDate, arrivalDate, themeIdx)
+        VALUES (?, ?, ?, ?, ?);
+    `;
+  const insertPostInfoRow = await connection.query(
+    insertTripInfoQuery,
+    insertTripInfoParams
+  );
+
+  return insertPostInfoRow;
+}
+
 module.exports = {
   selectTrip,
   selectTrips,
   selectCourses,
   selectLatestTrip,
-  selectTripsCount
+  selectTripsCount,
+  insertTripInfo
 };

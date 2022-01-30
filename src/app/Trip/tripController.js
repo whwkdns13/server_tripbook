@@ -61,7 +61,7 @@ exports.getLatestCourses = async function (req, res) {
     // 최근 여행 인덱스 조회
     const latestTripIdx = await tripProvider.retrieveLatest(userIdx);
 
-    const latestCoursesInfo = await tripProvider.retrieveTrip(latestTripIdx.tripIdx);
+    const latestCoursesInfo = await tripProvider.retrieveCourses(latestTripIdx.tripIdx);
     return res.send(response(baseResponse.SUCCESS, latestCoursesInfo));
 }
 
@@ -121,6 +121,37 @@ exports.getTripCourses = async function (req, res) {
     return res.send(response(baseResponse.SUCCESS, coursesBytripIdx));
 }
 
+/**
+ * API No. 2-3
+ * API Name : 여행 생성 API
+ * [POST] /app/trip
+ */
+exports.postTrip = async function (req, res) {
+    /**
+     * Body: userIdx, tripTitle, departureDate, arrivalDate, themeIdx
+     * tripImg = 1st courseImg default
+     */
+
+    const {userIdx, tripTitle, departureDate, arrivalDate, themeIdx} = req.body;
+
+    // 빈 값 체크
+    if(!userIdx) return res.send(response(baseResponse.USER_USERID_EMPTY));
+        //TODO USER_USERIDX_EMPTY 변경 필요
+        //TODO USER_USERID_NOEXIST 확인 필요
+    if(!tripTitle) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if(!departureDate) return res.send(errResponse(baseResponse.TRIP_DEPARTUREDATE_EMPTY));
+    if(!arrivalDate) return res.send(errResponse(baseResponse.TRIP_ARRIVALDATE_EMPTY));
+    if(!themeIdx) return res.send(errResponse(baseResponse.TRIP_THEMEIDX_EMPTY));
+
+    const postTripResponse = await tripService.createTrip(
+        userIdx,
+        tripTitle,
+        departureDate,
+        arrivalDate,
+        themeIdx
+    );
+    return res.send(postTripResponse);
+}
 
 // PAST TRIPS
 /**

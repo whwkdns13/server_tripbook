@@ -36,7 +36,10 @@ module.exports = {
 
 
     TRIP_TRIPIDX_EMPTY : { "isSuccess": false, "code": 2100, "message": "tripIdx를 입력해주세요" },
-
+    TRIP_TRIPTITLE_EMPTY : { "isSuccess": false, "code": 2101, "message": "tripTitle를 입력해주세요" },
+    TRIP_DEPARTUREDATE_EMPTY : { "isSuccess": false, "code": 2102, "message": "departureDate를 입력해주세요" },
+    TRIP_ARRIVALDATE_EMPTY : { "isSuccess": false, "code": 2103, "message": "arrivalDate를 입력해주세요" },
+    TRIP_THEMEIDX_EMPTY : { "isSuccess": false, "code": 2104, "message": "themeIdx를 입력해주세요" },
 
 
 
