@@ -11,18 +11,17 @@ async function selectCourseIdx(connection, courseIdx) {
     return courseRow;
   }
   
-async function insertCourseInfo(connection, insertCourseInfoParams) {
-  const insertCourseInfoQuery = `
-        INSERT INTO tripCourse(courseTitle, password, nickname)
-        VALUES (?, ?, ?);
-    `;
-  const insertCourseInfoRow = await connection.query(
-    insertCourseInfoQuery,
-    insertCourseInfoParams
-  );
-
-  return insertCourseInfoRow;
-}
+  async function insertCourseInfo(connection, insertCourseInfoParams) {
+    const insertCourseInfoQuery = `
+      INSERT INTO tripCourse (tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment) 
+      VALUE (?,?,?,?,?,?);
+      `;
+    const insertCourseInfoRow = await connection.query(
+      insertCourseInfoQuery,
+      insertCourseInfoParams
+    );
+    return insertCourseInfoRow;
+  }
 
 module.exports = {
     selectCourseIdx,
