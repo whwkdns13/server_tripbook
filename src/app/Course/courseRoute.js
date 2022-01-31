@@ -4,7 +4,7 @@ module.exports = function(app){
 
 
     // 0. 테스트 API
-    app.get('/app/test/course', course.getTest);
+    app.get('/app/course/test', course.getTest);
     
     //course가져오기 api
     app.get('/app/course/:courseIdx', course.getCourseByIdx);
@@ -12,6 +12,6 @@ module.exports = function(app){
     //course등록 api
     app.post('/app/course', course.postCourse);
 
+    //tripImg업데이트 api
+    app.post('/app/course/tripImg',course.patchTripImg);
 };
-
-   

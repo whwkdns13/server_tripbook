@@ -23,7 +23,24 @@ async function selectCourseIdx(connection, courseIdx) {
     return insertCourseInfoRow;
   }
 
+
+  // 썸네일(대표사진)설정
+async function updateTripImg(connection, updateTripImgParams) {
+  const updateTripImgQuery = `
+        UPDATE trip
+        SET tripImg = ?
+        WHERE tripIdx = ?;
+    `;
+  const updateTripImgInfoRow = await connection.query(
+    updateTripImgQuery,
+    updateTripImgParams
+  );
+
+  return updateTripImgInfoRow;
+}
+
 module.exports = {
     selectCourseIdx,
-    insertCourseInfo
+    insertCourseInfo,
+    updateTripImg
 };

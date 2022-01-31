@@ -36,7 +36,7 @@ exports.postCourse = async function (req, res) {
      * Body: tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment
      */
     const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment} = req.body;
-
+    
     // 빈 값 체크
     if (!tripIdx) return res.send(errResponse(baseResponse.COURSE_TRIPIDX_EMPTY));
     if (!courseDate) return res.send(errResponse(baseResponse.COURSE_COURSEDATE_EMPTY));
@@ -44,7 +44,8 @@ exports.postCourse = async function (req, res) {
     if (!courseTitle) return res.send(errResponse(baseResponse.COURSE_COURSETITLE_EMPTY));
     if (!courseImg) return res.send(errResponse(baseResponse.COURSE_COURSEIMAGE_EMPTY));
     if (!courseComment) return res.send(errResponse(baseResponse.COURSE_COURSECOMMENT_EMPTY));
-
+    
+    
     // 길이 체크
     if (courseTitle.length > 99)
         return res.send(response(baseResponse.COURSE_COURSETITLE_LENGTH));
@@ -64,4 +65,29 @@ exports.postCourse = async function (req, res) {
 
     // postCourseResponse 값을 json으로 전달
     return res.send(postCourseResponse);
+    
+};
+
+//썸네일 사진 업데이트
+exports.patchTripImg = async function (req, res) {
+
+    // jwt - tripIdx, path variable :tripIdx, tripImg
+
+    //const userIdFromJWT = req.verifiedToken.userId
+
+    //const userIdx = req.params.userIdx;
+    const tripIdx = req.body.tripIdx;
+    const tripImg = req.body.tripImg;
+    
+    // JWT는 이 후 주차에 다룰 내용
+    /*
+    if (userIdxFromJWT != userIdx) {
+        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
+    } else {*/
+        if (!tripIdx) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIDX_EMPTY));
+        if (!tripImg) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIMG_EMPTY));
+
+        const editTripInfo = await courseService.editTripImg(tripIdx, tripImg)
+        return res.send(editTripInfo);
+    //}
 };
