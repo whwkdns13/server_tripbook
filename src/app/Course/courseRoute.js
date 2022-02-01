@@ -14,7 +14,6 @@ module.exports = function(app){
     //코스 가져오기 Idx이용
     app.get('/app/course/:courseIdx', course.getCourseByIdx);
     
-
+    //courseDate 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/courseDate/:userIdx/:courseIdx', course.patchCourseDate);
 };
-
-   

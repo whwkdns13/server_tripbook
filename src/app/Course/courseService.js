@@ -34,3 +34,93 @@ exports.createCourse = async function (title, date, time, image, comment) {
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
+exports.editCourseDate = async function (courseIdx, courseDate) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCourseDateResult = await courseDao.updateCourseDate(connection, courseIdx, courseDate)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCourseDate Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
+
+exports.editCourseTime = async function (courseIdx, courseTime) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCourseTimeResult = await courseDao.updateCourseTime(connection, courseIdx, courseTime)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCourseTime Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
+
+exports.editCourseTitle = async function (courseIdx, courseTitle) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCourseTitleResult = await courseDao.updateCourseTitle(connection, courseIdx, courseTitle)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCourseTitle Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
+
+exports.editCourseImg = async function (courseIdx, courseImg) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCourseImgResult = await courseDao.updateCourseImg(connection, courseIdx, courseImg)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCourseImg Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
+
+exports.editCourseComment = async function (courseIdx, courseComment) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCourseCommentResult = await courseDao.updateCourseComment(connection, courseIdx, courseComment)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCourseComment Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
+
+exports.editCardIdx = async function (courseIdx, cardIdx) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCardIdxResult = await courseDao.updateCardIdx(connection, courseIdx, cardIdx)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCardIdx Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
