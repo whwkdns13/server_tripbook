@@ -16,4 +16,19 @@ module.exports = function(app){
     
     //courseDate 수정하기 API userIdx는 jwt이용에 필요
     app.patch('/app/course/courseDate/:userIdx/:courseIdx', course.patchCourseDate);
+
+    //courseTime 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/courseTime/:userIdx/:courseIdx', course.patchCourseTime);
+
+    //courseTitle 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/courseTitle/:userIdx/:courseIdx', course.patchCourseTitle);
+
+    //courseImg 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/courseImg/:userIdx/:courseIdx', course.patchCourseImg);
+
+    //courseComment 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/courseComment/:userIdx/:courseIdx', course.patchCourseComment);
+
+    //cardIdx 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/cardIdx/:userIdx/:courseIdx', course.patchCardIdx);
 };

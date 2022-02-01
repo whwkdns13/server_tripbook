@@ -41,7 +41,7 @@ exports.editCourseDate = async function (courseIdx, courseDate) {
         const connection = await pool.getConnection(async (conn) => conn);
         const editCourseDateResult = await courseDao.updateCourseDate(connection, courseIdx, courseDate)
         connection.release();
-
+        
         return response(baseResponse.SUCCESS);
 
     } catch (err) {
