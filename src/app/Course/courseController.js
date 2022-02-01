@@ -68,24 +68,24 @@ exports.postCourse = async function (req, res) {
     
 };
 
-//썸네일 사진 업데이트
+//썸네일 사진 업데이트 (jwt 적용 아직 안됨)
 exports.patchTripImg = async function (req, res) {
 
     // jwt - tripIdx, path variable :tripIdx, tripImg
 
-    //const userIdFromJWT = req.verifiedToken.userId
+    //const tripIdxFromJWT = req.verifiedToken.tripIdx
 
-    //const userIdx = req.params.userIdx;
+    //const tripIdx = req.params.tripIdx;
     const tripIdx = req.body.tripIdx;
     const tripImg = req.body.tripImg;
-    
+    if (!tripIdx) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIDX_EMPTY));
+    if (!tripImg) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIMG_EMPTY));
+
     // JWT는 이 후 주차에 다룰 내용
     /*
-    if (userIdxFromJWT != userIdx) {
-        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
+    if (tripIdxFromJWT != tripIdx) {
+        res.send(errResponse(baseResponse.TRIP_IDX_NOT_MATCH));
     } else {*/
-        if (!tripIdx) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIDX_EMPTY));
-        if (!tripImg) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIMG_EMPTY));
 
         const editTripInfo = await courseService.editTripImg(tripIdx, tripImg)
         return res.send(editTripInfo);

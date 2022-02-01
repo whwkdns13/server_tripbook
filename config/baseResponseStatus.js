@@ -51,6 +51,7 @@ module.exports = {
     COURSE_COURSECOMMENT_EMPTY : { "isSuccess": false, "code": 2206, "message": "코멘트를 입력해주세요." },
     TRIPIMG_TRIPIDX_EMPTY : { "isSuccess": false, "code": 2207, "message": "tripIdx를 입력해주세요." },
     TRIPIMG_TRIPIMG_EMPTY : { "isSuccess": false, "code": 2208, "message": "tripImg를 입력해주세요." },
+    TRIPIMG_IDX_NOT_MATCH : { "isSuccess": false, "code": 2209, "message": "tripidx 값을 확인해주세요" },
     // Response error
     SIGNUP_REDUNDANT_EMAIL : { "isSuccess": false, "code": 3001, "message":"중복된 이메일입니다." },
     SIGNUP_REDUNDANT_NICKNAME : { "isSuccess": false, "code": 3002, "message":"중복된 닉네임입니다." },
