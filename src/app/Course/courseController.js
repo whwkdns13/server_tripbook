@@ -35,7 +35,7 @@ exports.postCourse = async function (req, res) {
     /**
      * Body: tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment
      */
-    const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment} = req.body;
+    const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx} = req.body;
     
     // 빈 값 체크
     if (!tripIdx) return res.send(errResponse(baseResponse.COURSE_TRIPIDX_EMPTY));
@@ -44,7 +44,7 @@ exports.postCourse = async function (req, res) {
     if (!courseTitle) return res.send(errResponse(baseResponse.COURSE_COURSETITLE_EMPTY));
     if (!courseImg) return res.send(errResponse(baseResponse.COURSE_COURSEIMAGE_EMPTY));
     if (!courseComment) return res.send(errResponse(baseResponse.COURSE_COURSECOMMENT_EMPTY));
-    
+    if (!cardIdx) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
     
     // 길이 체크
     if (courseTitle.length > 99)
@@ -60,7 +60,8 @@ exports.postCourse = async function (req, res) {
         courseDate, 
         courseTime, 
         courseTitle, 
-        courseComment
+        courseComment,
+        cardIdx
     );
 
     // postCourseResponse 값을 json으로 전달
