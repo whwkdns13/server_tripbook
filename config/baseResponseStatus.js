@@ -42,7 +42,7 @@ module.exports = {
     TRIP_THEMEIDX_EMPTY : { "isSuccess": false, "code": 2104, "message": "themeIdx를 입력해주세요" },
 
 
-
+    COURSE_COURSEIDX_NOT_EXIST : { "isSuccess": false, "code": 2212, "message": "해당 courseIdx를 가진 발자국이 존재하지 않습니다." },
     // Response error
     SIGNUP_REDUNDANT_EMAIL : { "isSuccess": false, "code": 3001, "message":"중복된 이메일입니다." },
     SIGNUP_REDUNDANT_NICKNAME : { "isSuccess": false, "code": 3002, "message":"중복된 닉네임입니다." },

@@ -10,6 +10,5 @@ exports.retrieveCourse = async function (courseIdx) {
     const courseResult = await courseDao.selectCourseIdx(connection, courseIdx);
   
     connection.release();
-
     return courseResult[0];
   };

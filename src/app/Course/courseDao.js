@@ -5,7 +5,7 @@ async function selectCourseIdx(connection, courseIdx) {
     const selectCourseIdxQuery = `
                    SELECT * 
                    FROM tripCourse 
-                   WHERE courseIdx = ?;
+                   WHERE courseIdx = ? AND status = "ACTIVE";
                    `;
     const [courseRow] = await connection.query(selectCourseIdxQuery, courseIdx);
     return courseRow;

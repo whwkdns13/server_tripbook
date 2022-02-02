@@ -21,7 +21,7 @@ exports.getCourseByIdx = async function (req, res) {
 
     //중단) 사진, 시간, 제목, 코멘트, 위치, 해시태그
     const courseByCourseIdx = await courseProvider.retrieveCourse(courseIdx);
-
+    if(!courseByCourseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_NOT_EXIST));
     //최종 반환
     return res.send(response(baseResponse.SUCCESS, courseByCourseIdx));
     
