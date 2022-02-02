@@ -24,7 +24,21 @@ async function insertCourseInfo(connection, insertCourseInfoParams) {
   return insertCourseInfoRow;
 }
 
+async function insertCourseHashTagInfo(connection, insertCourseHashTagInfoParams) {
+  const insertCourseHashTagInfoQuery = `
+        INSERT INTO courseTagIdxRelationships (courseIdx, hashtagIdx)
+        VALUES (?,?);
+    `;
+  const insertCourseHashTagInfoRow = await connection.query(
+    insertCourseHashTagInfoQuery,
+    insertCourseHashTagInfoParams
+  );
+
+  return insertCourseHashTagInfoRow;
+}
+
 module.exports = {
     selectCourseIdx,
-    insertCourseInfo
+    insertCourseInfo,
+    insertCourseHashTagInfo
 };

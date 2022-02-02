@@ -34,3 +34,21 @@ exports.createCourse = async function (title, date, time, image, comment) {
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
+exports.createCourseHashTag = async function (courseIdx, hashTagIdx) {
+    try {
+        // 쿼리문에 사용할 변수 값을 배열 형태로 전달
+        const insertCourseHashTagInfoParams = [courseIdx, hashTagIdx];
+
+        const connection = await pool.getConnection(async (conn) => conn);
+
+        const courseHashTagIdxResult = await courseDao.insertCourseHashTagInfo(connection, insertCourseHashTagInfoParams);
+        console.log(`코스에 추가된 해쉬태그 : ${courseHashTagIdxResult[0].insertId}`)
+        connection.release();
+        return response(baseResponse.SUCCESS);
+        
+    } catch (err) {
+        logger.error(`App - createCourseHashTag Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
