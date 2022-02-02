@@ -14,7 +14,7 @@ module.exports = function(app){
     //코스 가져오기 Idx이용
     app.get('/app/course/:courseIdx', course.getCourseByIdx);
     
-
+    
 };
 
    
