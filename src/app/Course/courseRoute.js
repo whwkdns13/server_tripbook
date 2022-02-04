@@ -15,6 +15,8 @@ module.exports = function(app){
     app.get('/app/course/:courseIdx', course.getCourseByIdx);
     
 
+    //발자국 삭제 api
+    app.patch('/app/course/:courseIdx', course.deleteCourse);
 };
 
    

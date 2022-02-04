@@ -26,3 +26,19 @@ exports.getCourseByIdx = async function (req, res) {
     return res.send(response(baseResponse.SUCCESS, courseByCourseIdx));
     
 };
+
+//발자국 삭제 api
+exports.deleteCourse = async function (req, res) {
+
+    //req : courseIdx
+    const courseIdx = req.params.courseIdx;
+
+    // validation
+    if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
+
+    const eraseCourseInfo = await courseService.eraseCourse(courseIdx);
+
+    //최종 반환
+    return res.send(eraseCourseInfo);
+    
+};

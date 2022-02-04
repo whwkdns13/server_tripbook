@@ -24,7 +24,19 @@ async function insertCourseInfo(connection, insertCourseInfoParams) {
   return insertCourseInfoRow;
 }
 
+async function changeCourseStatusDelete(connection, courseIdx) {
+  const deleteCourseInfoQuery = `
+        UPDATE tripCourse 
+        SET status = 'DELETE' 
+        WHERE courseIdx = ?;
+    `;
+  const deleteCourseInfoRow = await connection.query(deleteCourseInfoQuery, courseIdx);
+
+  return deleteCourseInfoRow;
+}
+
 module.exports = {
     selectCourseIdx,
-    insertCourseInfo
+    insertCourseInfo,
+    changeCourseStatusDelete
 };

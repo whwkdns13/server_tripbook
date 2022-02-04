@@ -3,7 +3,7 @@ const userProvider = require("../../app/User/userProvider");
 const userService = require("../../app/User/userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
-
+const axios = require("axios");
 const regexEmail = require("regex-email");
 
 /**
@@ -110,7 +110,23 @@ exports.login = async function (req, res) {
     return res.send(signInResponse);
 };
 
-
+exports.kakaoLogin = async function (req, res) {
+    const accessToken = req.body; 
+    let kakaoProfile;
+    if(!accessToken)
+	try {
+        kakaoProfile = await axios({
+          method: "GET",
+          url: "https://kapi.kakao.com/v2/user/me",
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+      } catch (error) {
+        return res.json(error.data);
+      }
+      console.log(kakaoProfile.data);
+};
 /**
  * API No. 5
  * API Name : 회원 정보 수정 API + JWT + Validation

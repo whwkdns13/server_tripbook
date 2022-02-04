@@ -34,3 +34,18 @@ exports.createCourse = async function (title, date, time, image, comment) {
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
+
+exports.eraseCourse = async function (courseIdx) {
+    try {
+        const connection = await pool.getConnection(async (conn) => conn);
+
+        const deleteCourseResult = await courseDao.changeCourseStatusDelete(connection, courseIdx);
+        connection.release();
+        return response(baseResponse.SUCCESS);
+        
+    } catch (err) {
+        logger.error(`App - createCourse Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
