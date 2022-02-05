@@ -25,7 +25,7 @@ async function insertCourseInfo(connection, insertCourseInfoParams) {
 }
 async function selectCourseTag(connection, courseIdx) {
   const selectCourseTagQuery = `
-                    SELECT hashtag.tagName, hashtag.tagType
+                    SELECT courseTagIdxRelationships.relationIdx hashtag.tagName, hashtag.tagType
                     FROM courseTagIdxRelationships LEFT OUTER JOIN hashtag
                     ON courseTagIdxRelationships.hashtagIdx = hashtag.hashtagIdx
                     WHERE courseIdx = ? AND courseTagIdxRelationships.status = 'ACTIVE';
