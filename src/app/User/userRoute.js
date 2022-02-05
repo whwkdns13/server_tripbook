@@ -24,7 +24,7 @@ module.exports = function(app){
     app.patch('/app/users/:userId', jwtMiddleware, user.patchUsers)
 
     //카카오 로그인 구현
-    app.post('/app/kakao/signIn', user.kakaoLogin);
+    //app.post('/app/kakao/signIn', user.kakaoLogin);
 
 };
 
