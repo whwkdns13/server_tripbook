@@ -48,9 +48,26 @@ async function selectCourseTag(connection, courseIdx) {
   const [courseTag] = await connection.query(selectCourseTagQuery, courseIdx);
   return courseTag;
 }
+
+
+async function insertCourseHashTagInfo(connection, insertCourseHashTagInfoParams) {
+  const insertCourseHashTagInfoQuery = `
+        INSERT INTO courseTagIdxRelationships (courseIdx, hashtagIdx)
+        VALUES (?,?);
+    `;
+  const insertCourseHashTagInfoRow = await connection.query(
+    insertCourseHashTagInfoQuery,
+    insertCourseHashTagInfoParams
+  );
+
+  return insertCourseHashTagInfoRow;
+}
+
 module.exports = {
     selectCourseIdx,
     insertCourseInfo,
     updateTripImg,
-    selectCourseTag
+    selectCourseTag,
+    insertCourseHashTagInfo
+
 };
