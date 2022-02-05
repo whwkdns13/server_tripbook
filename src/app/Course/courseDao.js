@@ -11,17 +11,32 @@ async function selectCourseIdx(connection, courseIdx) {
     return courseRow;
   }
   
-async function insertCourseInfo(connection, insertCourseInfoParams) {
-  const insertCourseInfoQuery = `
-        INSERT INTO tripCourse(courseTitle, password, nickname)
-        VALUES (?, ?, ?);
+  async function insertCourseInfo(connection, insertCourseInfoParams) {
+    const insertCourseInfoQuery = `
+      INSERT INTO tripCourse (tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx) 
+      VALUE (?,?,?,?,?,?,?);
+      `;
+    const insertCourseInfoRow = await connection.query(
+      insertCourseInfoQuery,
+      insertCourseInfoParams
+    );
+    return insertCourseInfoRow;
+  }
+
+
+  // 썸네일(대표사진)설정
+async function updateTripImg(connection, updateTripImgParams) {
+  const updateTripImgQuery = `
+        UPDATE trip
+        SET tripImg = ?
+        WHERE tripIdx = ?;
     `;
-  const insertCourseInfoRow = await connection.query(
-    insertCourseInfoQuery,
-    insertCourseInfoParams
+  const updateTripImgInfoRow = await connection.query(
+    updateTripImgQuery,
+    updateTripImgParams
   );
 
-  return insertCourseInfoRow;
+  return updateTripImgInfoRow;
 }
 async function selectCourseTag(connection, courseIdx) {
   const selectCourseTagQuery = `
@@ -36,5 +51,6 @@ async function selectCourseTag(connection, courseIdx) {
 module.exports = {
     selectCourseIdx,
     insertCourseInfo,
+    updateTripImg,
     selectCourseTag
 };

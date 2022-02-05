@@ -4,17 +4,16 @@ module.exports = function(app){
 
 
     // 0. 테스트 API
-    app.get('/app/test/course', course.getTest);
+    app.get('/app/course/test', course.getTest);
     
-    
-    /** 여기서 부터 트립북 프로젝트
-     * -발자국 보기 페이지
-     * -파라미터
-     */
-    //코스 가져오기 Idx이용
+    //course가져오기 api
     app.get('/app/course/:courseIdx', course.getCourseByIdx);
     
-    
-};
 
-   
+    //course등록 api
+    app.post('/app/course', course.postCourse);
+
+    //tripImg업데이트 api
+    app.patch('/app/course/tripImg',course.patchTripImg);
+
+};
