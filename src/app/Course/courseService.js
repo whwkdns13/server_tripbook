@@ -37,6 +37,22 @@ exports.createCourse = async function (tripIdx, courseImg, courseDate, courseTim
     }
 };
 
+
+//course status를 DELETE로 변경해주는 함수
+exports.eraseCourse = async function (courseIdx) {
+    try {
+        const connection = await pool.getConnection(async (conn) => conn);
+
+        const deleteCourseResult = await courseDao.changeCourseStatusDelete(connection, courseIdx);
+        connection.release();
+        return response(baseResponse.SUCCESS);
+        
+    } catch (err) {
+        logger.error(`App - createCourse Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
 //courseDate변경 함수
 exports.editCourseDate = async function (courseIdx, courseDate) {
     try {
@@ -162,4 +178,5 @@ exports.editTripImg = async function (tripIdx, tripImg) {
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
 

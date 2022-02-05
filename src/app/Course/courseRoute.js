@@ -10,6 +10,10 @@ module.exports = function(app){
     app.get('/app/course/:courseIdx', course.getCourseByIdx);
     
 
+
+    //발자국 삭제 api
+    app.patch('/app/course/deleteCourse/:courseIdx', course.deleteCourse);
+
     //courseDate 수정하기 API userIdx는 jwt이용에 필요
     app.patch('/app/course/courseDate/:userIdx/:courseIdx', course.patchCourseDate);
 
@@ -44,5 +48,6 @@ module.exports = function(app){
 
     //cardIdx 수정하기 API userIdx는 jwt이용에 필요
     app.patch('/app/course/cardIdx/:userIdx/:courseIdx', course.patchCardIdx);
+
 };
 

@@ -23,8 +23,7 @@ async function selectCourseIdx(connection, courseIdx) {
     return insertCourseInfoRow;
   }
 
-
-  // 썸네일(대표사진)설정
+ // 썸네일(대표사진)설정
 async function updateTripImg(connection, updateTripImgParams) {
   const updateTripImgQuery = `
         UPDATE trip
@@ -38,6 +37,7 @@ async function updateTripImg(connection, updateTripImgParams) {
 
   return updateTripImgInfoRow;
 }
+
 async function selectCourseTag(connection, courseIdx) {
   const selectCourseTagQuery = `
                     SELECT courseTagIdxRelationships.relationIdx hashtag.tagName, hashtag.tagType
@@ -71,6 +71,18 @@ async function updateCourseDate(connection, courseIdx, courseDate) {
   WHERE courseIdx = ?;`;
   const updateCourseDateRow = await connection.query(updateCourseDateQuery, [courseDate, courseIdx]);
   return updateCourseDateRow[0];
+}
+
+
+async function changeCourseStatusDelete(connection, courseIdx) {
+  const deleteCourseInfoQuery = `
+        UPDATE tripCourse 
+        SET status = 'DELETE' 
+        WHERE courseIdx = ?;
+    `;
+  const deleteCourseInfoRow = await connection.query(deleteCourseInfoQuery, courseIdx);
+
+  return deleteCourseInfoRow;
 }
 
 //courseTime SET DAO
@@ -123,8 +135,8 @@ async function updateCardIdx(connection, courseIdx, cardIdx) {
   return updateCardIdxRow[0];
 }
 
-
 module.exports = {
+    changeCourseStatusDelete,
     selectCourseIdx,
     insertCourseInfo,
     updateCourseDate,
@@ -136,4 +148,5 @@ module.exports = {
     updateTripImg,
     selectCourseTag,
     insertCourseHashTagInfo
+
 };
