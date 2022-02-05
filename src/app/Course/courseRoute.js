@@ -13,8 +13,16 @@ module.exports = function(app){
     app.post('/app/course', course.postCourse);
 
     //tripImg업데이트 api
-    app.post('/app/course/tripImg',course.patchTripImg);
+    app.patch('/app/course/tripImg',course.patchTripImg);
+
 
     app.post('/app/course/hashTag/:courseIdx/:hashTagIdx',course.postCourseHashTag);
 
+    //course등록 api
+    app.post('/app/course', course.postCourse);
+
+    //tripImg업데이트 api
+    app.patch('/app/course/tripImg',course.patchTripImg);
+
 };
+
