@@ -4,19 +4,50 @@ module.exports = function(app){
 
 
     // 0. 테스트 API
-    app.get('/app/test/course', course.getTest);
+    app.get('/app/course/test', course.getTest);
     
-    
-    /** 여기서 부터 트립북 프로젝트
-     * -발자국 보기 페이지
-     * -파라미터
-     */
-    //코스 가져오기 Idx이용
+    //course가져오기 api
     app.get('/app/course/:courseIdx', course.getCourseByIdx);
     
 
+
     //발자국 삭제 api
     app.patch('/app/course/deleteCourse/:courseIdx', course.deleteCourse);
+
+    //courseDate 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/courseDate/:userIdx/:courseIdx', course.patchCourseDate);
+
+    //course등록 api
+    app.post('/app/course', course.postCourse);
+
+    //tripImg업데이트 api
+    app.patch('/app/course/tripImg',course.patchTripImg);
+
+    //courseHashTag 추가하기 api
+    app.post('/app/course/hashTag/:courseIdx/:hashTagIdx',course.postCourseHashTag);
+
+    //course등록 api
+    app.post('/app/course', course.postCourse);
+
+    //tripImg업데이트 api
+    app.patch('/app/course/tripImg',course.patchTripImg);
+
+
+    //courseTime 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/courseTime/:userIdx/:courseIdx', course.patchCourseTime);
+
+
+    //courseTitle 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/courseTitle/:userIdx/:courseIdx', course.patchCourseTitle);
+
+    //courseImg 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/courseImg/:userIdx/:courseIdx', course.patchCourseImg);
+
+    //courseComment 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/courseComment/:userIdx/:courseIdx', course.patchCourseComment);
+
+    //cardIdx 수정하기 API userIdx는 jwt이용에 필요
+    app.patch('/app/course/cardIdx/:userIdx/:courseIdx', course.patchCardIdx);
+
 };
 
-   
