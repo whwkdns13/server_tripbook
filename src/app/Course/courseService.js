@@ -37,6 +37,97 @@ exports.createCourse = async function (tripIdx, courseImg, courseDate, courseTim
     }
 };
 
+//courseDate변경 함수
+exports.editCourseDate = async function (courseIdx, courseDate) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCourseDateResult = await courseDao.updateCourseDate(connection, courseIdx, courseDate)
+        connection.release();
+        
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCourseDate Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+//courseTime변경 함수
+exports.editCourseTime = async function (courseIdx, courseTime) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCourseTimeResult = await courseDao.updateCourseTime(connection, courseIdx, courseTime)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCourseTime Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+//courseTitle변경 함수
+exports.editCourseTitle = async function (courseIdx, courseTitle) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCourseTitleResult = await courseDao.updateCourseTitle(connection, courseIdx, courseTitle)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCourseTitle Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+//courseImg변경 함수
+exports.editCourseImg = async function (courseIdx, courseImg) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCourseImgResult = await courseDao.updateCourseImg(connection, courseIdx, courseImg)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCourseImg Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+//courseComment변경 함수
+exports.editCourseComment = async function (courseIdx, courseComment) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCourseCommentResult = await courseDao.updateCourseComment(connection, courseIdx, courseComment)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCourseComment Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+//cardIdx변경 함수
+exports.editCardIdx = async function (courseIdx, cardIdx) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCardIdxResult = await courseDao.updateCardIdx(connection, courseIdx, cardIdx)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editCardIdx Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
 //courseHashTag추가기능
 exports.createCourseHashTag = async function (courseIdx, hashTagIdx) {
     try {
@@ -71,3 +162,4 @@ exports.editTripImg = async function (tripIdx, tripImg) {
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
