@@ -5,7 +5,7 @@ async function selectCourseIdx(connection, courseIdx) {
     const selectCourseIdxQuery = `
                    SELECT * 
                    FROM tripCourse 
-                   WHERE courseIdx = ?;
+                   WHERE courseIdx = ? AND status = 'ACTIVE';
                    `;
     const [courseRow] = await connection.query(selectCourseIdxQuery, courseIdx);
     return courseRow;
@@ -38,9 +38,19 @@ async function updateTripImg(connection, updateTripImgParams) {
 
   return updateTripImgInfoRow;
 }
-
+async function selectCourseTag(connection, courseIdx) {
+  const selectCourseTagQuery = `
+                    SELECT courseTagIdxRelationships.relationIdx hashtag.tagName, hashtag.tagType
+                    FROM courseTagIdxRelationships LEFT OUTER JOIN hashtag
+                    ON courseTagIdxRelationships.hashtagIdx = hashtag.hashtagIdx
+                    WHERE courseIdx = ? AND courseTagIdxRelationships.status = 'ACTIVE';
+                 `;
+  const [courseTag] = await connection.query(selectCourseTagQuery, courseIdx);
+  return courseTag;
+}
 module.exports = {
     selectCourseIdx,
     insertCourseInfo,
-    updateTripImg
+    updateTripImg,
+    selectCourseTag
 };

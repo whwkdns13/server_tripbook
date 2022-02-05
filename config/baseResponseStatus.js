@@ -41,6 +41,7 @@ module.exports = {
     TRIP_ARRIVALDATE_EMPTY : { "isSuccess": false, "code": 2103, "message": "arrivalDate를 입력해주세요" },
     TRIP_THEMEIDX_EMPTY : { "isSuccess": false, "code": 2104, "message": "themeIdx를 입력해주세요" },
 
+
     // course req error 2200~2299
     COURSE_COURSEIDX_EMPTY : { "isSuccess": false, "code": 2200, "message": "courseIdx를 입력해주세요." },
     COURSE_TRIPIDX_EMPTY : { "isSuccess": false, "code": 2201, "message": "tripIdx를 입력해주세요." },
@@ -52,6 +53,9 @@ module.exports = {
     TRIPIMG_TRIPIDX_EMPTY : { "isSuccess": false, "code": 2207, "message": "tripIdx를 입력해주세요." },
     TRIPIMG_TRIPIMG_EMPTY : { "isSuccess": false, "code": 2208, "message": "tripImg를 입력해주세요." },
     TRIPIMG_IDX_NOT_MATCH : { "isSuccess": false, "code": 2209, "message": "tripidx 값을 확인해주세요" },
+  
+    COURSE_COURSEIDX_NOT_EXIST : { "isSuccess": false, "code": 2212, "message": "해당 courseIdx를 가진 발자국이 존재하지 않습니다." },
+
     // Response error
     SIGNUP_REDUNDANT_EMAIL : { "isSuccess": false, "code": 3001, "message":"중복된 이메일입니다." },
     SIGNUP_REDUNDANT_NICKNAME : { "isSuccess": false, "code": 3002, "message":"중복된 닉네임입니다." },

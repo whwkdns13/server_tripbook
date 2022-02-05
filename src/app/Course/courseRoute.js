@@ -9,9 +9,11 @@ module.exports = function(app){
     //course가져오기 api
     app.get('/app/course/:courseIdx', course.getCourseByIdx);
     
+
     //course등록 api
     app.post('/app/course', course.postCourse);
 
     //tripImg업데이트 api
     app.patch('/app/course/tripImg',course.patchTripImg);
+
 };
