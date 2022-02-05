@@ -3,7 +3,6 @@ const userProvider = require("../../app/User/userProvider");
 const userService = require("../../app/User/userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
-const axios = require("axios");
 const regexEmail = require("regex-email");
 
 /**
@@ -109,7 +108,7 @@ exports.login = async function (req, res) {
 
     return res.send(signInResponse);
 };
-
+/*
 exports.kakaoLogin = async function (req, res) {
     const accessToken = req.body; 
     let kakaoProfile;
@@ -127,6 +126,7 @@ exports.kakaoLogin = async function (req, res) {
       }
       console.log(kakaoProfile.data);
 };
+*/
 /**
  * API No. 5
  * API Name : 회원 정보 수정 API + JWT + Validation
