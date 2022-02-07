@@ -25,7 +25,7 @@ async function selectTrips(connection, userIdx) {
 // tripIdx -> tripCourses
 async function selectCourses(connection, tripIdx) {
   const selectCoursesQuery = `
-    SELECT courseIdx, tripIdx, courseImg, DATE_FORMAT(courseDate, '%Y-%m-%d') AS courseDate, courseTime, courseTitle, courseComment, cardIdx, status
+    SELECT courseIdx, tripIdx, cardIdx, courseImg, DATE_FORMAT(courseDate, '%Y-%m-%d') AS courseDate, courseTime, courseTitle, courseComment, latitude, longitude, status
     FROM tripCourse
     WHERE tripIdx = ? AND status = 'ACTIVE'
     ORDER BY cardIdx;
@@ -55,7 +55,7 @@ async function selectTripsCount(connection, userIdx) {
     WHERE userIdx = ? AND status ='ACTIVE';
     `;
     const [tripsCount] = await connection.query(selectTripsCountQuery, userIdx);
-    return tripsCount[0];
+    return tripsCount[0].TRIPS_COUNT;
 }
 
 // create Trip
@@ -72,11 +72,75 @@ async function insertTripInfo(connection, insertTripInfoParams) {
   return insertPostInfoRow;
 }
 
+// update tripTitle
+async function updateTripTitle(connection, editTripTitleParams) {
+  const updateTripTitleQuery = `
+    UPDATE trip 
+    SET tripTitle = ?
+    WHERE tripIdx = ?;
+    `;
+  const updateTripTitleInfoRow = await connection.query(
+    updateTripTitleQuery,
+    editTripTitleParams
+  );
+
+  return updateTripTitleInfoRow;
+}
+
+// update departureDate
+async function updateDepartureDate(connection, editDepartureDateParams) {
+  const updateDepartureDateQuery = `
+    UPDATE trip 
+    SET departureDate = ?
+    WHERE tripIdx = ?;
+    `;
+  const updateDepartureDateInfoRow = await connection.query(
+    updateDepartureDateQuery,
+    editDepartureDateParams
+  );
+
+  return updateDepartureDateInfoRow;
+}
+
+// update arrivalDate
+async function updateArrivalDate(connection, editArrivalDateParams) {
+  const updateArrivalDateQuery = `
+    UPDATE trip 
+    SET arrivalDate = ?
+    WHERE tripIdx = ?;
+    `;
+  const updateArrivalDateInfoRow = await connection.query(
+    updateArrivalDateQuery,
+    editArrivalDateParams
+  );
+
+  return updateArrivalDateInfoRow;
+}
+
+// update theme
+async function updateTripTheme(connection, editTripThemeParams) {
+  const updateTripThemeQuery = `
+    UPDATE trip 
+    SET themeIdx = ?
+    WHERE tripIdx = ?;
+    `;
+  const updateTripThemeInfoRow = await connection.query(
+    updateTripThemeQuery,
+    editTripThemeParams
+  );
+
+  return updateTripThemeInfoRow;
+}
+
 module.exports = {
   selectTrip,
   selectTrips,
   selectCourses,
   selectLatestTrip,
   selectTripsCount,
-  insertTripInfo
+  insertTripInfo,
+  updateTripTitle,
+  updateDepartureDate,
+  updateArrivalDate,
+  updateTripTheme
 };
