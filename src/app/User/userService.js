@@ -19,13 +19,31 @@ exports.createKakaoUser = async function (kakaoId) {
     try {
         const connection = await pool.getConnection(async (conn) => conn);
 
-        const kakaoSingUpResult = await userDao.insertUserInfo(connection, kakaoId);
-        console.log(`추가된 회원 : ${kakaoSingUpResult[0].insertId}`)
+        const kakaoSignUpResult = await userDao.insertUserInfo(connection, kakaoId);
+        console.log(`추가된 회원 : ${kakaoSignUpResult[0].insertId}`)
+
         connection.release();
-        return response(baseResponse.SUCCESS);
+        return kakaoSignUpResult[0].insertId;
 
     } catch (err) {
-        logger.error(`App - createUser Service error\n: ${err.message}`);
+        logger.error(`App - createKakaoUser Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+exports.createKakaoUserProfile = async function (userIdx, nickName, userImg) {
+    try {
+        const connection = await pool.getConnection(async (conn) => conn);
+        
+        const kakaoSignUpParams = [userIdx, nickName, userImg];
+        const userProfileResult = await userDao.insertUserProfileInfo(connection, kakaoSignUpParams);
+        console.log(`추가된 회원프로필 : ${userProfileResult[0].insertId}`);
+
+        connection.release();
+        return true;
+
+    } catch (err) {
+        logger.error(`App - createKakaoUserProfile Service error\n: ${err.message}`);
         return errResponse(baseResponse.DB_ERROR);
     }
 };
