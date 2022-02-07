@@ -33,7 +33,8 @@ module.exports = {
     USER_NICKNAME_EMPTY : { "isSuccess": false, "code": 2017, "message": "변경할 닉네임 값을 입력해주세요" },
 
     USER_STATUS_EMPTY : { "isSuccess": false, "code": 2018, "message": "회원 상태값을 입력해주세요" },
-
+    KAKAO_ACCESSTOKEN_EMPTY : {"isSuccess": false, "code": 2050, "message": "kakao accesstoken을 입력해주세요"},
+    KAKAO_REFRESHTOKEN_EMPTY :{"isSuccess": false, "code": 2051, "message": "kakao refreshtoken을 입력해주세요"},
 
     TRIP_TRIPIDX_EMPTY : { "isSuccess": false, "code": 2100, "message": "tripIdx를 입력해주세요" },
     TRIP_TRIPTITLE_EMPTY : { "isSuccess": false, "code": 2101, "message": "tripTitle를 입력해주세요" },

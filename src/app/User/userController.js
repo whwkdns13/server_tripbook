@@ -3,7 +3,7 @@ const userProvider = require("../../app/User/userProvider");
 const userService = require("../../app/User/userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
-
+const axios = require("axios");
 const regexEmail = require("regex-email");
 
 /**
@@ -109,6 +109,52 @@ exports.login = async function (req, res) {
 
     return res.send(signInResponse);
 };
+
+exports.kakaoLoginByRefresh = async function (req, res) {
+    //리프레시 토큰이 있으면 카카오 서버에서 액세스 받아옴
+    const kakaoRefreshToken = req.body.kakaoRefreshToken;
+    if(!kakaoRefreshToken) return res.send(response(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
+    
+    let kakaoProfile;	
+    try {
+        kakaoProfile = await axios({
+          method: "POST",
+          url: "https://kauth.kakao.com/oauth/token",
+          params: {
+            grant_type: "refresh_token",
+            client_id: "c9ef096f1e3ddc185556eda18530b133",
+            refresh_token: kakaoRefreshToken
+          }
+        });
+      } catch (error) {
+        return res.json(error.data);
+      }
+      return res.send(response(baseResponse.SUCCESS,kakaoProfile.data));
+}
+
+exports.kakaoLogin = async function (req, res) {
+    const accessToken = req.body.accessToken;
+
+    let kakaoProfile;
+    if(!accessToken) return res.send(response(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
+	try {
+        kakaoProfile = await axios({
+          method: "GET",
+          url: "https://kapi.kakao.com/v2/user/me",
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+      } catch (error) {
+        return res.json(error.data);
+      }//.kakao_account.email
+      console.log(kakaoProfile.data.id);
+      const isUser = await userProvider.retrieveUser(id);
+      if(!isUser) {
+
+      }
+      return res.send(baseResponse.SUCCESS);
+}
 
 
 /**
