@@ -97,7 +97,6 @@ exports.kakaoLogin = async function (req, res) {
         return res.json(error.data);
       }//kakaoProfile.data.id
       const kakaoId = kakaoProfile.data.id;
-      
       const isUser = await userProvider.selectUserKakaoId(kakaoId);
       const nickName = kakaoProfile.data.kakao_account.profile.nickname;
       const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;
@@ -118,6 +117,47 @@ exports.kakaoLogin = async function (req, res) {
       }
 }
 
+
+exports.kakaoUserUpdateByRefresh = async function (req, res) {
+    //리프레시 토큰이 있으면 카카오 서버에서 액세스 받아옴
+    const kakaoRefreshToken = req.body.kakaoRefreshToken;
+    if(!kakaoRefreshToken) return res.send(response(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
+    
+    let refreshTokens;	
+    try {
+        refreshTokens = await axios({
+          method: "POST",
+          url: "https://kauth.kakao.com/oauth/token",
+          params: {
+            grant_type: "refresh_token",
+            client_id: "c9ef096f1e3ddc185556eda18530b133",
+            refresh_token: kakaoRefreshToken
+          }
+        });
+      } catch (error) {
+        return res.json(error.data);
+      }
+
+    let kakaoProfile;
+    const accessToken = refreshTokens.data.access_token;
+    if(!accessToken) return res.send(response(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
+	try {
+        kakaoProfile = await axios({
+          method: "GET",
+          url: "https://kapi.kakao.com/v2/user/me",
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+      } catch (error) {
+        return res.json(error.data);
+        }
+    const kakaoId = kakaoProfile.data.id;
+    const nickName = kakaoProfile.data.kakao_account.profile.nickname;
+    const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;  
+    
+    return res.send(response(baseResponse.SUCCESS,refreshTokens.data));
+}
 
 /**
  * API No. 5
