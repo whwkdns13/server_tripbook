@@ -25,9 +25,9 @@ exports.createTrip = async function (userIdx, tripTitle, departureDate, arrivalD
         const connection = await pool.getConnection(async (conn) => conn);
 
         const tripResult = await tripDao.insertTripInfo(connection, insertTripInfoParams);
-        console.log(`tripIdx : ${tripResult[0].insertId}`)
+        console.log(`tripIdx : ${tripResult[0].insertId}`);
         connection.release();
-        return response(baseResponse.SUCCESS);
+        return response(baseResponse.SUCCESS, tripResult[0].insertId);
 
     } catch (err) {
         logger.error(`App - createTrip Service error\n: ${err.message}`);

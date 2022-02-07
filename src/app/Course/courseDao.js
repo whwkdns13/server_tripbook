@@ -3,10 +3,10 @@
 // courseIdx로 모든 course정보 받아서 배열로 리턴해주는 함수
 async function selectCourseIdx(connection, courseIdx) {
     const selectCourseIdxQuery = `
-                   SELECT * 
-                   FROM tripCourse 
-                   WHERE courseIdx = ? AND status = 'ACTIVE';
-                   `;
+        SELECT * 
+        FROM tripCourse 
+        WHERE courseIdx = ? AND status = 'ACTIVE';
+        `;
     const [courseRow] = await connection.query(selectCourseIdxQuery, courseIdx);
     return courseRow;
   }
@@ -40,11 +40,11 @@ async function updateTripImg(connection, updateTripImgParams) {
 
 async function selectCourseTag(connection, courseIdx) {
   const selectCourseTagQuery = `
-                    SELECT courseTagIdxRelationships.relationIdx hashtag.tagName, hashtag.tagType
-                    FROM courseTagIdxRelationships LEFT OUTER JOIN hashtag
-                    ON courseTagIdxRelationships.hashtagIdx = hashtag.hashtagIdx
-                    WHERE courseIdx = ? AND courseTagIdxRelationships.status = 'ACTIVE';
-                 `;
+        SELECT courseTagIdxRelationships.relationIdx, hashtag.tagName, hashtag.tagType
+        FROM courseTagIdxRelationships LEFT OUTER JOIN hashtag
+        ON courseTagIdxRelationships.hashtagIdx = hashtag.hashtagIdx
+        WHERE courseIdx = ? AND courseTagIdxRelationships.status = 'ACTIVE';
+        `;
   const [courseTag] = await connection.query(selectCourseTagQuery, courseIdx);
   return courseTag;
 }
