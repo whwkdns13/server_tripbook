@@ -3,7 +3,7 @@
 // tripIdx -> trip
 async function selectTrip(connection, tripIdx) {
   const selectTripQuery = `
-    SELECT *
+    SELECT tripIdx, userIdx, themeIdx, tripTitle, DATE_FORMAT(departureDate,'%Y-%m-%d') AS departureDate, DATE_FORMAT(arrivalDate,'%Y-%m-%d') AS arrivalDate, status
     FROM trip
     WHERE tripIdx = ?;
     `;
@@ -14,9 +14,9 @@ async function selectTrip(connection, tripIdx) {
 // userIdx -> trips
 async function selectTrips(connection, userIdx) {
   const selectTripsQuery = `
-    SELECT *
+    SELECT tripIdx, userIdx, themeIdx, tripImg, tripTitle, DATE_FORMAT(departureDate,'%Y-%m-%d') AS departureDate, DATE_FORMAT(arrivalDate,'%Y-%m-%d') AS arrivalDate, status
     FROM trip
-    WHERE userIdx = ?;
+    WHERE userIdx = ? AND status = 'ACTIVE';
     `;
   const [tripsRows] = await connection.query(selectTripsQuery, userIdx);
   return tripsRows;
@@ -25,10 +25,10 @@ async function selectTrips(connection, userIdx) {
 // tripIdx -> tripCourses
 async function selectCourses(connection, tripIdx) {
   const selectCoursesQuery = `
-    SELECT *
+    SELECT courseIdx, tripIdx, courseImg, DATE_FORMAT(courseDate, '%Y-%m-%d') AS courseDate, courseTime, courseTitle, courseComment, cardIdx, status
     FROM tripCourse
-    WHERE tripIdx = ?
-    ORDER BY courseDate, courseTime;
+    WHERE tripIdx = ? AND status = 'ACTIVE'
+    ORDER BY cardIdx;
     `;
     //TODO course 순서 정하기
   const [courseRows] = await connection.query(selectCoursesQuery, tripIdx);
@@ -40,7 +40,7 @@ async function selectLatestTrip(connection, userIdx) {
   const selectLatestTripQuery = `
     SELECT tripIdx
     FROM trip
-    WHERE userIdx = ?
+    WHERE userIdx = ? AND status ='ACTIVE'
     ORDER BY arrivalDate DESC;
     `;
   const [latestTripIdx] = await connection.query(selectLatestTripQuery, userIdx);
@@ -52,7 +52,7 @@ async function selectTripsCount(connection, userIdx) {
   const selectTripsCountQuery = `
     SELECT COUNT(*) AS TRIPS_COUNT
     FROM trip
-    WHERE userIdx = ?;
+    WHERE userIdx = ? AND status ='ACTIVE';
     `;
     const [tripsCount] = await connection.query(selectTripsCountQuery, userIdx);
     return tripsCount[0];

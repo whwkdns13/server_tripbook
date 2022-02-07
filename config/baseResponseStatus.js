@@ -40,8 +40,12 @@ module.exports = {
     TRIP_DEPARTUREDATE_EMPTY : { "isSuccess": false, "code": 2102, "message": "departureDate를 입력해주세요" },
     TRIP_ARRIVALDATE_EMPTY : { "isSuccess": false, "code": 2103, "message": "arrivalDate를 입력해주세요" },
     TRIP_THEMEIDX_EMPTY : { "isSuccess": false, "code": 2104, "message": "themeIdx를 입력해주세요" },
-
-
+    TRIP_USERIDX_EMPTY : { "isSuccess": false, "code": 2105, "message": "userIdx를 입력해주세요" },
+    TRIP_USERIDX_NOT_EXIST : { "isSuccess": false, "code": 2106, "message": "해당 userIdx가 존재하지 않습니다." },
+    TRIP_TRIPTITLE_LENGTH : { "isSuccess": false, "code": 2107, "message": "tripTitle은 14자리 이하로 입력해주세요" },
+    TRIP_LATEST_NOT_EXIST : { "isSuccess": false, "code": 2107, "message": "latestTrip이 존재하지 않습니다." },
+    TRIP_COURSE_NOT_EXIST : { "isSuccess": false, "code": 2108, "message": "course가 존재하지 않습니다." },
+    TRIP_DELETE_TRIP : { "isSuccess": false, "code": 2109, "message": "삭제 된 여행입니다." },
 
     
 

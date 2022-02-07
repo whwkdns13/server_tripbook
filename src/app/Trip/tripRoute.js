@@ -34,3 +34,5 @@ module.exports = function(app){
     // 3-1. 유저 전체 여행 조회 API
     app.get('/app/trips/:userIdx',trip.getTrips);
 }
+
+//제목 14자
