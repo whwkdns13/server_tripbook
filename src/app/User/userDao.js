@@ -23,27 +23,26 @@ async function selectUserEmail(connection, email) {
 }
 
 // userId 회원 조회
-async function selectUserId(connection, userId) {
-  const selectUserIdQuery = `
-                 SELECT id, email, nickname 
-                 FROM UserInfo 
-                 WHERE id = ?;
+async function selectUserKakaoId(connection, kakaoId) {
+  const selectUserKakaoIdQuery = `
+                 SELECT *
+                 FROM user
+                 WHERE kakaoId = ?;
                  `;
-  const [userRow] = await connection.query(selectUserIdQuery, userId);
+  const [userRow] = await connection.query(selectUserKakaoIdQuery,kakaoId);
   return userRow;
 }
 
 // 유저 생성
-async function insertUserInfo(connection, insertUserInfoParams) {
+async function insertUserInfo(connection, kakaoId) {
   const insertUserInfoQuery = `
-        INSERT INTO UserInfo(email, password, nickname)
-        VALUES (?, ?, ?);
+        INSERT INTO user(kakaoId)
+        VALUES (?);
     `;
   const insertUserInfoRow = await connection.query(
     insertUserInfoQuery,
-    insertUserInfoParams
+    kakaoId
   );
-
   return insertUserInfoRow;
 }
 
@@ -62,14 +61,14 @@ async function selectUserPassword(connection, selectUserPasswordParams) {
 }
 
 // 유저 계정 상태 체크 (jwt 생성 위해 id 값도 가져온다.)
-async function selectUserAccount(connection, email) {
+async function selectUserAccount(connection, userIdx) {
   const selectUserAccountQuery = `
-        SELECT status, id
-        FROM UserInfo 
-        WHERE email = ?;`;
+        SELECT status, userIdx, kakaoId
+        FROM user
+        WHERE userIdx = ?;`;
   const selectUserAccountRow = await connection.query(
       selectUserAccountQuery,
-      email
+      userIdx
   );
   return selectUserAccountRow[0];
 }
@@ -83,13 +82,12 @@ async function updateUserInfo(connection, id, nickname) {
   return updateUserRow[0];
 }
 
-
 module.exports = {
   selectUser,
   selectUserEmail,
-  selectUserId,
+  selectUserKakaoId,
   insertUserInfo,
   selectUserPassword,
   selectUserAccount,
-  updateUserInfo,
+  updateUserInfo
 };

@@ -147,13 +147,23 @@ exports.kakaoLogin = async function (req, res) {
         });
       } catch (error) {
         return res.json(error.data);
-      }//.kakao_account.email
-      console.log(kakaoProfile.data.id);
-      const isUser = await userProvider.retrieveUser(id);
+      }//kakaoProfile.data.id
+      const kakaoId = kakaoProfile.data.id;
+      const isUser = await userProvider.selectUserKakaoId(kakaoId);
+      
+      //회원이 아니라면 회원가입 과정을 거침.
       if(!isUser) {
-
+        const createUserInfo = await userService.createKakaoUser(kakaoId);
+        if(createUserInfo === response(baseResponse.SUCCESS)){
+            const afterKakaoSignInResult = await userService.postSignIn(isUser.userIdx, kakaoId);
+            return res.send(afterKakaoSignInResult);
+        }
       }
-      return res.send(baseResponse.SUCCESS);
+      else{
+        //회원이라면 signIn시켜줌
+        const kakaoSignInResult = await userService.postSignIn(isUser.userIdx, kakaoId);
+        return res.send(kakaoSignInResult);
+      }
 }
 
 
