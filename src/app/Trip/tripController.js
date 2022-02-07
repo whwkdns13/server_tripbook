@@ -30,17 +30,16 @@ exports.getLatestTrip = async function (req, res) {
 
     const userIdx = req.params.userIdx;
     // errResponse 전달
-    // TODO Path Variable이 params인데 errResponse가 필요한가?
-    if(!userIdx) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
-    // TODO baseResponse 수정 필요
-    //     -> USER_USERIDX_EMPTY
-    // TODO userIdx에 여행이 있는지 없는지 확인 필요 
-    //     -> tripProvider or tripController 에서 구현 필요
-    
+    if(!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));    
+
     // 최근 여행 인덱스 조회
     const latestTripIdx = await tripProvider.retrieveLatest(userIdx);
 
+    // errResponse 전달 - 최근 여행 인덱스 없을때
+    if(!latestTripIdx) return res.send(response(baseResponse.TRIP_LATEST_NOT_EXIST));
+
     const latestTripInfo = await tripProvider.retrieveTrip(latestTripIdx.tripIdx);
+
     return res.send(response(baseResponse.SUCCESS, latestTripInfo));
 }
 
@@ -56,12 +55,18 @@ exports.getLatestCourses = async function (req, res) {
 
     const userIdx = req.params.userIdx;
     // errResponse 전달
-    if(!userIdx) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    if(!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
 
     // 최근 여행 인덱스 조회
     const latestTripIdx = await tripProvider.retrieveLatest(userIdx);
 
+    // errResponse 전달 - 최근 여행 인덱스 없을때
+    if(!latestTripIdx) return res.send(response(baseResponse.TRIP_LATEST_NOT_EXIST));
+
     const latestCoursesInfo = await tripProvider.retrieveCourses(latestTripIdx.tripIdx);
+
+    // errResponse 전달 - 최근 여행의 course가 없을 때
+    if(!latestCoursesInfo) return res.send(response(baseResponse.TRIP_COURSE_NOT_EXIST));
     return res.send(response(baseResponse.SUCCESS, latestCoursesInfo));
 }
 
@@ -77,7 +82,7 @@ exports.getTripsCount = async function (req, res) {
 
     const userIdx = req.params.userIdx;
     // errResponse 전달
-    if(!userIdx) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    if(!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
 
     const tripsCount = await tripProvider.retrieveTripsCount(userIdx);
     return res.send(response(baseResponse.SUCCESS, tripsCount));
@@ -100,6 +105,9 @@ exports.getTrip = async function (req, res) {
     if(!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
 
     const tripBytripIdx = await tripProvider.retrieveTrip(tripIdx);
+
+    // errResponse 전달 - tripIdx가 DELETE되었을 때
+    if(tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
     return res.send(response(baseResponse.SUCCESS, tripBytripIdx));
 }
 
@@ -135,13 +143,18 @@ exports.postTrip = async function (req, res) {
     const {userIdx, tripTitle, departureDate, arrivalDate, themeIdx} = req.body;
 
     // 빈 값 체크
-    if(!userIdx) return res.send(response(baseResponse.USER_USERID_EMPTY));
-        //TODO USER_USERIDX_EMPTY 변경 필요
+    if(!userIdx) return res.send(response(baseResponse.TRIP_USERIDX_EMPTY));
         //TODO USER_USERID_NOEXIST 확인 필요
-    if(!tripTitle) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if(!tripTitle) return res.send(errResponse(baseResponse.TRIP_TRIPTITLE_EMPTY));
     if(!departureDate) return res.send(errResponse(baseResponse.TRIP_DEPARTUREDATE_EMPTY));
     if(!arrivalDate) return res.send(errResponse(baseResponse.TRIP_ARRIVALDATE_EMPTY));
     if(!themeIdx) return res.send(errResponse(baseResponse.TRIP_THEMEIDX_EMPTY));
+
+
+    //triptitle 길이 체크
+    if(tripTitle.length > 14) return res.send(response(baseResponse.TRIP_TRIPTITLE_LENGTH));
+
+    // TODO DATE유효성 검사
 
     const postTripResponse = await tripService.createTrip(
         userIdx,
@@ -166,7 +179,7 @@ exports.getTrips = async function (req, res) {
 
     const userIdx = req.params.userIdx;
     // errResponse 전달
-    if(!userIdx) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    if(!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
 
     const tripsByuserIdx = await tripProvider.retrieveTrips(userIdx);
     return res.send(response(baseResponse.SUCCESS, tripsByuserIdx));
