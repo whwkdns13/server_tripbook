@@ -15,11 +15,11 @@ const crypto = require("crypto");
 
 // Service: Create, Update, Delete 비즈니스 로직 처리
 
-exports.createKakaoUser = async function (kakaoId) {
+exports.createKakaoUser = async function (email) {
     try {
         const connection = await pool.getConnection(async (conn) => conn);
 
-        const kakaoSignUpResult = await userDao.insertUserInfo(connection, kakaoId);
+        const kakaoSignUpResult = await userDao.insertUserInfo(connection, email);
         console.log(`추가된 회원 : ${kakaoSignUpResult[0].insertId}`)
 
         connection.release();
@@ -65,13 +65,13 @@ exports.postSignIn = async function (userIdx) {
         let token = await jwt.sign(
             {
                 userIdx: userInfoRows[0].userIdx,
-                kakaoId: userInfoRows[0].kakaoId
+                email: userInfoRows[0].email
             }, // 토큰의 내용(payload)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "365d",
+                expiresIn: "1d",
                 subject: "user",
-            } // 유효 기간 365일
+            } // 유효 기간 1일
         );
         return response(baseResponse.SUCCESS, {'userIdx': userInfoRows[0].userIdx, 'jwt': token});
 
@@ -81,7 +81,21 @@ exports.postSignIn = async function (userIdx) {
     }
 };
 
+exports.editKakaoUser = async function (userIdx, nickName, userImg) {
+    try {
+        console.log(userIdx);
+        const editKakaoUserParams = [nickName, userImg, userIdx];
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editKakaoUserResult = await userDao.updateKakaoUserInfo(connection, editKakaoUserParams);
+        connection.release();
 
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editKakaoUser Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
 
 exports.editUser = async function (id, nickname) {
     try {

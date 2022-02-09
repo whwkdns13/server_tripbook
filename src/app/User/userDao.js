@@ -12,25 +12,25 @@ async function selectUser(connection) {
 }
 
 // userId 회원 조회
-async function selectUserKakaoId(connection, kakaoId) {
-  const selectUserKakaoIdQuery = `
+async function selectUserByEmail(connection, email) {
+  const selectUserEmailQuery = `
                  SELECT *
                  FROM user
-                 WHERE kakaoId = ?;
+                 WHERE email = ?;
                  `;
-  const [userRow] = await connection.query(selectUserKakaoIdQuery,kakaoId);
+  const [userRow] = await connection.query(selectUserEmailQuery, email);
   return userRow;
 }
 
 // 유저 생성
-async function insertUserInfo(connection, kakaoId) {
+async function insertUserInfo(connection, email) {
   const insertUserInfoQuery = `
-        INSERT INTO user(kakaoId)
+        INSERT INTO user(email)
         VALUES (?);
     `;
   const insertUserInfoRow = await connection.query(
     insertUserInfoQuery,
-    kakaoId
+    email
   );
   return insertUserInfoRow;
 }
@@ -50,7 +50,7 @@ async function insertUserProfileInfo(connection, kakaoSignUpParams) {
 // 유저 계정 상태 체크 (jwt 생성 위해 id 값도 가져온다.)
 async function selectUserAccount(connection, userIdx) {
   const selectUserAccountQuery = `
-        SELECT status, userIdx, kakaoId
+        SELECT status, userIdx, email
         FROM user
         WHERE userIdx = ?;`;
   const selectUserAccountRow = await connection.query(
@@ -69,11 +69,23 @@ async function updateUserInfo(connection, id, nickName) {
   return updateUserRow[0];
 }
 
+async function updateKakaoUserInfo(connection, editKakaoUserParams) {
+  const updateUserQuery = `
+  UPDATE userProfile
+  SET nickName = ?, userImg = ?
+  WHERE userIdx = ?;`;
+  const updateUserRow = await connection.query(updateUserQuery, editKakaoUserParams);
+  return updateUserRow[0];
+}
+
+
+
 module.exports = {
   selectUser,
-  selectUserKakaoId,
+  selectUserByEmail,
   insertUserInfo,
   selectUserAccount,
   updateUserInfo,
-  insertUserProfileInfo
+  insertUserProfileInfo,
+  updateKakaoUserInfo
 };

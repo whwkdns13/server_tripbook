@@ -5,9 +5,9 @@ const userDao = require("./userDao");
 
 // Provider: Read 비즈니스 로직 처리
 
-exports.selectUserKakaoId = async function (kakaoId) {
+exports.retrieveUserByEmail = async function (email) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const userResult = await userDao.selectUserKakaoId(connection, kakaoId);
+  const userResult = await userDao.selectUserByEmail(connection, email);
 
   connection.release();
 
