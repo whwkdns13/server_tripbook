@@ -92,6 +92,16 @@ async function updateRefreshToken(connection, userIdx, refreshToken) {
   return updateUserRow[0];
 }
 
+async function selectRefreshToken(connection, userIdx) {
+  const selectRefreshTokenQuery = `
+                 SELECT *
+                 FROM user
+                 WHERE userIdx = ? and status = 'ACTIVE';
+                 `;
+  const [refreshTokenRow] = await connection.query(selectRefreshTokenQuery, userIdx);
+  return refreshTokenRow;
+}
+
 module.exports = {
   selectUser,
   selectUserByEmail,
@@ -100,5 +110,6 @@ module.exports = {
   updateUserInfo,
   insertUserProfileInfo,
   updateKakaoUserInfo,
-  updateRefreshToken
+  updateRefreshToken,
+  selectRefreshToken
 };
