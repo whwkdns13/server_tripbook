@@ -16,7 +16,8 @@ async function selectTrips(connection, userIdx) {
   const selectTripsQuery = `
     SELECT tripIdx, userIdx, themeIdx, tripImg, tripTitle, DATE_FORMAT(departureDate,'%Y-%m-%d') AS departureDate, DATE_FORMAT(arrivalDate,'%Y-%m-%d') AS arrivalDate, status
     FROM trip
-    WHERE userIdx = ? AND status = 'ACTIVE';
+    WHERE userIdx = ? AND status = 'ACTIVE'
+    ORDER BY arrivalDate DESC, departureDate ASC;;
     `;
   const [tripsRows] = await connection.query(selectTripsQuery, userIdx);
   return tripsRows;
