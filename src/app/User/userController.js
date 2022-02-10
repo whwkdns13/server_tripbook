@@ -40,11 +40,6 @@ exports.getUsers = async function (req, res) {
     }
 };
 
-/**
- * API No. 3
- * API Name : 특정 유저 조회 API
- * [GET] /app/users/{userId}
- */
 exports.getUserById = async function (req, res) {
 
     /**
@@ -159,24 +154,22 @@ try {
     }
 }
 
-
-
 //jwt있을 때 자동 로그인
 exports.check = async function (req, res) {
-  const userIdResult = req.verifiedToken.userIdx;
-  console.log(userIdResult);
+  const userIdxResult = req.verifiedToken.userIdx;
+  console.log(userIdxResult);
   return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
 };
 
 //카카오 유저 닉네임, 썸네일 업데이트
 exports.userUpdateByKakao = async function (req, res) {
-    const userIdFromJWT = req.verifiedToken.userIdx;
+    const userIdxFromJWT = req.verifiedToken.userIdx;
     const userIdx = req.params.userIdx;
     const accessToken = req.body.accessToken;
     if(!accessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
     if (!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
     // JWT 검증
-    if (userIdFromJWT != userIdx) {
+    if (userIdxFromJWT != userIdx) {
       res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
     } 
     else {
@@ -213,13 +206,13 @@ exports.patchUsers = async function (req, res) {
 
     // jwt - userId, path variable :userId
 
-    const userIdFromJWT = req.verifiedToken.userIdx;
+    const userIdxFromJWT = req.verifiedToken.userIdx;
 
-    const userId = req.params.userIdx;
+    const userIdx = req.params.userIdx;
     const nickname = req.body.nickname;
 
     // JWT는 이 후 주차에 다룰 내용
-    if (userIdFromJWT != userId) {
+    if (userIdxFromJWT != userIdx) {
         res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
     } else {
         if (!nickname) return res.send(errResponse(baseResponse.USER_NICKNAME_EMPTY));

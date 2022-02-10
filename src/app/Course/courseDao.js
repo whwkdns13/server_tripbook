@@ -13,8 +13,8 @@ async function selectCourseIdx(connection, courseIdx) {
   
   async function insertCourseInfo(connection, insertCourseInfoParams) {
     const insertCourseInfoQuery = `
-      INSERT INTO tripCourse (tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx) 
-      VALUE (?,?,?,?,?,?,?);
+      INSERT INTO tripCourse (tripIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, latitude, longitude) 
+      VALUE (?,?,?,?,?,?,?,?,?);
       `;
     const insertCourseInfoRow = await connection.query(
       insertCourseInfoQuery,
@@ -28,7 +28,7 @@ async function updateTripImg(connection, updateTripImgParams) {
   const updateTripImgQuery = `
         UPDATE trip
         SET tripImg = ?
-        WHERE tripIdx = ?;
+        WHERE tripIdx = ? AND status = 'ACTIVE';
     `;
   const updateTripImgInfoRow = await connection.query(
     updateTripImgQuery,
@@ -49,7 +49,6 @@ async function selectCourseTag(connection, courseIdx) {
   return courseTag;
 }
 
-
 async function insertCourseHashTagInfo(connection, insertCourseHashTagInfoParams) {
   const insertCourseHashTagInfoQuery = `
         INSERT INTO courseTagIdxRelationships (courseIdx, hashtagIdx)
@@ -63,26 +62,25 @@ async function insertCourseHashTagInfo(connection, insertCourseHashTagInfoParams
   return insertCourseHashTagInfoRow;
 }
 
+async function changeCourseStatusDelete(connection, courseIdx) {
+  const deleteCourseInfoQuery = `
+        UPDATE tripCourse 
+        SET status = 'DELETE' 
+        WHERE courseIdx = ? AND status = 'ACTIVE';
+    `;
+  const deleteCourseInfoRow = await connection.query(deleteCourseInfoQuery, courseIdx);
+
+  return deleteCourseInfoRow;
+}
+
 //courseDate SET DAO
 async function updateCourseDate(connection, courseIdx, courseDate) {
   const updateCourseDateQuery = `
   UPDATE tripCourse 
   SET courseDate = ?
-  WHERE courseIdx = ?;`;
+  WHERE courseIdx = ? AND status = 'ACTIVE';`;
   const updateCourseDateRow = await connection.query(updateCourseDateQuery, [courseDate, courseIdx]);
   return updateCourseDateRow[0];
-}
-
-
-async function changeCourseStatusDelete(connection, courseIdx) {
-  const deleteCourseInfoQuery = `
-        UPDATE tripCourse 
-        SET status = 'DELETE' 
-        WHERE courseIdx = ?;
-    `;
-  const deleteCourseInfoRow = await connection.query(deleteCourseInfoQuery, courseIdx);
-
-  return deleteCourseInfoRow;
 }
 
 //courseTime SET DAO
@@ -90,7 +88,7 @@ async function updateCourseTime(connection, courseIdx, courseTime) {
   const updateCourseTimeQuery = `
   UPDATE tripCourse 
   SET courseTime = ?
-  WHERE courseIdx = ?;`;
+  WHERE courseIdx = ? AND status = 'ACTIVE';`;
   const updateCourseTimeRow = await connection.query(updateCourseTimeQuery, [courseTime, courseIdx]);
   return updateCourseTimeRow[0];
 }
@@ -100,7 +98,7 @@ async function updateCourseTitle(connection, courseIdx, courseTitle) {
   const updateCourseTitleQuery = `
   UPDATE tripCourse 
   SET courseTitle = ?
-  WHERE courseIdx = ?;`;
+  WHERE courseIdx = ? AND status = 'ACTIVE';`;
   const updateCourseTitleRow = await connection.query(updateCourseTitleQuery, [courseTitle, courseIdx]);
   return updateCourseTitleRow[0];
 }
@@ -110,7 +108,7 @@ async function updateCourseImg(connection, courseIdx, courseImg) {
   const updateCourseImgQuery = `
   UPDATE tripCourse 
   SET courseImg = ?
-  WHERE courseIdx = ?;`;
+  WHERE courseIdx = ? AND status = 'ACTIVE';`;
   const updateCourseImgRow = await connection.query(updateCourseImgQuery, [courseImg, courseIdx]);
   return updateCourseImgRow[0];
 }
@@ -120,7 +118,7 @@ async function updateCourseComment(connection, courseIdx, courseComment) {
   const updateCourseCommentQuery = `
   UPDATE tripCourse 
   SET courseComment = ?
-  WHERE courseIdx = ?;`;
+  WHERE courseIdx = ? AND status = 'ACTIVE';`;
   const updateCourseCommentRow = await connection.query(updateCourseCommentQuery, [courseComment, courseIdx]);
   return updateCourseCommentRow[0];
 }
@@ -130,8 +128,16 @@ async function updateCardIdx(connection, courseIdx, cardIdx) {
   const updateCardIdxQuery = `
   UPDATE tripCourse 
   SET cardIdx = ?
-  WHERE courseIdx = ?;`;
+  WHERE courseIdx = ? AND status = 'ACTIVE';`;
   const updateCardIdxRow = await connection.query(updateCardIdxQuery, [cardIdx, courseIdx]);
+  return updateCardIdxRow[0];
+}
+async function updateRegion(connection, courseIdx, latitude, longitude) {
+  const updateRegionQuery = `
+  UPDATE tripCourse 
+  SET latitude = ?, longitude = ?
+  WHERE courseIdx = ? AND status = 'ACTIVE';`;
+  const updateCardIdxRow = await connection.query(updateRegionQuery, [latitude, longitude, courseIdx]);
   return updateCardIdxRow[0];
 }
 
@@ -146,7 +152,7 @@ module.exports = {
     updateCourseComment,
     updateCardIdx,
     updateTripImg,
+    updateRegion,
     selectCourseTag,
     insertCourseHashTagInfo
-
 };

@@ -77,7 +77,7 @@ exports.postCourse = async function (req, res) {
     /**
      * Body: tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment
      */
-    const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx} = req.body;
+    const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx, latitude, longitude} = req.body;
     
     // 빈 값 체크
     if (!tripIdx) return res.send(errResponse(baseResponse.COURSE_TRIPIDX_EMPTY));
@@ -87,7 +87,9 @@ exports.postCourse = async function (req, res) {
     if (!courseImg) return res.send(errResponse(baseResponse.COURSE_COURSEIMAGE_EMPTY));
     if (!courseComment) return res.send(errResponse(baseResponse.COURSE_COURSECOMMENT_EMPTY));
     if (!cardIdx) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
-    
+    //if (!latitude) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
+    //if (!longitude) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
+
     // 길이 체크
     if (courseTitle.length > 99)
         return res.send(response(baseResponse.COURSE_COURSETITLE_LENGTH));
@@ -98,20 +100,20 @@ exports.postCourse = async function (req, res) {
     // createCourse 함수 실행을 통한 결과 값을 postCourseResponse에 저장
     const postCourseResponse = await courseService.createCourse(
         tripIdx, 
+        cardIdx,
         courseImg, 
         courseDate, 
         courseTime, 
         courseTitle, 
         courseComment,
-        cardIdx
+        latitude,
+        longitude
     );
 
     // postCourseResponse 값을 json으로 전달
     return res.send(postCourseResponse);
     
 };
-
-
 
 //date patch 함수
 exports.patchCourseDate = async function (req, res) {
@@ -257,6 +259,26 @@ exports.patchCardIdx = async function (req, res) {
     //}
 };
 
+//latitude, longitude patch 함수
+exports.patchRegion = async function (req, res) {
+
+    // jwt - userIdx, path variable :userId
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    const {userIdx, courseIdx} = req.params;
+    const {latitude, longitude} = req.body;
+    if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
+    if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
+    if (!latitude) return res.send(errResponse(baseResponse.COURSE_LATITUDE_EMPTY));
+    if (!longitude) return res.send(errResponse(baseResponse.COURSE_LONGITUDE_EMPTY));
+
+    if (userIdxFromJWT != userIdx) {
+        return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    } else {
+        const editRegionInfo = await courseService.editRegion(courseIdx, latitude, longitude);
+        return res.send(editRegionInfo);
+    }
+};
+
 //hashTag 입력
 exports.postCourseHashTag = async function(req, res){
     const {courseIdx, hashTagIdx} = req.params;
@@ -270,9 +292,8 @@ exports.postCourseHashTag = async function(req, res){
         hashTagIdx
     );
     // postCourseResponse 값을 json으로 전달
-    return res.send(postCourseHashTagResponse);
+    return res.send(response(baseResponse.SUCCESS), postCourseHashTagResponse);
 };
-
 
 //발자국 삭제 api
 exports.deleteCourse = async function (req, res) {
@@ -289,7 +310,6 @@ exports.deleteCourse = async function (req, res) {
     return res.send(eraseCourseInfo);
     
 };
-
 
 //썸네일 사진 업데이트 (jwt 적용 아직 안됨)
 exports.patchTripImg = async function (req, res) {
