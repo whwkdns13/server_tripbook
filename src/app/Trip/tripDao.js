@@ -17,7 +17,7 @@ async function selectTrips(connection, userIdx) {
     SELECT tripIdx, userIdx, themeIdx, tripImg, tripTitle, DATE_FORMAT(departureDate,'%Y-%m-%d') AS departureDate, DATE_FORMAT(arrivalDate,'%Y-%m-%d') AS arrivalDate, status
     FROM trip
     WHERE userIdx = ? AND status = 'ACTIVE'
-    ORDER BY arrivalDate DESC, departureDate ASC;;
+    ORDER BY arrivalDate DESC, departureDate DESC;
     `;
   const [tripsRows] = await connection.query(selectTripsQuery, userIdx);
   return tripsRows;
@@ -42,7 +42,7 @@ async function selectLatestTrip(connection, userIdx) {
     SELECT tripIdx
     FROM trip
     WHERE userIdx = ? AND status ='ACTIVE'
-    ORDER BY arrivalDate DESC;
+    ORDER BY arrivalDate DESC, departureDate DESC;
     `;
   const [latestTripIdx] = await connection.query(selectLatestTripQuery, userIdx);
   return latestTripIdx[0];
