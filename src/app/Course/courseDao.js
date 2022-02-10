@@ -132,6 +132,14 @@ async function updateCardIdx(connection, courseIdx, cardIdx) {
   const updateCardIdxRow = await connection.query(updateCardIdxQuery, [cardIdx, courseIdx]);
   return updateCardIdxRow[0];
 }
+async function updateRegion(connection, courseIdx, latitude, longitude) {
+  const updateRegionQuery = `
+  UPDATE tripCourse 
+  SET latitude = ?, longitude = ?
+  WHERE courseIdx = ? AND status = 'ACTIVE';`;
+  const updateCardIdxRow = await connection.query(updateRegionQuery, [latitude, longitude, courseIdx]);
+  return updateCardIdxRow[0];
+}
 
 module.exports = {
     changeCourseStatusDelete,
@@ -144,7 +152,7 @@ module.exports = {
     updateCourseComment,
     updateCardIdx,
     updateTripImg,
+    updateRegion,
     selectCourseTag,
     insertCourseHashTagInfo
-
 };

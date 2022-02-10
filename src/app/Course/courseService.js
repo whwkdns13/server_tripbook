@@ -37,7 +37,6 @@ exports.createCourse = async function (tripIdx, cardIdx, courseImg, courseDate, 
     }
 };
 
-
 //course status를 DELETE로 변경해주는 함수
 exports.eraseCourse = async function (courseIdx) {
     try {
@@ -45,7 +44,11 @@ exports.eraseCourse = async function (courseIdx) {
 
         const deleteCourseResult = await courseDao.changeCourseStatusDelete(connection, courseIdx);
         connection.release();
-        return response(baseResponse.SUCCESS);
+
+        if(deleteCourseResult.affectedRows != 0){
+            return response(baseResponse.SUCCESS);
+        }
+        else return errResponse(baseResponse.COURSE_COURSE_NOT_EXIST);
         
     } catch (err) {
         logger.error(`App - createCourse Service error\n: ${err.message}`);
@@ -61,7 +64,10 @@ exports.editCourseDate = async function (courseIdx, courseDate) {
         const editCourseDateResult = await courseDao.updateCourseDate(connection, courseIdx, courseDate)
         connection.release();
         
-        return response(baseResponse.SUCCESS);
+        if(editCourseDateResult.affectedRows != 0){
+            return response(baseResponse.SUCCESS);
+        }
+        else return errResponse(baseResponse.COURSE_COURSE_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - editCourseDate Service error\n: ${err.message}`);
@@ -76,7 +82,10 @@ exports.editCourseTime = async function (courseIdx, courseTime) {
         const editCourseTimeResult = await courseDao.updateCourseTime(connection, courseIdx, courseTime)
         connection.release();
 
-        return response(baseResponse.SUCCESS);
+        if(editCourseTimeResult.affectedRows != 0){
+            return response(baseResponse.SUCCESS);
+        }
+        else return errResponse(baseResponse.COURSE_COURSE_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - editCourseTime Service error\n: ${err.message}`);
@@ -91,7 +100,10 @@ exports.editCourseTitle = async function (courseIdx, courseTitle) {
         const editCourseTitleResult = await courseDao.updateCourseTitle(connection, courseIdx, courseTitle)
         connection.release();
 
-        return response(baseResponse.SUCCESS);
+        if(editCourseTitleResult.affectedRows != 0){
+            return response(baseResponse.SUCCESS);
+        }
+        else return errResponse(baseResponse.COURSE_COURSE_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - editCourseTitle Service error\n: ${err.message}`);
@@ -106,7 +118,10 @@ exports.editCourseImg = async function (courseIdx, courseImg) {
         const editCourseImgResult = await courseDao.updateCourseImg(connection, courseIdx, courseImg)
         connection.release();
 
-        return response(baseResponse.SUCCESS);
+        if(editCourseImgResult.affectedRows != 0){
+            return response(baseResponse.SUCCESS);
+        }
+        else return errResponse(baseResponse.COURSE_COURSE_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - editCourseImg Service error\n: ${err.message}`);
@@ -121,14 +136,17 @@ exports.editCourseComment = async function (courseIdx, courseComment) {
         const editCourseCommentResult = await courseDao.updateCourseComment(connection, courseIdx, courseComment)
         connection.release();
 
-        return response(baseResponse.SUCCESS);
+        if(editCourseCommentResult.affectedRows != 0){
+            return response(baseResponse.SUCCESS);
+        }
+        else return errResponse(baseResponse.COURSE_COURSE_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - editCourseComment Service error\n: ${err.message}`);
         return errResponse(baseResponse.DB_ERROR);
     }
 };
-//cardIdx변경 함수
+//cardIdx변경
 exports.editCardIdx = async function (courseIdx, cardIdx) {
     try {
         console.log(courseIdx);
@@ -136,10 +154,32 @@ exports.editCardIdx = async function (courseIdx, cardIdx) {
         const editCardIdxResult = await courseDao.updateCardIdx(connection, courseIdx, cardIdx)
         connection.release();
 
-        return response(baseResponse.SUCCESS);
+        if(editCardIdxResult.affectedRows != 0){
+            return response(baseResponse.SUCCESS);
+        }
+        else return errResponse(baseResponse.COURSE_COURSE_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - editCardIdx Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+//region 변경
+exports.editRegion = async function (courseIdx, latitude, longitude) {
+    try {
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editRegionResult = await courseDao.updateRegion(connection, courseIdx, latitude, longitude);
+        connection.release();
+        if(editRegionResult.affectedRows != 0){
+            return response(baseResponse.SUCCESS);
+        }
+        else  return errResponse(baseResponse.COURSE_COURSE_NOT_EXIST);
+        
+
+    } catch (err) {
+        logger.error(`App - editRegion Service error\n: ${err.message}`);
         return errResponse(baseResponse.DB_ERROR);
     }
 };

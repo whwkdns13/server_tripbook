@@ -13,7 +13,6 @@ exports.retrieveCourse = async function (courseIdx) {
     return courseResult[0];
   };
 
-  
   exports.retrieveCourseTag = async function (courseIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
     const courseTagResult = await courseDao.selectCourseTag(connection, courseIdx);

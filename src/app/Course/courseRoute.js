@@ -47,5 +47,7 @@ module.exports = function(app){
     //cardIdx 수정하기 API userIdx는 jwt이용에 필요
     app.patch('/app/course/cardIdx/:userIdx/:courseIdx', course.patchCardIdx);
 
+    //region 수정하기 api
+    app.patch('/app/course/region/:userIdx/:courseIdx', course.patchRegion);
 };
 

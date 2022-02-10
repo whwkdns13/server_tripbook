@@ -68,9 +68,10 @@ module.exports = {
     COURSE_USERIDX_EMPTY: { "isSuccess": false, "code": 2210, "message": "userIdx를 입력해주세요" },
     COURSE_CARDIDX_EMPTY: { "isSuccess": false, "code": 2211, "message": "cardIdx를 입력해주세요" },
     COURSE_COURSEIDX_NOT_EXIST: { "isSuccess": false, "code": 2212, "message": "해당 courseIdx를 가진 발자국이 존재하지 않습니다." },
-    COURSE_HASHTAGIDX_EMPTY: { "isSuccess": false, "code": 2250, "message": "hashTagIdx를 입력해주세요" },
-
-
+    COURSE_HASHTAGIDX_EMPTY: { "isSuccess": false, "code": 2213, "message": "hashTagIdx를 입력해주세요" },
+    COURSE_LATITUDE_EMPTY :    { "isSuccess": false, "code": 2214, "message": "latitude를 입력해주세요" },
+    COURSE_LONGITUDE_EMPTY :{ "isSuccess": false, "code": 2215, "message": "longitude를 입력해주세요" },
+    COURSE_COURSE_NOT_EXIST :{ "isSuccess": false, "code": 2216, "message": "해당 courseIdx를 가진 코스가 존재하지 않습니다." },
     // Response error
     SIGNUP_REDUNDANT_EMAIL: { "isSuccess": false, "code": 3001, "message": "중복된 이메일입니다." },
     SIGNUP_REDUNDANT_NICKNAME: { "isSuccess": false, "code": 3002, "message": "중복된 닉네임입니다." },

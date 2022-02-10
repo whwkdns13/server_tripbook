@@ -115,8 +115,6 @@ exports.postCourse = async function (req, res) {
     
 };
 
-
-
 //date patch 함수
 exports.patchCourseDate = async function (req, res) {
 
@@ -253,6 +251,30 @@ exports.patchCardIdx = async function (req, res) {
     const editCardIdxInfo = await courseService.editCardIdx(courseIdx, cardIdx);
     
     return res.send(editCardIdxInfo);
+    // JWT는 이 후 주차에 다룰 내용
+    /*if (userIdxFromJWT != userIdx) {
+        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
+    } else {*/
+
+    //}
+};
+
+//latitude, longitude patch 함수
+exports.patchRegion = async function (req, res) {
+
+    // jwt - userId, path variable :userId
+    //const userIdxFromJWT = req.verifiedToken.userIdx;
+
+    const {userIdx, courseIdx} = req.params;
+    const {latitude, longitude} = req.body;
+    if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
+    if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
+    if (!latitude) return res.send(errResponse(baseResponse.COURSE_LATITUDE_EMPTY));
+    if (!longitude) return res.send(errResponse(baseResponse.COURSE_LONGITUDE_EMPTY));
+
+    const editRegionInfo = await courseService.editRegion(courseIdx, latitude, longitude);
+    
+    return res.send(editRegionInfo);
     // JWT는 이 후 주차에 다룰 내용
     /*if (userIdxFromJWT != userIdx) {
         res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
