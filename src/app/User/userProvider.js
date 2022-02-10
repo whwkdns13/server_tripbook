@@ -18,6 +18,6 @@ exports.accountCheck = async function (userIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   const userAccountResult = await userDao.selectUserAccount(connection, userIdx);
   connection.release();
-
+  
   return userAccountResult;
 };

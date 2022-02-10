@@ -5,7 +5,8 @@
 async function selectUser(connection) {
   const selectUserListQuery = `
                 SELECT * 
-                FROM user;
+                FROM user
+                WHERE status = 'ACTIVE';
                 `;
   const [userRows] = await connection.query(selectUserListQuery);
   return userRows;
@@ -16,7 +17,7 @@ async function selectUserByEmail(connection, email) {
   const selectUserEmailQuery = `
                  SELECT *
                  FROM user
-                 WHERE email = ?;
+                 WHERE email = ? and status = 'ACTIVE';
                  `;
   const [userRow] = await connection.query(selectUserEmailQuery, email);
   return userRow;
@@ -50,9 +51,10 @@ async function insertUserProfileInfo(connection, kakaoSignUpParams) {
 // 유저 계정 상태 체크 (jwt 생성 위해 id 값도 가져온다.)
 async function selectUserAccount(connection, userIdx) {
   const selectUserAccountQuery = `
-        SELECT status, userIdx, email
-        FROM user
-        WHERE userIdx = ?;`;
+          SELECT status, userIdx, email
+          FROM user
+          WHERE userIdx = ? and status = 'ACTIVE';
+        `;
   const selectUserAccountRow = await connection.query(
       selectUserAccountQuery,
       userIdx
@@ -62,23 +64,33 @@ async function selectUserAccount(connection, userIdx) {
 
 async function updateUserInfo(connection, id, nickName) {
   const updateUserQuery = `
-  UPDATE userProfile
-  SET nickName = ?
-  WHERE userIdx = ?;`;
+    UPDATE userProfile
+    SET nickName = ?
+    WHERE userIdx = ? and status = 'ACTIVE';
+  `;
   const updateUserRow = await connection.query(updateUserQuery, [nickName, id]);
   return updateUserRow[0];
 }
 
 async function updateKakaoUserInfo(connection, editKakaoUserParams) {
   const updateUserQuery = `
-  UPDATE userProfile
-  SET nickName = ?, userImg = ?
-  WHERE userIdx = ?;`;
+    UPDATE userProfile
+    SET nickName = ?, userImg = ?
+    WHERE userIdx = ? and status = 'ACTIVE';
+  `;
   const updateUserRow = await connection.query(updateUserQuery, editKakaoUserParams);
   return updateUserRow[0];
 }
 
-
+async function updateRefreshToken(connection, userIdx, refreshToken) {
+  const updateUserQuery = `
+    UPDATE user
+    SET refreshToken = ?
+    WHERE userIdx = ? and status = 'ACTIVE';
+  `;
+  const updateUserRow = await connection.query(updateUserQuery, [refreshToken, userIdx]);
+  return updateUserRow[0];
+}
 
 module.exports = {
   selectUser,
@@ -87,5 +99,6 @@ module.exports = {
   selectUserAccount,
   updateUserInfo,
   insertUserProfileInfo,
-  updateKakaoUserInfo
+  updateKakaoUserInfo,
+  updateRefreshToken
 };

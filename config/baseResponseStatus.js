@@ -24,26 +24,28 @@ module.exports = {
     SIGNIN_EMAIL_ERROR_TYPE : { "isSuccess": false, "code": 2010, "message":"이메일을 형식을 정확하게 입력해주세요." },
     SIGNIN_PASSWORD_EMPTY : { "isSuccess": false, "code": 2011, "message": "비밀번호를 입력 해주세요." },
 
-    USER_USERID_EMPTY : { "isSuccess": false, "code": 2012, "message": "userId를 입력해주세요." },
-    USER_USERID_NOT_EXIST : { "isSuccess": false, "code": 2013, "message": "해당 회원이 존재하지 않습니다." },
+    USER_USERIDX_EMPTY : { "isSuccess": false, "code": 2012, "message": "userIdx를 입력해주세요." },
+    USER_USERIDX_NOT_EXIST : { "isSuccess": false, "code": 2013, "message": "해당 회원이 존재하지 않습니다." },
 
     USER_USEREMAIL_EMPTY : { "isSuccess": false, "code": 2014, "message": "이메일을 입력해주세요." },
     USER_USEREMAIL_NOT_EXIST : { "isSuccess": false, "code": 2015, "message": "해당 이메일을 가진 회원이 존재하지 않습니다." },
-    USER_ID_NOT_MATCH : { "isSuccess": false, "code": 2016, "message": "유저 아이디 값을 확인해주세요" },
+    USER_IDX_NOT_MATCH : { "isSuccess": false, "code": 2016, "message": "유저 아이디 값을 확인해주세요" },
     USER_NICKNAME_EMPTY : { "isSuccess": false, "code": 2017, "message": "변경할 닉네임 값을 입력해주세요" },
+
+    
 
     USER_STATUS_EMPTY : { "isSuccess": false, "code": 2018, "message": "회원 상태값을 입력해주세요" },
     KAKAO_ACCESSTOKEN_EMPTY : {"isSuccess": false, "code": 2050, "message": "kakao accesstoken을 입력해주세요"},
     KAKAO_REFRESHTOKEN_EMPTY :{"isSuccess": false, "code": 2051, "message": "kakao refreshtoken을 입력해주세요"},
-    KAKAO_CREATEPROFILE_FAIL:{"isSuccess": false, "code": 2052, "message": "profile이 만들어지지 않습니다."},
+    
+    USER_USER_NOT_EXIST : {"isSuccess": false, "code": 2052, "message": "회원 가입이 필요합니다."},
+    
     TRIP_TRIPIDX_EMPTY : { "isSuccess": false, "code": 2100, "message": "tripIdx를 입력해주세요" },
     TRIP_TRIPTITLE_EMPTY : { "isSuccess": false, "code": 2101, "message": "tripTitle를 입력해주세요" },
     TRIP_DEPARTUREDATE_EMPTY : { "isSuccess": false, "code": 2102, "message": "departureDate를 입력해주세요" },
     TRIP_ARRIVALDATE_EMPTY : { "isSuccess": false, "code": 2103, "message": "arrivalDate를 입력해주세요" },
     TRIP_THEMEIDX_EMPTY : { "isSuccess": false, "code": 2104, "message": "themeIdx를 입력해주세요" },
-
-
-
+    
     // Response error
     SIGNUP_REDUNDANT_EMAIL : { "isSuccess": false, "code": 3001, "message":"중복된 이메일입니다." },
     SIGNUP_REDUNDANT_NICKNAME : { "isSuccess": false, "code": 3002, "message":"중복된 닉네임입니다." },

@@ -48,21 +48,18 @@ exports.createKakaoUserProfile = async function (userIdx, nickName, userImg) {
     }
 };
 
-
-
 // TODO: After 로그인 인증 방법 (JWT)
 exports.postSignIn = async function (userIdx) {
     try {        
         // 계정 상태 확인
         const userInfoRows = await userProvider.accountCheck(userIdx);
 
-        if (userInfoRows[0].status === "DELETE") {
+        if (userInfoRows[0].status === "DELETE") 
             return errResponse(baseResponse.SIGNIN_INACTIVE_ACCOUNT);
-        }
-        console.log(userInfoRows[0].userIdx) // DB의 userId
+        console.log(userIdx); // 로그인한 userIdx
 
-        //토큰 생성 Service
-        let token = await jwt.sign(
+        //토큰 생성 Service 유효기간 1시간
+        const accessToken = await jwt.sign(
             {
                 userIdx: userInfoRows[0].userIdx,
                 email: userInfoRows[0].email
@@ -73,7 +70,27 @@ exports.postSignIn = async function (userIdx) {
                 subject: "user",
             } // 유효 기간 1일
         );
-        return response(baseResponse.SUCCESS, {'userIdx': userInfoRows[0].userIdx, 'jwt': token});
+
+        //refresh 토큰 생성 유효기간 14일
+        const refreshToken = await jwt.sign(
+            {}, // 비워놓음 (오버헤드 최소화)
+            secret_config.jwtsecret, // 비밀키
+            {
+                expiresIn: "14d",
+                subject: "user",
+            } // 유효 기간 1일
+        );
+
+        //refresh 토큰 DB에 넣기
+        const connection = await pool.getConnection(async (conn) => conn);
+        const createRefreshToken = await userDao.updateRefreshToken(connection, userIdx, refreshToken);
+        connection.release();
+
+        return response(baseResponse.SUCCESS, {
+            'userIdx': userIdx, 
+            'jwt': accessToken , 
+            'jwtRefreshToken' : refreshToken
+        });
 
     } catch (err) {
         logger.error(`App - postSignIn Service error\n: ${err.message} \n${JSON.stringify(err)}`);

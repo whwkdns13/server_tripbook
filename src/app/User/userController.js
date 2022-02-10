@@ -47,22 +47,22 @@ exports.getUsers = async function (req, res) {
 exports.getUserById = async function (req, res) {
 
     /**
-     * Path Variable: userId
+     * Path Variable: userIdx
      */
-    const userId = req.params.userId;
+    const userIdx = req.params.userIdx;
     // errResponse 전달
-    if (!userId) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    if (!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
 
     // userId를 통한 유저 검색 함수 호출 및 결과 저장
-    const userByUserId = await userProvider.retrieveUser(userId);
-    return res.send(response(baseResponse.SUCCESS, userByUserId));
+    const userByUserIdx = await userProvider.retrieveUser(userIdx);
+    return res.send(response(baseResponse.SUCCESS, userByUserIdx));
 };
 
 //카카오 리프레시 토큰을 이용해서 kakao토큰들 갱신 (카카오 액세스 토큰 유효기간 검증 후)
 exports.updateKakaoRefreshToken = async function (req, res) {
     //리프레시 토큰이 있으면 카카오 서버에서 액세스 받아옴
     const kakaoRefreshToken = req.body.kakaoRefreshToken;
-    if(!kakaoRefreshToken) return res.send(response(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
+    if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
     
     let kakaoProfile;	
     try {
@@ -76,7 +76,8 @@ exports.updateKakaoRefreshToken = async function (req, res) {
           }
         });
       } catch (error) {
-        return res.json(error.data);
+        console.log(json(error.data));
+        return res.send(errResponse(json(error.data)));
       }
       return res.send(response(baseResponse.SUCCESS,kakaoProfile.data));
 }
@@ -84,9 +85,8 @@ exports.updateKakaoRefreshToken = async function (req, res) {
 //jwt없을 때 카카오 액세스 토큰으로 정보 불러와서 로그인
 exports.kakaoLogin = async function (req, res) {
     const accessToken = req.body.accessToken;
-
     let kakaoProfile;
-    if(!accessToken) return res.send(response(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
+    if(!accessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
 	try {
         kakaoProfile = await axios({
           method: "GET",
@@ -96,13 +96,15 @@ exports.kakaoLogin = async function (req, res) {
           }
         });
       } catch (error) {
-        return res.json(error.data);
+        console.log(json(error.data));
+        return res.send(errResponse(json(error.data)));
       }
-      const kakaoId = kakaoProfile.data.id;
+
       const email = kakaoProfile.data.kakao_account.email;
       const isUser = await userProvider.retrieveUserByEmail(email);
       const nickName = kakaoProfile.data.kakao_account.profile.nickname;
       const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;
+
       //회원이 아니라면 회원가입 과정을 거침.
       if(!isUser) {
         const signUpUserIdx = await userService.createKakaoUser(email);
@@ -113,11 +115,11 @@ exports.kakaoLogin = async function (req, res) {
             return res.send(afterKakaoSignInResult);
         }
         else {
-          res.send(errResponse(baseResponse.KAKAO_CREATEPROFILE_FAIL));
+          return res.send(errResponse(baseResponse.KAKAO_CREATEPROFILE_FAIL));
         }
       }
+      //회원이라면 signIn시켜줌
       else{
-        //회원이라면 signIn시켜줌
         const kakaoSignInResult = await userService.postSignIn(isUser.userIdx, email);
         return res.send(kakaoSignInResult);
       }
@@ -132,18 +134,17 @@ exports.check = async function (req, res) {
 
 //카카오 유저 닉네임, 썸네일 업데이트
 exports.userUpdateByKakao = async function (req, res) {
-
     const userIdFromJWT = req.verifiedToken.userIdx;
     const userIdx = req.params.userIdx;
+    const accessToken = req.body.accessToken;
+    if(!accessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
     if (!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
-    // JWT는 이 후 주차에 다룰 내용
+    // JWT 검증
     if (userIdFromJWT != userIdx) {
-      res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
+      res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
     } 
     else {
       let kakaoProfile;
-      const accessToken = req.body.accessToken;
-      if(!accessToken) return res.send(response(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
       try {
           kakaoProfile = await axios({
             method: "GET",
@@ -153,7 +154,8 @@ exports.userUpdateByKakao = async function (req, res) {
             }
           });
       } catch (error) {
-          return res.json(error.data);
+        console.log(json(error.data));
+        return res.send(errResponse(json(error.data)));
       }
       const nickName = kakaoProfile.data.kakao_account.profile.nickname;
       const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;  
@@ -182,7 +184,7 @@ exports.patchUsers = async function (req, res) {
 
     // JWT는 이 후 주차에 다룰 내용
     if (userIdFromJWT != userId) {
-        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
+        res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
     } else {
         if (!nickname) return res.send(errResponse(baseResponse.USER_NICKNAME_EMPTY));
 
@@ -190,10 +192,4 @@ exports.patchUsers = async function (req, res) {
         return res.send(editUserInfo);
     }
 };
-
-
-// JWT 이 후 주차에 다룰 내용
-/** JWT 토큰 검증 API
- * [GET] /app/auto-login
- */
 
