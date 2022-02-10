@@ -98,11 +98,8 @@ exports.kakaoLogin = async function (req, res) {
 
       const email = kakaoProfile.data.kakao_account.email;
       const isUser = await userProvider.retrieveUserByEmail(email);
-      const nickName = kakaoProfile.data.kakao_account.profile.nickname;
-      const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;
-
       //회원이 아니라면 회원가입 과정을 거침.
-      if(!isUser) {
+      if(!isUser.userIdx) {
         return res.send(errResponse(baseResponse.USER_USER_NOT_EXIST));
       }
       //회원이라면 signIn시켜줌
@@ -163,20 +160,36 @@ exports.check = async function (req, res) {
 
 //jwt토큰과 리프레시 토큰 갱신
 exports.updateTokens = async function (req, res) {
+  
   const userIdxFromJWT = req.verifiedToken.userIdx;
   const refreshToken = req.body.refreshToken;
+  const accessToken = req.headers['x-access-token'] || req.query.token;
+
   console.log(userIdxFromJWT);
 
   const refreshTokenResult = await userProvider.retrieveRefreshToken(userIdxFromJWT);
 
-  if(refreshTokenResult.refreshToken === refreshToken) {
-    //refreshToken이 DB와 동일하다면 postSignIn으로 재로그인
-    const refreshTokenSignInResult = await userService.postSignIn(userIdxFromJWT, refreshTokenResult.email);
-    return res.send(refreshTokenSignInResult);
+  if(!refreshTokenResult.refreshToken) return res.send(errResponse(baseResponse.USER_USER_LOGOUT));
+
+  if(refreshTokenResult.refreshToken === refreshToken ) {
+    if(refreshTokenResult.accessToken !== accessToken) return res.send(errResponse(baseResponse.TOKEN_JWTTOKEN_NOT_MATCH));
+    //refreshToken과 accessToken이 DB와 동일하다면 accessToken의 유효기간 확인
+    
+    const jwtExpired = req.jwtExpired;
+    //유효기간 안 지났을 시
+    if(!jwtExpired) {
+      const logOutResult = await userService.logOut(userIdxFromJWT);
+      return res.send(logOutResult);
+    }
+    //유효기간이 만료된 정상적인 갱신요청이라면 postSignIn으로 재로그인
+    else{
+      const refreshTokenSignInResult = await userService.postSignIn(userIdxFromJWT, refreshTokenResult.email);
+      return res.send(refreshTokenSignInResult);
+    }
   }
-  else{
+  else
     return res.send(errResponse(baseResponse.TOKEN_REFRESHTOKEN_NOT_MATCH));
-  }
+  
 };
 
 //카카오 유저 닉네임, 썸네일 업데이트

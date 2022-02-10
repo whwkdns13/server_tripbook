@@ -15,6 +15,8 @@ module.exports = {
     TOKEN_JWTTOKEN_EXPIRED: { "isSuccess": false, "code": 1503, "message": "JWT 토큰 만료" },
     TOKEN_VERIFICATION_FAILURE: { "isSuccess": false, "code": 1504, "message": "JWT 토큰 검증 실패" },
     TOKEN_REFRESHTOKEN_NOT_MATCH:{ "isSuccess": false, "code": 1505, "message": "refersh 토큰이 DB와 다릅니다." },
+    TOKEN_TOKEN_NOT_EXPIRED:{ "isSuccess": false, "code": 1506, "message": "jwt토큰의 유효기간이 아직 지나지 않아 보안 이슈로 토큰들이 만료됩니다." },
+    TOKEN_JWTTOKEN_NOT_MATCH:{ "isSuccess": false, "code": 1507, "message": "access 토큰이 DB와 다릅니다." },
     
     //Request error
     SIGNUP_EMAIL_EMPTY: { "isSuccess": false, "code": 2001, "message": "이메일을 입력해주세요" },
@@ -81,10 +83,10 @@ module.exports = {
     // Response error
     SIGNUP_REDUNDANT_EMAIL: { "isSuccess": false, "code": 3001, "message": "중복된 이메일입니다." },
     SIGNUP_REDUNDANT_NICKNAME: { "isSuccess": false, "code": 3002, "message": "중복된 닉네임입니다." },
-
+    USER_USER_LOGOUT:{ "isSuccess": false, "code": 3007, "message": "로그아웃된 유저입니다." },
     SIGNIN_EMAIL_WRONG: { "isSuccess": false, "code": 3003, "message": "아이디가 잘못 되었습니다." },
     SIGNIN_PASSWORD_WRONG: { "isSuccess": false, "code": 3004, "message": "비밀번호가 잘못 되었습니다." },
-    SIGNIN_INACTIVE_ACCOUNT: { "isSuccess": false, "code": 3005, "message": "비활성화 된 계정입니다. 고객센터에 문의해주세요." },
+    SIGNIN_DELETED_ACCOUNT: { "isSuccess": false, "code": 3005, "message": "삭제 된 계정입니다. 고객센터에 문의해주세요." },
     SIGNIN_WITHDRAWAL_ACCOUNT: { "isSuccess": false, "code": 3006, "message": "탈퇴 된 계정입니다. 고객센터에 문의해주세요." },
 
     //Connection, Transaction 등의 서버 오류

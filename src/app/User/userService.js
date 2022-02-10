@@ -55,7 +55,7 @@ exports.postSignIn = async function (userIdx) {
         const userInfoRows = await userProvider.accountCheck(userIdx);
 
         if (userInfoRows[0].status === "DELETE") 
-            return errResponse(baseResponse.SIGNIN_INACTIVE_ACCOUNT);
+            return errResponse(baseResponse.SIGNIN_DELETED_ACCOUNT);
         console.log(userIdx); // 로그인한 userIdx
 
         //토큰 생성 Service 유효기간 1시간
@@ -66,7 +66,7 @@ exports.postSignIn = async function (userIdx) {
             }, // 토큰의 내용(payload)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "1h",
+                expiresIn: "1s",
                 subject: "user",
             } // 유효 기간 1일
         );
@@ -83,20 +83,45 @@ exports.postSignIn = async function (userIdx) {
 
         //refresh 토큰 DB에 넣기
         const connection = await pool.getConnection(async (conn) => conn);
-        const createRefreshToken = await userDao.updateRefreshToken(connection, userIdx, refreshToken);
+        const updateTokensResult = await userDao.updateTokens(connection, userIdx, accessToken, refreshToken);
         connection.release();
-
-        if(createRefreshToken.affectedRows != 0){
+        
+        if(updateTokensResult.affectedRows === 1){
             return response(baseResponse.SUCCESS, {
                 'userIdx': userIdx, 
                 'jwt': accessToken , 
                 'jwtRefreshToken' : refreshToken
             });
         }
-        else return errResponse(baseResponse.USER_USER_NOT_EXIST);
+        else return errResponse(baseResponse.USER_USERIDX_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - postSignIn Service error\n: ${err.message} \n${JSON.stringify(err)}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+exports.logOut = async function (userIdx) {
+    try {
+        // 계정 상태 확인
+        const userInfoRows = await userProvider.accountCheck(userIdx);
+
+        if (userInfoRows[0].status === "DELETE") 
+            return errResponse(baseResponse.SIGNIN_DELETED_ACCOUNT);
+        console.log(userIdx); // 로그아웃 userIdx
+
+        //refresh 토큰 DB에 넣기
+        const connection = await pool.getConnection(async (conn) => conn);
+        const updateTokensResult = await userDao.updateTokens(connection, userIdx, null, null);
+        connection.release();
+
+        if(updateTokensResult.affectedRows === 2){
+            return response(baseResponse.SUCCESS);
+        }
+        else return errResponse(baseResponse.USER_USER_NOT_EXIST);
+
+    } catch (err) {
+        logger.error(`App - logOut Service error\n: ${err.message} \n${JSON.stringify(err)}`);
         return errResponse(baseResponse.DB_ERROR);
     }
 };

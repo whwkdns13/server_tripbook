@@ -82,13 +82,13 @@ async function updateKakaoUserInfo(connection, editKakaoUserParams) {
   return updateUserRow[0];
 }
 
-async function updateRefreshToken(connection, userIdx, refreshToken) {
+async function updateTokens(connection, userIdx, accessToken, refreshToken) {
   const updateUserQuery = `
     UPDATE user
-    SET refreshToken = ?
+    SET accessToken = ? , refreshToken = ?
     WHERE userIdx = ? and status = 'ACTIVE';
   `;
-  const updateUserRow = await connection.query(updateUserQuery, [refreshToken, userIdx]);
+  const updateUserRow = await connection.query(updateUserQuery, [accessToken, refreshToken, userIdx]);
   return updateUserRow[0];
 }
 
@@ -110,6 +110,6 @@ module.exports = {
   updateUserInfo,
   insertUserProfileInfo,
   updateKakaoUserInfo,
-  updateRefreshToken,
+  updateTokens,
   selectRefreshToken
 };

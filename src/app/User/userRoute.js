@@ -28,7 +28,7 @@ module.exports = function(app){
     app.post('/app/user/kakao/update/:userIdx', jwtMiddleware.jwtMiddleware, user.userUpdateByKakao); 
     
     //리프레시 토큰으로 jwt토큰, 리프레시 토큰 갱신하기
-    app.post('/app/user/updateTokens', jwtMiddleware.accessMiddleware, jwtMiddleware.refreshMiddleware, user.updateTokens);
+    app.post('/app/user/updateTokens', jwtMiddleware.refreshMiddleware, jwtMiddleware.accessMiddleware, user.updateTokens);
 
     //jwt를 이용한 자동 로그인 기능 구현
     app.get('/app/auto-login', jwtMiddleware.jwtMiddleware, user.check);

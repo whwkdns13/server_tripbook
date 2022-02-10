@@ -62,11 +62,15 @@ const accessMiddleware = (req, res, next) => {
     const onError = (error) => {
         if(error.name !== 'TokenExpiredError') 
             return res.send(errResponse(baseResponse.TOKEN_VERIFICATION_FAILURE));
-        else next();
+        else {
+            req.jwtExpired = true;
+            next();
+        }
     };
     // process the promise
     p.then((verifiedToken)=>{
-        //액세스 토큰 유효기간이 남아있는 경우도 실행해준다.
+        //액세스 토큰 유효기간이 남아있는 데도 재발급 받으려 하면 모두 만료시킨다.
+        req.jwtExpired = false;
         next();
     }).catch(onError);
 };
