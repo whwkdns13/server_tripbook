@@ -126,6 +126,9 @@ exports.getTripCourses = async function (req, res) {
     if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
 
     const coursesBytripIdx = await tripProvider.retrieveCourses(tripIdx);
+
+    // errResponse 전달 - 특정 여행의 course가 없을 때
+    if (coursesBytripIdx.length == 0) return res.send(response(baseResponse.TRIP_COURSE_NOT_EXIST));
     return res.send(response(baseResponse.SUCCESS, coursesBytripIdx));
 };
 
