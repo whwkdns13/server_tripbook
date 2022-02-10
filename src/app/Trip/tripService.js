@@ -25,12 +25,81 @@ exports.createTrip = async function (userIdx, tripTitle, departureDate, arrivalD
         const connection = await pool.getConnection(async (conn) => conn);
 
         const tripResult = await tripDao.insertTripInfo(connection, insertTripInfoParams);
-        console.log(`tripIdx : ${tripResult[0].insertId}`)
+        console.log(`tripIdx : ${tripResult[0].insertId}`);
         connection.release();
-        return response(baseResponse.SUCCESS);
+        return response(baseResponse.SUCCESS, tripResult[0].insertId);
 
     } catch (err) {
         logger.error(`App - createTrip Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+// tripTitle 변경
+exports.editTripTitle = async function (tripIdx, tripTitle) {
+    try {
+        const editTripTitleParams = [tripTitle, tripIdx];
+
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editTripTitleResult = await tripDao.updateTripTitle(connection, editTripTitleParams);
+        connection.release();
+
+        return response(baseResponse.SUCCESS, editTripTitleResult);
+
+    } catch (err) {
+        logger.error(`App - editTripTitle Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+// departureDate 변경
+exports.editDepartureDate = async function (tripIdx, departureDate) {
+    try {
+        const editDepartureDateParams = [departureDate, tripIdx];
+
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editDepartureDateResult = await tripDao.updateDepartureDate(connection, editDepartureDateParams);
+        connection.release();
+
+        return response(baseResponse.SUCCESS, editDepartureDateResult);
+
+    } catch (err) {
+        logger.error(`App - editDepartureDate Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+
+// arrivalDate 변경
+exports.editArrivalDate = async function (tripIdx, arrivalDate) {
+    try {
+        const editArrivalDateParams = [arrivalDate, tripIdx];
+
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editArrivalDateResult = await tripDao.updateArrivalDate(connection, editArrivalDateParams);
+        connection.release();
+
+        return response(baseResponse.SUCCESS, editArrivalDateResult);
+
+    } catch (err) {
+        logger.error(`App - editArrivalDate Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+// Theme 변경
+exports.editTripTheme = async function (tripIdx, theme) {
+    try {
+        const editTripThemeParams = [theme, tripIdx];
+
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editTripThemeResult = await tripDao.updateTripTheme(connection, editTripThemeParams);
+        connection.release();
+
+        return response(baseResponse.SUCCESS, editTripThemeResult);
+
+    } catch (err) {
+        logger.error(`App - editTripTheme Service error\n: ${err.message}`);
         return errResponse(baseResponse.DB_ERROR);
     }
 };

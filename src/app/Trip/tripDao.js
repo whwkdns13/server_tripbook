@@ -3,7 +3,7 @@
 // tripIdx -> trip
 async function selectTrip(connection, tripIdx) {
   const selectTripQuery = `
-    SELECT *
+    SELECT tripIdx, userIdx, themeIdx, tripTitle, DATE_FORMAT(departureDate,'%Y-%m-%d') AS departureDate, DATE_FORMAT(arrivalDate,'%Y-%m-%d') AS arrivalDate, status
     FROM trip
     WHERE tripIdx = ?;
     `;
@@ -14,9 +14,10 @@ async function selectTrip(connection, tripIdx) {
 // userIdx -> trips
 async function selectTrips(connection, userIdx) {
   const selectTripsQuery = `
-    SELECT *
+    SELECT tripIdx, userIdx, themeIdx, tripImg, tripTitle, DATE_FORMAT(departureDate,'%Y-%m-%d') AS departureDate, DATE_FORMAT(arrivalDate,'%Y-%m-%d') AS arrivalDate, status
     FROM trip
-    WHERE userIdx = ?;
+    WHERE userIdx = ? AND status = 'ACTIVE'
+    ORDER BY arrivalDate DESC, departureDate DESC;
     `;
   const [tripsRows] = await connection.query(selectTripsQuery, userIdx);
   return tripsRows;
@@ -25,10 +26,10 @@ async function selectTrips(connection, userIdx) {
 // tripIdx -> tripCourses
 async function selectCourses(connection, tripIdx) {
   const selectCoursesQuery = `
-    SELECT *
+    SELECT courseIdx, tripIdx, cardIdx, courseImg, DATE_FORMAT(courseDate, '%Y-%m-%d') AS courseDate, courseTime, courseTitle, courseComment, latitude, longitude, status
     FROM tripCourse
-    WHERE tripIdx = ?
-    ORDER BY courseDate, courseTime;
+    WHERE tripIdx = ? AND status = 'ACTIVE'
+    ORDER BY cardIdx;
     `;
     //TODO course 순서 정하기
   const [courseRows] = await connection.query(selectCoursesQuery, tripIdx);
@@ -40,8 +41,8 @@ async function selectLatestTrip(connection, userIdx) {
   const selectLatestTripQuery = `
     SELECT tripIdx
     FROM trip
-    WHERE userIdx = ?
-    ORDER BY arrivalDate DESC;
+    WHERE userIdx = ? AND status ='ACTIVE'
+    ORDER BY arrivalDate DESC, departureDate DESC;
     `;
   const [latestTripIdx] = await connection.query(selectLatestTripQuery, userIdx);
   return latestTripIdx[0];
@@ -52,10 +53,10 @@ async function selectTripsCount(connection, userIdx) {
   const selectTripsCountQuery = `
     SELECT COUNT(*) AS TRIPS_COUNT
     FROM trip
-    WHERE userIdx = ?;
+    WHERE userIdx = ? AND status ='ACTIVE';
     `;
     const [tripsCount] = await connection.query(selectTripsCountQuery, userIdx);
-    return tripsCount[0];
+    return tripsCount[0].TRIPS_COUNT;
 }
 
 // create Trip
@@ -72,11 +73,75 @@ async function insertTripInfo(connection, insertTripInfoParams) {
   return insertPostInfoRow;
 }
 
+// update tripTitle
+async function updateTripTitle(connection, editTripTitleParams) {
+  const updateTripTitleQuery = `
+    UPDATE trip 
+    SET tripTitle = ?
+    WHERE tripIdx = ?;
+    `;
+  const updateTripTitleInfoRow = await connection.query(
+    updateTripTitleQuery,
+    editTripTitleParams
+  );
+
+  return updateTripTitleInfoRow;
+}
+
+// update departureDate
+async function updateDepartureDate(connection, editDepartureDateParams) {
+  const updateDepartureDateQuery = `
+    UPDATE trip 
+    SET departureDate = ?
+    WHERE tripIdx = ?;
+    `;
+  const updateDepartureDateInfoRow = await connection.query(
+    updateDepartureDateQuery,
+    editDepartureDateParams
+  );
+
+  return updateDepartureDateInfoRow;
+}
+
+// update arrivalDate
+async function updateArrivalDate(connection, editArrivalDateParams) {
+  const updateArrivalDateQuery = `
+    UPDATE trip 
+    SET arrivalDate = ?
+    WHERE tripIdx = ?;
+    `;
+  const updateArrivalDateInfoRow = await connection.query(
+    updateArrivalDateQuery,
+    editArrivalDateParams
+  );
+
+  return updateArrivalDateInfoRow;
+}
+
+// update theme
+async function updateTripTheme(connection, editTripThemeParams) {
+  const updateTripThemeQuery = `
+    UPDATE trip 
+    SET themeIdx = ?
+    WHERE tripIdx = ?;
+    `;
+  const updateTripThemeInfoRow = await connection.query(
+    updateTripThemeQuery,
+    editTripThemeParams
+  );
+
+  return updateTripThemeInfoRow;
+}
+
 module.exports = {
   selectTrip,
   selectTrips,
   selectCourses,
   selectLatestTrip,
   selectTripsCount,
-  insertTripInfo
+  insertTripInfo,
+  updateTripTitle,
+  updateDepartureDate,
+  updateArrivalDate,
+  updateTripTheme
 };
