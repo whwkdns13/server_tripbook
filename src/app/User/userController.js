@@ -107,16 +107,7 @@ exports.kakaoLogin = async function (req, res) {
 
       //회원이 아니라면 회원가입 과정을 거침.
       if(!isUser) {
-        const signUpUserIdx = await userService.createKakaoUser(email);
-        const createUserProfileInfo = await userService.createKakaoUserProfile(signUpUserIdx, nickName, userImg);
-        
-        if(createUserProfileInfo){
-            const afterKakaoSignInResult = await userService.postSignIn(signUpUserIdx, email);
-            return res.send(afterKakaoSignInResult);
-        }
-        else {
-          return res.send(errResponse(baseResponse.KAKAO_CREATEPROFILE_FAIL));
-        }
+        return res.send(response(baseResponse.USER_USER_NOT_EXIST));
       }
       //회원이라면 signIn시켜줌
       else{
@@ -124,6 +115,50 @@ exports.kakaoLogin = async function (req, res) {
         return res.send(kakaoSignInResult);
       }
 }
+
+exports.kakaoSignin = async function (req, res) {
+  const accessToken = req.body.accessToken;
+  let kakaoProfile;
+  if(!accessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
+try {
+      kakaoProfile = await axios({
+        method: "GET",
+        url: "https://kapi.kakao.com/v2/user/me",
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+    } catch (error) {
+      console.log(json(error.data));
+      return res.send(errResponse(json(error.data)));
+    }
+
+    const email = kakaoProfile.data.kakao_account.email;
+    const isUser = await userProvider.retrieveUserByEmail(email);
+    const nickName = kakaoProfile.data.kakao_account.profile.nickname;
+    const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;
+
+    //회원이 아니라면 회원가입 과정을 거침.
+    if(!isUser) {
+      const signUpUserIdx = await userService.createKakaoUser(email);
+      const createUserProfileInfo = await userService.createKakaoUserProfile(signUpUserIdx, nickName, userImg);
+      
+      if(createUserProfileInfo){
+          const afterKakaoSignInResult = await userService.postSignIn(signUpUserIdx, email);
+          return res.send(afterKakaoSignInResult);
+      }
+      else {
+        return res.send(errResponse(baseResponse.KAKAO_CREATEPROFILE_FAIL));
+      }
+    }
+    //회원이라면 signIn시켜줌
+    else{
+      const kakaoSignInResult = await userService.postSignIn(isUser.userIdx, email);
+      return res.send(kakaoSignInResult);
+    }
+}
+
+
 
 //jwt있을 때 자동 로그인
 exports.check = async function (req, res) {
