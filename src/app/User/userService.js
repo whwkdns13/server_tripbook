@@ -15,90 +15,104 @@ const crypto = require("crypto");
 
 // Service: Create, Update, Delete 비즈니스 로직 처리
 
-exports.createUser = async function (email, password, nickname) {
+exports.createKakaoUser = async function (email) {
     try {
-        // 이메일 중복 확인
-        // UserProvider에서 해당 이메일과 같은 User 목록을 받아서 emailRows에 저장한 후, 배열의 길이를 검사한다.
-        // -> 길이가 0 이상이면 이미 해당 이메일을 갖고 있는 User가 조회된다는 의미
-        const emailRows = await userProvider.emailCheck(email);
-        if (emailRows.length > 0)
-            return errResponse(baseResponse.SIGNUP_REDUNDANT_EMAIL);
-
-        // 비밀번호 암호화
-        const hashedPassword = await crypto
-            .createHash("sha512")
-            .update(password)
-            .digest("hex");
-
-        // 쿼리문에 사용할 변수 값을 배열 형태로 전달
-        const insertUserInfoParams = [email, hashedPassword, nickname];
-
         const connection = await pool.getConnection(async (conn) => conn);
 
-        const userIdResult = await userDao.insertUserInfo(connection, insertUserInfoParams);
-        console.log(`추가된 회원 : ${userIdResult[0].insertId}`)
+        const kakaoSignUpResult = await userDao.insertUserInfo(connection, email);
+        console.log(`추가된 회원 : ${kakaoSignUpResult[0].insertId}`)
+
         connection.release();
-        return response(baseResponse.SUCCESS);
+        return kakaoSignUpResult[0].insertId;
 
     } catch (err) {
-        logger.error(`App - createUser Service error\n: ${err.message}`);
+        logger.error(`App - createKakaoUser Service error\n: ${err.message}`);
         return errResponse(baseResponse.DB_ERROR);
     }
 };
 
+exports.createKakaoUserProfile = async function (userIdx, nickName, userImg) {
+    try {
+        const connection = await pool.getConnection(async (conn) => conn);
+        
+        const kakaoSignUpParams = [userIdx, nickName, userImg];
+        const userProfileResult = await userDao.insertUserProfileInfo(connection, kakaoSignUpParams);
+        console.log(`추가된 회원프로필 : ${userProfileResult[0].insertId}`);
+
+        connection.release();
+        return true;
+
+    } catch (err) {
+        logger.error(`App - createKakaoUserProfile Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
 
 // TODO: After 로그인 인증 방법 (JWT)
-exports.postSignIn = async function (email, password) {
-    try {
-        // 이메일 여부 확인
-        const emailRows = await userProvider.emailCheck(email);
-        if (emailRows.length < 1) return errResponse(baseResponse.SIGNIN_EMAIL_WRONG);
-
-        const selectEmail = emailRows[0].email
-
-        // 비밀번호 확인 (입력한 비밀번호를 암호화한 것과 DB에 저장된 비밀번호가 일치하는 지 확인함)
-        const hashedPassword = await crypto
-            .createHash("sha512")
-            .update(password)
-            .digest("hex");
-
-        const selectUserPasswordParams = [selectEmail, hashedPassword];
-        const passwordRows = await userProvider.passwordCheck(selectUserPasswordParams);
-
-        if (passwordRows[0].password !== hashedPassword) {
-            return errResponse(baseResponse.SIGNIN_PASSWORD_WRONG);
-        }
-
+exports.postSignIn = async function (userIdx) {
+    try {        
         // 계정 상태 확인
-        const userInfoRows = await userProvider.accountCheck(email);
+        const userInfoRows = await userProvider.accountCheck(userIdx);
 
-        if (userInfoRows[0].status === "INACTIVE") {
+        if (userInfoRows[0].status === "DELETE") 
             return errResponse(baseResponse.SIGNIN_INACTIVE_ACCOUNT);
-        } else if (userInfoRows[0].status === "DELETED") {
-            return errResponse(baseResponse.SIGNIN_WITHDRAWAL_ACCOUNT);
-        }
+        console.log(userIdx); // 로그인한 userIdx
 
-        console.log(userInfoRows[0].id) // DB의 userId
-
-        //토큰 생성 Service
-        let token = await jwt.sign(
+        //토큰 생성 Service 유효기간 1시간
+        const accessToken = await jwt.sign(
             {
-                userId: userInfoRows[0].id,
+                userIdx: userInfoRows[0].userIdx,
+                email: userInfoRows[0].email
             }, // 토큰의 내용(payload)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "365d",
-                subject: "userInfo",
-            } // 유효 기간 365일
+                expiresIn: "1d",
+                subject: "user",
+            } // 유효 기간 1일
         );
 
-        return response(baseResponse.SUCCESS, {'userId': userInfoRows[0].id, 'jwt': token});
+        //refresh 토큰 생성 유효기간 14일
+        const refreshToken = await jwt.sign(
+            {}, // 비워놓음 (오버헤드 최소화)
+            secret_config.jwtsecret, // 비밀키
+            {
+                expiresIn: "14d",
+                subject: "user",
+            } // 유효 기간 1일
+        );
+
+        //refresh 토큰 DB에 넣기
+        const connection = await pool.getConnection(async (conn) => conn);
+        const createRefreshToken = await userDao.updateRefreshToken(connection, userIdx, refreshToken);
+        connection.release();
+
+        return response(baseResponse.SUCCESS, {
+            'userIdx': userIdx, 
+            'jwt': accessToken , 
+            'jwtRefreshToken' : refreshToken
+        });
 
     } catch (err) {
         logger.error(`App - postSignIn Service error\n: ${err.message} \n${JSON.stringify(err)}`);
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
+exports.editKakaoUser = async function (userIdx, nickName, userImg) {
+    try {
+        console.log(userIdx);
+        const editKakaoUserParams = [nickName, userImg, userIdx];
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editKakaoUserResult = await userDao.updateKakaoUserInfo(connection, editKakaoUserParams);
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editKakaoUser Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
 
 exports.editUser = async function (id, nickname) {
     try {

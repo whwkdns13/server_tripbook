@@ -3,6 +3,8 @@ const userProvider = require("../../app/User/userProvider");
 const userService = require("../../app/User/userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
+const axios = require("axios");
+
 const regexEmail = require("regex-email");
 
 /**
@@ -13,41 +15,6 @@ const regexEmail = require("regex-email");
 exports.getTest = async function (req, res) {
     return res.send(response(baseResponse.SUCCESS))
 }
-
-/**
- * API No. 1
- * API Name : 유저 생성 (회원가입) API
- * [POST] /app/users
- */
-exports.postUsers = async function (req, res) {
-
-    /**
-     * Body: email, password, nickname
-     */
-    const {email, password, nickname} = req.body;
-
-    // 빈 값 체크
-    if (!email)
-        return res.send(response(baseResponse.SIGNUP_EMAIL_EMPTY));
-
-    // 길이 체크
-    if (email.length > 30)
-        return res.send(response(baseResponse.SIGNUP_EMAIL_LENGTH));
-
-    // 형식 체크 (by 정규표현식)
-    if (!regexEmail.test(email))
-        return res.send(response(baseResponse.SIGNUP_EMAIL_ERROR_TYPE));
-
-    // createUser 함수 실행을 통한 결과 값을 signUpResponse에 저장
-    const signUpResponse = await userService.createUser(
-        email,
-        password,
-        nickname
-    );
-
-    // signUpResponse 값을 json으로 전달
-    return res.send(signUpResponse);
-};
 
 /**
  * API No. 2
@@ -81,38 +48,46 @@ exports.getUsers = async function (req, res) {
 exports.getUserById = async function (req, res) {
 
     /**
-     * Path Variable: userId
+     * Path Variable: userIdx
      */
-    const userId = req.params.userId;
+    const userIdx = req.params.userIdx;
     // errResponse 전달
-    if (!userId) return res.send(errResponse(baseResponse.USER_USERID_EMPTY));
+    if (!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
 
     // userId를 통한 유저 검색 함수 호출 및 결과 저장
-    const userByUserId = await userProvider.retrieveUser(userId);
-    return res.send(response(baseResponse.SUCCESS, userByUserId));
+    const userByUserIdx = await userProvider.retrieveUser(userIdx);
+    return res.send(response(baseResponse.SUCCESS, userByUserIdx));
 };
 
+//카카오 리프레시 토큰을 이용해서 kakao토큰들 갱신 (카카오 액세스 토큰 유효기간 검증 후)
+exports.updateKakaoRefreshToken = async function (req, res) {
+    //리프레시 토큰이 있으면 카카오 서버에서 액세스 받아옴
+    const kakaoRefreshToken = req.body.kakaoRefreshToken;
+    if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
+    
+    let kakaoProfile;	
+    try {
+        kakaoProfile = await axios({
+          method: "POST",
+          url: "https://kauth.kakao.com/oauth/token",
+          params: {
+            grant_type: "refresh_token",
+            client_id: "c9ef096f1e3ddc185556eda18530b133",
+            refresh_token: kakaoRefreshToken
+          }
+        });
+      } catch (error) {
+        console.log(json(error.data));
+        return res.send(errResponse(json(error.data)));
+      }
+      return res.send(response(baseResponse.SUCCESS,kakaoProfile.data));
+}
 
-// TODO: After 로그인 인증 방법 (JWT)
-/**
- * API No. 4
- * API Name : 로그인 API
- * [POST] /app/login
- * body : email, passsword
- */
-exports.login = async function (req, res) {
-
-    const {email, password} = req.body;
-
-    const signInResponse = await userService.postSignIn(email, password);
-
-    return res.send(signInResponse);
-};
-/*
+//jwt없을 때 카카오 액세스 토큰으로 정보 불러와서 로그인
 exports.kakaoLogin = async function (req, res) {
-    const accessToken = req.body; 
+    const accessToken = req.body.accessToken;
     let kakaoProfile;
-    if(!accessToken)
+    if(!accessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
 	try {
         kakaoProfile = await axios({
           method: "GET",
@@ -122,11 +97,111 @@ exports.kakaoLogin = async function (req, res) {
           }
         });
       } catch (error) {
-        return res.json(error.data);
+        console.log(json(error.data));
+        return res.send(errResponse(json(error.data)));
       }
-      console.log(kakaoProfile.data);
+
+      const email = kakaoProfile.data.kakao_account.email;
+      const isUser = await userProvider.retrieveUserByEmail(email);
+      const nickName = kakaoProfile.data.kakao_account.profile.nickname;
+      const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;
+
+      //회원이 아니라면 회원가입 과정을 거침.
+      if(!isUser) {
+        return res.send(response(baseResponse.USER_USER_NOT_EXIST));
+      }
+      //회원이라면 signIn시켜줌
+      else{
+        const kakaoSignInResult = await userService.postSignIn(isUser.userIdx, email);
+        return res.send(kakaoSignInResult);
+      }
+}
+
+exports.kakaoSignin = async function (req, res) {
+  const accessToken = req.body.accessToken;
+  let kakaoProfile;
+  if(!accessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
+try {
+      kakaoProfile = await axios({
+        method: "GET",
+        url: "https://kapi.kakao.com/v2/user/me",
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+    } catch (error) {
+      console.log(json(error.data));
+      return res.send(errResponse(json(error.data)));
+    }
+
+    const email = kakaoProfile.data.kakao_account.email;
+    const isUser = await userProvider.retrieveUserByEmail(email);
+    const nickName = kakaoProfile.data.kakao_account.profile.nickname;
+    const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;
+
+    //회원이 아니라면 회원가입 과정을 거침.
+    if(!isUser) {
+      const signUpUserIdx = await userService.createKakaoUser(email);
+      const createUserProfileInfo = await userService.createKakaoUserProfile(signUpUserIdx, nickName, userImg);
+      
+      if(createUserProfileInfo){
+          const afterKakaoSignInResult = await userService.postSignIn(signUpUserIdx, email);
+          return res.send(afterKakaoSignInResult);
+      }
+      else {
+        return res.send(errResponse(baseResponse.KAKAO_CREATEPROFILE_FAIL));
+      }
+    }
+    //회원이라면 signIn시켜줌
+    else{
+      const kakaoSignInResult = await userService.postSignIn(isUser.userIdx, email);
+      return res.send(kakaoSignInResult);
+    }
+}
+
+
+
+//jwt있을 때 자동 로그인
+exports.check = async function (req, res) {
+  const userIdResult = req.verifiedToken.userIdx;
+  console.log(userIdResult);
+  return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
 };
-*/
+
+//카카오 유저 닉네임, 썸네일 업데이트
+exports.userUpdateByKakao = async function (req, res) {
+    const userIdFromJWT = req.verifiedToken.userIdx;
+    const userIdx = req.params.userIdx;
+    const accessToken = req.body.accessToken;
+    if(!accessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
+    if (!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
+    // JWT 검증
+    if (userIdFromJWT != userIdx) {
+      res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    } 
+    else {
+      let kakaoProfile;
+      try {
+          kakaoProfile = await axios({
+            method: "GET",
+            url: "https://kapi.kakao.com/v2/user/me",
+            headers: {
+              Authorization: `Bearer ${accessToken}`
+            }
+          });
+      } catch (error) {
+        console.log(json(error.data));
+        return res.send(errResponse(json(error.data)));
+      }
+      const nickName = kakaoProfile.data.kakao_account.profile.nickname;
+      const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;  
+      
+      const editkakaoUserInfoResult = await userService.editKakaoUser(userIdx, nickName, userImg);
+
+      return res.send(editkakaoUserInfoResult);
+    }
+}
+
 /**
  * API No. 5
  * API Name : 회원 정보 수정 API + JWT + Validation
@@ -138,14 +213,14 @@ exports.patchUsers = async function (req, res) {
 
     // jwt - userId, path variable :userId
 
-    const userIdFromJWT = req.verifiedToken.userId
+    const userIdFromJWT = req.verifiedToken.userIdx;
 
-    const userId = req.params.userId;
+    const userId = req.params.userIdx;
     const nickname = req.body.nickname;
 
     // JWT는 이 후 주차에 다룰 내용
     if (userIdFromJWT != userId) {
-        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
+        res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
     } else {
         if (!nickname) return res.send(errResponse(baseResponse.USER_NICKNAME_EMPTY));
 
@@ -154,17 +229,3 @@ exports.patchUsers = async function (req, res) {
     }
 };
 
-
-
-
-
-
-// JWT 이 후 주차에 다룰 내용
-/** JWT 토큰 검증 API
- * [GET] /app/auto-login
- */
-exports.check = async function (req, res) {
-    const userIdResult = req.verifiedToken.userId;
-    console.log(userIdResult);
-    return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
-};

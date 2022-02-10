@@ -24,15 +24,22 @@ module.exports = {
     SIGNIN_EMAIL_ERROR_TYPE: { "isSuccess": false, "code": 2010, "message": "이메일을 형식을 정확하게 입력해주세요." },
     SIGNIN_PASSWORD_EMPTY: { "isSuccess": false, "code": 2011, "message": "비밀번호를 입력 해주세요." },
 
-    USER_USERID_EMPTY: { "isSuccess": false, "code": 2012, "message": "userId를 입력해주세요." },
-    USER_USERID_NOT_EXIST: { "isSuccess": false, "code": 2013, "message": "해당 회원이 존재하지 않습니다." },
 
-    USER_USEREMAIL_EMPTY: { "isSuccess": false, "code": 2014, "message": "이메일을 입력해주세요." },
-    USER_USEREMAIL_NOT_EXIST: { "isSuccess": false, "code": 2015, "message": "해당 이메일을 가진 회원이 존재하지 않습니다." },
-    USER_ID_NOT_MATCH: { "isSuccess": false, "code": 2016, "message": "유저 아이디 값을 확인해주세요" },
-    USER_NICKNAME_EMPTY: { "isSuccess": false, "code": 2017, "message": "변경할 닉네임 값을 입력해주세요" },
+    USER_USERIDX_EMPTY : { "isSuccess": false, "code": 2012, "message": "userIdx를 입력해주세요." },
+    USER_USERIDX_NOT_EXIST : { "isSuccess": false, "code": 2013, "message": "해당 회원이 존재하지 않습니다." },
 
-    USER_STATUS_EMPTY: { "isSuccess": false, "code": 2018, "message": "회원 상태값을 입력해주세요" },
+    USER_USEREMAIL_EMPTY : { "isSuccess": false, "code": 2014, "message": "이메일을 입력해주세요." },
+    USER_USEREMAIL_NOT_EXIST : { "isSuccess": false, "code": 2015, "message": "해당 이메일을 가진 회원이 존재하지 않습니다." },
+    USER_IDX_NOT_MATCH : { "isSuccess": false, "code": 2016, "message": "유저 아이디 값을 확인해주세요" },
+    USER_NICKNAME_EMPTY : { "isSuccess": false, "code": 2017, "message": "변경할 닉네임 값을 입력해주세요" },
+
+    
+
+    USER_STATUS_EMPTY : { "isSuccess": false, "code": 2018, "message": "회원 상태값을 입력해주세요" },
+    KAKAO_ACCESSTOKEN_EMPTY : {"isSuccess": false, "code": 2050, "message": "kakao accesstoken을 입력해주세요"},
+    KAKAO_REFRESHTOKEN_EMPTY :{"isSuccess": false, "code": 2051, "message": "kakao refreshtoken을 입력해주세요"},
+    
+    USER_USER_NOT_EXIST : {"isSuccess": false, "code": 2052, "message": "회원 가입이 필요합니다."},
 
     // trip req error 2200~2299
     TRIP_TRIPIDX_EMPTY: { "isSuccess": false, "code": 2100, "message": "tripIdx를 입력해주세요" },
@@ -46,8 +53,6 @@ module.exports = {
     TRIP_LATEST_NOT_EXIST: { "isSuccess": false, "code": 2107, "message": "latestTrip이 존재하지 않습니다." },
     TRIP_COURSE_NOT_EXIST: { "isSuccess": false, "code": 2108, "message": "course가 존재하지 않습니다." },
     TRIP_DELETE_TRIP: { "isSuccess": false, "code": 2109, "message": "삭제 된 여행입니다." },
-
-
 
     // course req error 2200~2299
     COURSE_COURSEIDX_EMPTY: { "isSuccess": false, "code": 2200, "message": "courseIdx를 입력해주세요." },
