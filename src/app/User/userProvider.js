@@ -21,3 +21,13 @@ exports.accountCheck = async function (userIdx) {
   
   return userAccountResult;
 };
+
+//리프레시 토큰 유저 idx로 가져오는 함수
+exports.retrieveRefreshToken = async function (userIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const refreshTokenResult = await userDao.selectRefreshToken(connection, userIdx);
+
+  connection.release();
+
+  return refreshTokenResult[0]; 
+};

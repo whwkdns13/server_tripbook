@@ -4,12 +4,18 @@ module.exports = {
 
     // Success
     SUCCESS: { "isSuccess": true, "code": 1000, "message": "성공" },
+    TOKEN_VERIFICATION_SUCCESS: { "isSuccess": true, "code": 1001, "message": "JWT 토큰 검증 성공" },
 
     // Common
-    TOKEN_EMPTY: { "isSuccess": false, "code": 2000, "message": "JWT 토큰을 입력해주세요." },
-    TOKEN_VERIFICATION_FAILURE: { "isSuccess": false, "code": 3000, "message": "JWT 토큰 검증 실패" },
-    TOKEN_VERIFICATION_SUCCESS: { "isSuccess": true, "code": 1001, "message": "JWT 토큰 검증 성공" }, // ?
 
+    //TOKEN error 1500~2000
+    TOKEN_EMPTY: { "isSuccess": false, "code": 1500, "message": "JWT 토큰을 입력해주세요." },
+    TOKEN_REFRESHTOKEN_EMPTY: { "isSuccess": false, "code": 1501, "message": "refresh 토큰을 입력해주세요." },
+    TOKEN_REFRESHTOKEN_EXPIRED: { "isSuccess": false, "code": 1502, "message": "REFRESH 토큰 만료" },
+    TOKEN_JWTTOKEN_EXPIRED: { "isSuccess": false, "code": 1503, "message": "JWT 토큰 만료" },
+    TOKEN_VERIFICATION_FAILURE: { "isSuccess": false, "code": 1504, "message": "JWT 토큰 검증 실패" },
+    TOKEN_REFRESHTOKEN_NOT_MATCH:{ "isSuccess": false, "code": 1505, "message": "refersh 토큰이 DB와 다릅니다." },
+    
     //Request error
     SIGNUP_EMAIL_EMPTY: { "isSuccess": false, "code": 2001, "message": "이메일을 입력해주세요" },
     SIGNUP_EMAIL_LENGTH: { "isSuccess": false, "code": 2002, "message": "이메일은 30자리 미만으로 입력해주세요." },
@@ -38,7 +44,6 @@ module.exports = {
     USER_STATUS_EMPTY : { "isSuccess": false, "code": 2018, "message": "회원 상태값을 입력해주세요" },
     KAKAO_ACCESSTOKEN_EMPTY : {"isSuccess": false, "code": 2050, "message": "kakao accesstoken을 입력해주세요"},
     KAKAO_REFRESHTOKEN_EMPTY :{"isSuccess": false, "code": 2051, "message": "kakao refreshtoken을 입력해주세요"},
-    
     USER_USER_NOT_EXIST : {"isSuccess": false, "code": 2052, "message": "회원 가입이 필요합니다."},
 
     // trip req error 2200~2299
@@ -72,6 +77,7 @@ module.exports = {
     COURSE_LATITUDE_EMPTY :    { "isSuccess": false, "code": 2214, "message": "latitude를 입력해주세요" },
     COURSE_LONGITUDE_EMPTY :{ "isSuccess": false, "code": 2215, "message": "longitude를 입력해주세요" },
     COURSE_COURSE_NOT_EXIST :{ "isSuccess": false, "code": 2216, "message": "해당 courseIdx를 가진 코스가 존재하지 않습니다." },
+    
     // Response error
     SIGNUP_REDUNDANT_EMAIL: { "isSuccess": false, "code": 3001, "message": "중복된 이메일입니다." },
     SIGNUP_REDUNDANT_NICKNAME: { "isSuccess": false, "code": 3002, "message": "중복된 닉네임입니다." },

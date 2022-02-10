@@ -55,7 +55,7 @@ exports.getUserById = async function (req, res) {
 };
 
 //카카오 리프레시 토큰을 이용해서 kakao토큰들 갱신 (카카오 액세스 토큰 유효기간 검증 후)
-exports.updateKakaoRefreshToken = async function (req, res) {
+exports.updateKakaoTokens = async function (req, res) {
     //리프레시 토큰이 있으면 카카오 서버에서 액세스 받아옴
     const kakaoRefreshToken = req.body.kakaoRefreshToken;
     if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
@@ -72,8 +72,8 @@ exports.updateKakaoRefreshToken = async function (req, res) {
           }
         });
       } catch (error) {
-        console.log(json(error.data));
-        return res.send(errResponse(json(error.data)));
+        console.log(error.response.data);
+        return res.send(error.response.data);
       }
       return res.send(response(baseResponse.SUCCESS,kakaoProfile.data));
 }
@@ -92,8 +92,8 @@ exports.kakaoLogin = async function (req, res) {
           }
         });
       } catch (error) {
-        console.log(json(error.data));
-        return res.send(errResponse(json(error.data)));
+        console.log(error.response.data);
+        return res.send(error.response.data);
       }
 
       const email = kakaoProfile.data.kakao_account.email;
@@ -103,7 +103,7 @@ exports.kakaoLogin = async function (req, res) {
 
       //회원이 아니라면 회원가입 과정을 거침.
       if(!isUser) {
-        return res.send(response(baseResponse.USER_USER_NOT_EXIST));
+        return res.send(errResponse(baseResponse.USER_USER_NOT_EXIST));
       }
       //회원이라면 signIn시켜줌
       else{
@@ -125,8 +125,8 @@ try {
         }
       });
     } catch (error) {
-      console.log(json(error.data));
-      return res.send(errResponse(json(error.data)));
+      console.log(error.response.data);
+      return res.send(error.response.data);
     }
 
     const email = kakaoProfile.data.kakao_account.email;
@@ -159,6 +159,24 @@ exports.check = async function (req, res) {
   const userIdxResult = req.verifiedToken.userIdx;
   console.log(userIdxResult);
   return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
+};
+
+//jwt토큰과 리프레시 토큰 갱신
+exports.updateTokens = async function (req, res) {
+  const userIdxFromJWT = req.verifiedToken.userIdx;
+  const refreshToken = req.body.refreshToken;
+  console.log(userIdxFromJWT);
+
+  const refreshTokenResult = await userProvider.retrieveRefreshToken(userIdxFromJWT);
+
+  if(refreshTokenResult.refreshToken === refreshToken) {
+    //refreshToken이 DB와 동일하다면 postSignIn으로 재로그인
+    const refreshTokenSignInResult = await userService.postSignIn(userIdxFromJWT, refreshTokenResult.email);
+    return res.send(refreshTokenSignInResult);
+  }
+  else{
+    return res.send(errResponse(baseResponse.TOKEN_REFRESHTOKEN_NOT_MATCH));
+  }
 };
 
 //카카오 유저 닉네임, 썸네일 업데이트

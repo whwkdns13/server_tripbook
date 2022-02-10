@@ -66,14 +66,14 @@ exports.postSignIn = async function (userIdx) {
             }, // 토큰의 내용(payload)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "365d",
+                expiresIn: "1h",
                 subject: "user",
             } // 유효 기간 1일
         );
 
         //refresh 토큰 생성 유효기간 14일
         const refreshToken = await jwt.sign(
-            {}, // 비워놓음 (오버헤드 최소화)
+            {userIdx: userInfoRows[0].userIdx}, // 비워놓음 (오버헤드 최소화)
             secret_config.jwtsecret, // 비밀키
             {
                 expiresIn: "14d",
@@ -86,11 +86,14 @@ exports.postSignIn = async function (userIdx) {
         const createRefreshToken = await userDao.updateRefreshToken(connection, userIdx, refreshToken);
         connection.release();
 
-        return response(baseResponse.SUCCESS, {
-            'userIdx': userIdx, 
-            'jwt': accessToken , 
-            'jwtRefreshToken' : refreshToken
-        });
+        if(createRefreshToken.affectedRows != 0){
+            return response(baseResponse.SUCCESS, {
+                'userIdx': userIdx, 
+                'jwt': accessToken , 
+                'jwtRefreshToken' : refreshToken
+            });
+        }
+        else return errResponse(baseResponse.USER_USER_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - postSignIn Service error\n: ${err.message} \n${JSON.stringify(err)}`);
