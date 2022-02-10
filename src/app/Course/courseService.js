@@ -18,10 +18,10 @@ const crypto = require("crypto");
 // Service: Create, Update, Delete 비즈니스 로직 처리
 
 //Course 변수들을 받아서 course를 등록해주는 기능
-exports.createCourse = async function (tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx) {
+exports.createCourse = async function (tripIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment,  latitude, longitude) {
     try {
         // 쿼리문에 사용할 변수 값을 배열 형태로 전달
-        const insertCourseInfoParams = [tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx];
+        const insertCourseInfoParams = [tripIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment,  latitude, longitude];
 
         const connection = await pool.getConnection(async (conn) => conn);
         const courseIdxResult = await courseDao.insertCourseInfo(connection, insertCourseInfoParams);

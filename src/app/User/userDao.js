@@ -12,7 +12,7 @@ async function selectUser(connection) {
   return userRows;
 }
 
-// userId 회원 조회
+// user 회원 조회
 async function selectUserByEmail(connection, email) {
   const selectUserEmailQuery = `
                  SELECT *

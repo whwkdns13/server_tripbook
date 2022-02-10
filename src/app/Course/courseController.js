@@ -77,7 +77,7 @@ exports.postCourse = async function (req, res) {
     /**
      * Body: tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment
      */
-    const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx} = req.body;
+    const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx, latitude, longitude} = req.body;
     
     // 빈 값 체크
     if (!tripIdx) return res.send(errResponse(baseResponse.COURSE_TRIPIDX_EMPTY));
@@ -87,7 +87,9 @@ exports.postCourse = async function (req, res) {
     if (!courseImg) return res.send(errResponse(baseResponse.COURSE_COURSEIMAGE_EMPTY));
     if (!courseComment) return res.send(errResponse(baseResponse.COURSE_COURSECOMMENT_EMPTY));
     if (!cardIdx) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
-    
+    //if (!latitude) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
+    //if (!longitude) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
+
     // 길이 체크
     if (courseTitle.length > 99)
         return res.send(response(baseResponse.COURSE_COURSETITLE_LENGTH));
@@ -98,12 +100,14 @@ exports.postCourse = async function (req, res) {
     // createCourse 함수 실행을 통한 결과 값을 postCourseResponse에 저장
     const postCourseResponse = await courseService.createCourse(
         tripIdx, 
+        cardIdx,
         courseImg, 
         courseDate, 
         courseTime, 
         courseTitle, 
         courseComment,
-        cardIdx
+        latitude,
+        longitude
     );
 
     // postCourseResponse 값을 json으로 전달
@@ -270,9 +274,8 @@ exports.postCourseHashTag = async function(req, res){
         hashTagIdx
     );
     // postCourseResponse 값을 json으로 전달
-    return res.send(postCourseHashTagResponse);
+    return res.send(response(baseResponse.SUCCESS), postCourseHashTagResponse);
 };
-
 
 //발자국 삭제 api
 exports.deleteCourse = async function (req, res) {
