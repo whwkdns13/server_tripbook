@@ -66,7 +66,7 @@ exports.getLatestCourses = async function (req, res) {
     const latestCoursesInfo = await tripProvider.retrieveCourses(latestTripIdx.tripIdx);
 
     // errResponse 전달 - 최근 여행의 course가 없을 때
-    if (!latestCoursesInfo) return res.send(response(baseResponse.TRIP_COURSE_NOT_EXIST));
+    if (latestCoursesInfo.length == 0) return res.send(response(baseResponse.TRIP_COURSE_NOT_EXIST));
     return res.send(response(baseResponse.SUCCESS, latestCoursesInfo));
 };
 
