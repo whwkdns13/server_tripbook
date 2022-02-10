@@ -50,7 +50,7 @@ exports.createKakaoUserProfile = async function (userIdx, nickName, userImg) {
 
 // TODO: After 로그인 인증 방법 (JWT)
 exports.postSignIn = async function (userIdx) {
-    try {        
+    try {
         // 계정 상태 확인
         const userInfoRows = await userProvider.accountCheck(userIdx);
 
@@ -66,7 +66,7 @@ exports.postSignIn = async function (userIdx) {
             }, // 토큰의 내용(payload)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "1d",
+                expiresIn: "365d",
                 subject: "user",
             } // 유효 기간 1일
         );
