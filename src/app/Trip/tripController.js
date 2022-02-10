@@ -2,7 +2,7 @@ const jwtMiddleware = require("../../../config/jwtMiddleware");
 const tripProvider = require("../Trip/tripProvider");
 const tripService = require("../Trip/tripService");
 const baseResponse = require("../../../config/baseResponseStatus");
-const {response, errResponse} = require("../../../config/response");
+const { response, errResponse } = require("../../../config/response");
 
 const regexEmail = require("regex-email");
 
@@ -30,13 +30,13 @@ exports.getLatestTrip = async function (req, res) {
 
     const userIdx = req.params.userIdx;
     // errResponse 전달
-    if(!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));    
+    if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
 
     // 최근 여행 인덱스 조회
     const latestTripIdx = await tripProvider.retrieveLatest(userIdx);
 
     // errResponse 전달 - 최근 여행 인덱스 없을때
-    if(!latestTripIdx) return res.send(response(baseResponse.TRIP_LATEST_NOT_EXIST));
+    if (!latestTripIdx) return res.send(response(baseResponse.TRIP_LATEST_NOT_EXIST));
 
     const latestTripInfo = await tripProvider.retrieveTrip(latestTripIdx.tripIdx);
 
@@ -55,18 +55,18 @@ exports.getLatestCourses = async function (req, res) {
 
     const userIdx = req.params.userIdx;
     // errResponse 전달
-    if(!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
+    if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
 
     // 최근 여행 인덱스 조회
     const latestTripIdx = await tripProvider.retrieveLatest(userIdx);
 
     // errResponse 전달 - 최근 여행 인덱스 없을때
-    if(!latestTripIdx) return res.send(response(baseResponse.TRIP_LATEST_NOT_EXIST));
+    if (!latestTripIdx) return res.send(response(baseResponse.TRIP_LATEST_NOT_EXIST));
 
     const latestCoursesInfo = await tripProvider.retrieveCourses(latestTripIdx.tripIdx);
 
     // errResponse 전달 - 최근 여행의 course가 없을 때
-    if(!latestCoursesInfo) return res.send(response(baseResponse.TRIP_COURSE_NOT_EXIST));
+    if (latestCoursesInfo.length == 0) return res.send(response(baseResponse.TRIP_COURSE_NOT_EXIST));
     return res.send(response(baseResponse.SUCCESS, latestCoursesInfo));
 };
 
@@ -82,7 +82,7 @@ exports.getTripsCount = async function (req, res) {
 
     const userIdx = req.params.userIdx;
     // errResponse 전달
-    if(!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
+    if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
 
     const tripsCount = await tripProvider.retrieveTripsCount(userIdx);
     return res.send(response(baseResponse.SUCCESS, tripsCount));
@@ -102,12 +102,12 @@ exports.getTrip = async function (req, res) {
 
     const tripIdx = req.params.tripIdx;
     // errResponse 전달
-    if(!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
 
     const tripBytripIdx = await tripProvider.retrieveTrip(tripIdx);
 
     // errResponse 전달 - DELETE된 trip일 때
-    if(tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
+    if (tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
     return res.send(response(baseResponse.SUCCESS, tripBytripIdx));
 };
 
@@ -123,9 +123,12 @@ exports.getTripCourses = async function (req, res) {
 
     const tripIdx = req.params.tripIdx;
     // errResponse 전달
-    if(!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
 
     const coursesBytripIdx = await tripProvider.retrieveCourses(tripIdx);
+
+    // errResponse 전달 - 특정 여행의 course가 없을 때
+    if (coursesBytripIdx.length == 0) return res.send(response(baseResponse.TRIP_COURSE_NOT_EXIST));
     return res.send(response(baseResponse.SUCCESS, coursesBytripIdx));
 };
 
@@ -140,17 +143,17 @@ exports.postTrip = async function (req, res) {
      * tripImg = 1st courseImg default
      */
 
-    const {userIdx, tripTitle, departureDate, arrivalDate, themeIdx} = req.body;
+    const { userIdx, tripTitle, departureDate, arrivalDate, themeIdx } = req.body;
 
     // 빈 값 체크
-    if(!userIdx) return res.send(response(baseResponse.TRIP_USERIDX_EMPTY));
+    if (!userIdx) return res.send(response(baseResponse.TRIP_USERIDX_EMPTY));
     //TODO USER_USERID_NOEXIST 확인 필요
     //triptitle 길이 체크
-    if(tripTitle.length > 14) return res.send(response(baseResponse.TRIP_TRIPTITLE_LENGTH));
-    if(!tripTitle) return res.send(errResponse(baseResponse.TRIP_TRIPTITLE_EMPTY));
-    if(!departureDate) return res.send(errResponse(baseResponse.TRIP_DEPARTUREDATE_EMPTY));
-    if(!arrivalDate) return res.send(errResponse(baseResponse.TRIP_ARRIVALDATE_EMPTY));
-    if(!themeIdx) return res.send(errResponse(baseResponse.TRIP_THEMEIDX_EMPTY));
+    if (tripTitle.length > 14) return res.send(response(baseResponse.TRIP_TRIPTITLE_LENGTH));
+    if (!tripTitle) return res.send(errResponse(baseResponse.TRIP_TRIPTITLE_EMPTY));
+    if (!departureDate) return res.send(errResponse(baseResponse.TRIP_DEPARTUREDATE_EMPTY));
+    if (!arrivalDate) return res.send(errResponse(baseResponse.TRIP_ARRIVALDATE_EMPTY));
+    if (!themeIdx) return res.send(errResponse(baseResponse.TRIP_THEMEIDX_EMPTY));
 
     // TODO DATE유효성 검사
 
@@ -177,16 +180,16 @@ exports.patchTripTitle = async function (req, res) {
      */
     const tripIdx = req.params.tripIdx;
     const tripTitle = req.body.tripTitle;
-     // errResponse 전달
-    if(!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
-    if(!tripTitle) return res.send(errResponse(baseResponse.TRIP_TRIPTITLE_EMPTY));
-    
+    // errResponse 전달
+    if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if (!tripTitle) return res.send(errResponse(baseResponse.TRIP_TRIPTITLE_EMPTY));
+
     //triptitle 길이 체크
-    if(tripTitle.length > 14) return res.send(response(baseResponse.TRIP_TRIPTITLE_LENGTH));
-    
+    if (tripTitle.length > 14) return res.send(response(baseResponse.TRIP_TRIPTITLE_LENGTH));
+
     // errResponse 전달 - DELETE된 trip일 때
     const tripBytripIdx = await tripProvider.retrieveTrip(tripIdx);
-    if(tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
+    if (tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
 
     const editTripTitleInfo = await tripService.editTripTitle(tripIdx, tripTitle);
     return res.send(response(baseResponse.SUCCESS));
@@ -205,13 +208,13 @@ exports.patchDepartureDate = async function (req, res) {
      */
     const tripIdx = req.params.tripIdx;
     const departureDate = req.body.departureDate;
-     // errResponse 전달
-    if(!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
-    if(!departureDate) return res.send(errResponse(baseResponse.TRIP_DEPARTUREDATE_EMPTY));
+    // errResponse 전달
+    if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if (!departureDate) return res.send(errResponse(baseResponse.TRIP_DEPARTUREDATE_EMPTY));
 
     // errResponse 전달 - DELETE된 trip일 때
     const tripBytripIdx = await tripProvider.retrieveTrip(tripIdx);
-    if(tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
+    if (tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
 
     // TODO departureDate DATE 유효성 검사
 
@@ -231,13 +234,13 @@ exports.patchArrivalDate = async function (req, res) {
      */
     const tripIdx = req.params.tripIdx;
     const arrivalDate = req.body.arrivalDate;
-     // errResponse 전달
-    if(!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
-    if(!arrivalDate) return res.send(errResponse(baseResponse.TRIP_ARRIVALDATE_EMPTY));
+    // errResponse 전달
+    if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if (!arrivalDate) return res.send(errResponse(baseResponse.TRIP_ARRIVALDATE_EMPTY));
 
     // errResponse 전달 - DELETE된 trip일 때
     const tripBytripIdx = await tripProvider.retrieveTrip(tripIdx);
-    if(tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
+    if (tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
 
     // TODO arrivalDate DATE 유효성 검사
 
@@ -257,13 +260,13 @@ exports.patchTheme = async function (req, res) {
      */
     const tripIdx = req.params.tripIdx;
     const theme = req.body.theme;
-     // errResponse 전달
-    if(!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
-    if(!theme) return res.send(errResponse(baseResponse.TRIP_THEMEIDX_EMPTY));
+    // errResponse 전달
+    if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if (!theme) return res.send(errResponse(baseResponse.TRIP_THEMEIDX_EMPTY));
 
     // errResponse 전달 - DELETE된 trip일 때
     const tripBytripIdx = await tripProvider.retrieveTrip(tripIdx);
-    if(tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
+    if (tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
 
     // TODO theme가 INT인지?
 
@@ -285,7 +288,7 @@ exports.getTrips = async function (req, res) {
 
     const userIdx = req.params.userIdx;
     // errResponse 전달
-    if(!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
+    if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
 
     const tripsByuserIdx = await tripProvider.retrieveTrips(userIdx);
     return res.send(response(baseResponse.SUCCESS, tripsByuserIdx));
