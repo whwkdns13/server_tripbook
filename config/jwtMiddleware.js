@@ -36,6 +36,7 @@ const jwtMiddleware = (req, res, next) => {
     // process the promise
     p.then(async (verifiedToken)=>{
         if(token === req.headers['x-access-token']){
+            //jwt Token은 한명당 한개만 배정되어 있음.
             const accessTokenFromDB = await userProvider.retrieveAccessToken(verifiedToken.userIdx);
             //retrieveAccessToken
             if(token === accessTokenFromDB) {

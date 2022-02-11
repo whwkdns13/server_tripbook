@@ -132,6 +132,26 @@ async function selectAccessToken(connection, userIdx) {
   return accessTokenRow;
 }
 
+async function updateKakaoRefreshToken(connection, userIdx, kakaoRefreshToken) {
+  const updateKakaoRefreshTokenQuery = `
+    UPDATE user
+    SET kakaoRefreshToken = ?
+    WHERE userIdx = ? and status = 'ACTIVE';
+  `;
+  const updateKakaoRefreshTokenRow = await connection.query(updateKakaoRefreshTokenQuery, [kakaoRefreshToken, userIdx]);
+  return updateKakaoRefreshTokenRow[0];
+}
+
+async function updateTokensByKakaoSignIn(connection, updateTokensByKakaoSignInParams) {
+  const updateTokensByKakaoSignInQuery = `
+    UPDATE user
+    SET accessToken = ? , refreshToken = ?, kakaoRefreshToken = ?
+    WHERE userIdx = ? and status = 'ACTIVE';
+  `;
+  const updateTokensByKakaoSignInRow = await connection.query(updateTokensByKakaoSignInQuery, updateTokensByKakaoSignInParams);
+  return updateTokensByKakaoSignInRow[0];
+}
+
 module.exports = {
   selectUser,
   selectUserByEmail,
@@ -144,5 +164,7 @@ module.exports = {
   updateAccessToken,
   selectRefreshToken,
   selectAccessToken,
-  userLogOut
+  userLogOut,
+  updateKakaoRefreshToken,
+  updateTokensByKakaoSignIn
 };

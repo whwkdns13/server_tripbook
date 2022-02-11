@@ -7,7 +7,9 @@ module.exports = {
     TOKEN_VERIFICATION_SUCCESS: { "isSuccess": true, "code": 1001, "message": "JWT 토큰 검증 성공" },
     TOKEN_ACCESSTOKEN_UPDATE: { "isSuccess": true, "code": 1002, "message": "JWT 토큰 업데이트 성공" },
     USER_USER_LOGOUT_SUCCESS:{ "isSuccess": true, "code": 1003, "message": "로그아웃 성공" },
-    
+    SIGNUP_USER_SUCCESS:{ "isSuccess": true, "code": 1004, "message": "유저테이블 생성 성공. 유저 프로필도 생성해주세요." },
+    SIGNUP_USERPROFILE_SUCCESS:{ "isSuccess": true, "code": 1005, "message": "회원가입 성공" },
+
     // Common
 
     //TOKEN error 1500~2000
@@ -52,7 +54,9 @@ module.exports = {
     USER_USER_NOT_EXIST : {"isSuccess": false, "code": 2052, "message": "회원 가입이 필요합니다."},
     KAKAO_REFRESHTOKEN_NOT_MATCH:{"isSuccess": false, "code": 2053, "message": "kakao refreshToken이 사용자의 것이 아닙니다."},
     KAKAO_REFRESHTOKEN_NOT_EXIST:{"isSuccess": false, "code": 2054, "message": "DB에 kakao refreshToken이 없습니다. 카카오 로그인을 진행해주세요."},
-    
+    USER_USER_EXIST : {"isSuccess": false, "code": 2055, "message": "이미 있는 회원입니다."},
+    USER_USERPROFILE_EXIST : {"isSuccess": false, "code": 2056, "message": "이미 프로필이 있는 회원입니다."},
+    KAKAO_KAKAO_ERROR:{"isSuccess": false, "code": 2057, "message": "카카오 서버에 요청이 실패했습니다."},
     
     
     // trip req error 2200~2299

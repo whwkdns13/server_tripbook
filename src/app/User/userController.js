@@ -57,11 +57,14 @@ exports.getUserById = async function (req, res) {
 //카카오 리프레시 토큰을 이용해서 kakao토큰들 갱신 (카카오 액세스 토큰 유효기간 검증 후)
 exports.updateKakaoTokens = async function (req, res) {
   //리프레시 토큰이 있으면 카카오 서버에서 액세스 받아옴
+  const userIdxFromJWT = req.verifiedToken.userIdx;
   const kakaoRefreshToken = req.body.kakaoRefreshToken;
   const userIdx = req.params.userIdx;
-
   if(!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
   if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
+  if (userIdxFromJWT != userIdx) {
+    return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+  } 
 
   const refreshTokenResult = await userProvider.retrieveRefreshToken(userIdx);
   if(!refreshTokenResult.kakaoRefreshToken)
@@ -109,53 +112,89 @@ exports.updateKakaoTokens = async function (req, res) {
       });
     } catch (error) {
       console.log(error.response.data);
-      return res.send(error.response.data);
+      return res.send(errResponse(baseResponse.KAKAO_KAKAO_ERROR));
     }
 
     //갱신된 카카오 리프레시 토큰이 있을 시 저장해줌
     if(kakaoProfile.data.refreshToken){
-
+      //########################################
     }
 
     return res.send(response(baseResponse.SUCCESS,kakaoProfile.data));
 }
 
 //jwt없을 때 카카오 액세스 토큰으로 정보 불러와서 로그인
-exports.kakaoLogin = async function (req, res) {
-    const accessToken = req.body.accessToken;
+exports.kakaoSignin = async function (req, res) {
+    const kakaoAccessToken = req.body.kakaoAccessToken;
+    const kakaoRefreshToken = req.body.kakaoRefreshToken;
     let kakaoProfile;
-    if(!accessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
+    if(!kakaoAccessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
 	try {
         kakaoProfile = await axios({
           method: "GET",
           url: "https://kapi.kakao.com/v2/user/me",
           headers: {
-            Authorization: `Bearer ${accessToken}`
+            Authorization: `Bearer ${kakaoAccessToken}`
           }
         });
       } catch (error) {
         console.log(error.response.data);
-        return res.send(error.response.data);
+        return res.send(errResponse(baseResponse.KAKAO_KAKAO_ERROR));
       }
 
       const email = kakaoProfile.data.kakao_account.email;
       const isUser = await userProvider.retrieveUserByEmail(email);
-      //회원이 아니라면 회원가입 과정을 거침.
-      if(!isUser.userIdx) {
+      //회원이 아니라면 회원가입 메시지를 보냄.
+      if(!isUser) {
         return res.send(errResponse(baseResponse.USER_USER_NOT_EXIST));
       }
       //회원이라면 signIn시켜줌
       else{
-        const kakaoSignInResult = await userService.postSignIn(isUser.userIdx, email);
+        const kakaoSignInResult = await userService.kakaoSignin(isUser.userIdx, kakaoRefreshToken);
         return res.send(kakaoSignInResult);
       }
 }
 
-exports.kakaoSignin = async function (req, res) {
+//카카오 정보로 회원가입 (유저 테이블)
+exports.kakaoSignup = async function (req, res) {
+  const kakaoAccessToken = req.body.kakaoAccessToken;
+  const kakaoRefreshToken = req.body.kakaoRefreshToken;
+  if(!kakaoAccessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
+  if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
+  
+  let kakaoProfile;
+  try {
+      kakaoProfile = await axios({
+        method: "GET",
+        url: "https://kapi.kakao.com/v2/user/me",
+        headers: {
+          Authorization: `Bearer ${kakaoAccessToken}`
+        }
+      });
+    } catch (error) {
+      console.log(error.response.data);
+      return res.send(errResponse(baseResponse.KAKAO_KAKAO_ERROR));
+    }
+    //이메일로 회원가입
+    const email = kakaoProfile.data.kakao_account.email;
+
+    const isUser = await userProvider.retrieveUserByEmail(email);
+    //회원이 아닐 경우에만 회원가입
+    if(!isUser) {
+      const signUpUserResult = await userService.createKakaoUser(email);
+      return res.send(signUpUserResult);    
+    }
+    else{
+      return res.send(errResponse(baseResponse.USER_USER_EXIST));
+    }
+}
+
+//카카오 정보로 회원가입 (유저 프로필)
+exports.kakaoSignupProfile = async function (req, res) {
   const accessToken = req.body.accessToken;
   let kakaoProfile;
   if(!accessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
-try {
+  try {
       kakaoProfile = await axios({
         method: "GET",
         url: "https://kapi.kakao.com/v2/user/me",
@@ -165,33 +204,28 @@ try {
       });
     } catch (error) {
       console.log(error.response.data);
-      return res.send(error.response.data);
+      return res.send(errResponse(baseResponse.KAKAO_KAKAO_ERROR, error.response.data));
     }
 
-    const email = kakaoProfile.data.kakao_account.email;
-    const isUser = await userProvider.retrieveUserByEmail(email);
-    const nickName = kakaoProfile.data.kakao_account.profile.nickname;
-    const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;
-
-    //회원이 아니라면 회원가입 과정을 거침.
-    if(!isUser) {
-      const signUpUserIdx = await userService.createKakaoUser(email);
-      const createUserProfileInfo = await userService.createKakaoUserProfile(signUpUserIdx, nickName, userImg);
-      
-      if(createUserProfileInfo){
-          const afterKakaoSignInResult = await userService.postSignIn(signUpUserIdx, email);
-          return res.send(afterKakaoSignInResult);
-      }
-      else {
-        return res.send(errResponse(baseResponse.KAKAO_CREATEPROFILE_FAIL));
-      }
+  const email = kakaoProfile.data.kakao_account.email;
+  const nickName = kakaoProfile.data.kakao_account.profile.nickname;
+  const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;
+  const isUser = await userProvider.retrieveUserByEmail(email);
+  if(!isUser) {
+      return res.send(errResponse(baseResponse.USER_USER_NOT_EXIST));
+  }
+  else{
+    const isProfile = await userProvider.retrieveUserProfile(isUser.userIdx);
+    if(!isProfile) {
+      const createUserProfileInfo = await userService.createKakaoUserProfile(isUser.userIdx, nickName, userImg);
+      return res.send(createUserProfileInfo);
     }
-    //회원이라면 signIn시켜줌
     else{
-      const kakaoSignInResult = await userService.postSignIn(isUser.userIdx, email);
-      return res.send(kakaoSignInResult);
+      return res.send(errResponse(baseResponse.USER_USERPROFILE_EXIST));
     }
-}
+  } 
+}    
+
 
 //jwt있을 때 자동 로그인
 exports.check = async function (req, res) {
@@ -237,7 +271,7 @@ exports.updateTokens = async function (req, res) {
   }catch(error){
     if(error.name === 'TokenExpiredError') {
       //정상적인 접근이므로 토큰들 모두 업데이트 (재로그인)
-      const refreshTokenSignInResult = await userService.postSignIn(userIdxFromRefresh, refreshTokenResult.email);
+      const refreshTokenSignInResult = await userService.SigninByRefreshToken(userIdxFromRefresh);
       return res.send(refreshTokenSignInResult);
     }
   }

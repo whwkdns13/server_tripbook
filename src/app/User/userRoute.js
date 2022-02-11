@@ -18,14 +18,20 @@ module.exports = function(app){
 
 //카카오 로그인 이용한 로그인기능 구현
 
+    //액세스 토큰으로 카카오 회원가입(유저 테이블) API
+    app.post('/app/kakao/signup', user.kakaoSignup);
+
+    //액세스 토큰으로 카카오 회원가입(유저프로필 테이블) API
+    app.post('/app/kakao/signupProfile', user.kakaoSignupProfile);
+
     //액세스 토큰으로 카카오 로그인 구현 API
-    app.post('/app/user/kakao/login', user.kakaoLogin);
+    app.post('/app/kakao/signin', user.kakaoSignin);
 
     //카카오 액세스 토큰 갱신하기 리프레시 토큰
-    app.post('/app/user/kakao/updateTokens/:userIdx', user.updateKakaoTokens);
+    app.post('/app/user/kakao/updateTokens/:userIdx', jwtMiddleware, user.updateKakaoTokens);
     
     //유저 닉네임, 이미지 업데이트 api(카카오 이용)
-    app.post('/app/user/kakao/update/:userIdx', jwtMiddleware, user.userUpdateByKakao); 
+    app.post('/app/user/kakao/updateUserProfile/:userIdx', jwtMiddleware, user.userUpdateByKakao); 
     
     //리프레시 토큰으로 jwt토큰, 리프레시 토큰 갱신하기
     app.post('/app/user/updateTokens', jwtMiddleware, user.updateTokens);

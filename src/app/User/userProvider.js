@@ -19,7 +19,7 @@ exports.accountCheck = async function (userIdx) {
   const userAccountResult = await userDao.selectUserAccount(connection, userIdx);
   connection.release();
   
-  return userAccountResult;
+  return userAccountResult[0];
 };
 
 //리프레시 토큰 유저 idx로 가져오는 함수
@@ -29,7 +29,7 @@ exports.retrieveRefreshToken = async function (userIdx) {
 
   connection.release();
 
-  return refreshTokenResult[0]; 
+  return refreshTokenResult; 
 };
 
 //리프레시 토큰 유저 idx로 가져오는 함수
