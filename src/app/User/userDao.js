@@ -96,7 +96,7 @@ async function userLogOut(connection, userIdx) {
   const updateTokensQuery = `
     UPDATE user
     SET accessToken = null , refreshToken = null, kakaoRefreshToken = null
-    WHERE userIdx = ?;
+    WHERE userIdx = ? ;
   `;
   const updateTokensRow = await connection.query(updateTokensQuery, userIdx);
   return updateTokensRow[0];
@@ -116,7 +116,7 @@ async function selectRefreshToken(connection, userIdx) {
   const selectRefreshTokenQuery = `
                  SELECT *
                  FROM user
-                 WHERE userIdx = ?;
+                 WHERE userIdx = ? and status = 'ACTIVE' ;
                  `;
   const [refreshTokenRow] = await connection.query(selectRefreshTokenQuery, userIdx);
   return refreshTokenRow;
@@ -152,6 +152,17 @@ async function updateTokensByKakaoSignIn(connection, updateTokensByKakaoSignInPa
   return updateTokensByKakaoSignInRow[0];
 }
 
+// userProfile 조회
+async function selectUserProfileByIdx(connection, userIdx) {
+  const selectUserProfileByIdxQuery = `
+                 SELECT *
+                 FROM userProfile
+                 WHERE userIdx = ? and status = 'ACTIVE';
+                 `;
+  const [userProfileRow] = await connection.query(selectUserProfileByIdxQuery, userIdx);
+  return userProfileRow;
+}
+
 module.exports = {
   selectUser,
   selectUserByEmail,
@@ -166,5 +177,6 @@ module.exports = {
   selectAccessToken,
   userLogOut,
   updateKakaoRefreshToken,
-  updateTokensByKakaoSignIn
+  updateTokensByKakaoSignIn,
+  selectUserProfileByIdx
 };

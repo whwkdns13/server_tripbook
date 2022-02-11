@@ -191,15 +191,15 @@ exports.kakaoSignup = async function (req, res) {
 
 //카카오 정보로 회원가입 (유저 프로필)
 exports.kakaoSignupProfile = async function (req, res) {
-  const accessToken = req.body.accessToken;
+  const kakaoAccessToken = req.body.kakaoAccessToken;
   let kakaoProfile;
-  if(!accessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
+  if(!kakaoAccessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
   try {
       kakaoProfile = await axios({
         method: "GET",
         url: "https://kapi.kakao.com/v2/user/me",
         headers: {
-          Authorization: `Bearer ${accessToken}`
+          Authorization: `Bearer ${kakaoAccessToken}`
         }
       });
     } catch (error) {
@@ -215,8 +215,8 @@ exports.kakaoSignupProfile = async function (req, res) {
       return res.send(errResponse(baseResponse.USER_USER_NOT_EXIST));
   }
   else{
-    const isProfile = await userProvider.retrieveUserProfile(isUser.userIdx);
-    if(!isProfile) {
+    const isProfileResult = await userProvider.retrieveUserProfileByIdx(isUser.userIdx);
+    if(!isProfileResult) {
       const createUserProfileInfo = await userService.createKakaoUserProfile(isUser.userIdx, nickName, userImg);
       return res.send(createUserProfileInfo);
     }
