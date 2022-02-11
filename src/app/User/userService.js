@@ -66,7 +66,7 @@ exports.SigninByRefreshToken = async function (userIdx) {
             }, // 토큰의 내용(payload)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "1s",
+                expiresIn: "1h",
                 subject: "user",
             } // 유효 기간 1일
         );
@@ -76,7 +76,7 @@ exports.SigninByRefreshToken = async function (userIdx) {
             {userIdx: userInfoRows[0].userIdx}, // 비워놓음 (오버헤드 최소화)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "1s",
+                expiresIn: "14d",
                 subject: "user",
             } // 유효 기간 1일
         );
@@ -119,7 +119,7 @@ exports.kakaoSignin = async function (userIdx, kakaoRefreshToken) {
             }, // 토큰의 내용(payload)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "1s",
+                expiresIn: "1h",
                 subject: "user",
             } // 유효 기간 1시간
         );
@@ -129,7 +129,7 @@ exports.kakaoSignin = async function (userIdx, kakaoRefreshToken) {
             {userIdx: userInfoRows[0].userIdx}, // 이메일 제외 (오버헤드 최소화)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "1s",
+                expiresIn: "14d",
                 subject: "user",
             } // 유효 기간 14일
         );
@@ -173,7 +173,7 @@ exports.logOut = async function (userIdx) {
         if(userLogOutResult.affectedRows === 1){
             return response(baseResponse.USER_USER_LOGOUT_SUCCESS);
         }
-        else return errResponse(baseResponse.USER_USER_NOT_EXIST);
+        else return errResponse(baseResponse.USER_USERIDX_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - logOut Service error\n: ${err.message} \n${JSON.stringify(err)}`);
@@ -190,7 +190,7 @@ exports.editAccessToken = async function (userIdx, accessToken) {
         if(editUserResult.affectedRows === 1){
             return response(baseResponse.TOKEN_ACCESSTOKEN_UPDATE);
         }
-        else return errResponse(baseResponse.USER_USER_NOT_EXIST);
+        else return errResponse(baseResponse.USER_USERIDX_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - editAccessToken Service error\n: ${err.message}`);
@@ -207,7 +207,7 @@ exports.editKakaoRefreshToken = async function (userIdx, kakaoRefreshToken, kaka
         if(editUserResult.affectedRows === 1){
             return response(baseResponse.SUCCESS, kakaoData);
         }
-        else return errResponse(baseResponse.USER_USER_NOT_EXIST);
+        else return errResponse(baseResponse.USER_USERIDX_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - editKakaoRefreshToken Service error\n: ${err.message}`);
@@ -222,8 +222,10 @@ exports.editKakaoUser = async function (userIdx, nickName, userImg) {
         const connection = await pool.getConnection(async (conn) => conn);
         const editKakaoUserResult = await userDao.updateKakaoUserInfo(connection, editKakaoUserParams);
         connection.release();
-
-        return response(baseResponse.SUCCESS);
+        if(editKakaoUserResult.affectedRows === 1){
+            return response(baseResponse.SUCCESS);
+        }
+        else return errResponse(baseResponse.USER_USERIDX_NOT_EXIST);
 
     } catch (err) {
         logger.error(`App - editKakaoUser Service error\n: ${err.message}`);

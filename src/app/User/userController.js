@@ -290,8 +290,8 @@ exports.updateTokens = async function (req, res) {
 exports.userUpdateByKakao = async function (req, res) {
     const userIdxFromJWT = req.verifiedToken.userIdx;
     const userIdx = req.params.userIdx;
-    const accessToken = req.body.accessToken;
-    if(!accessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
+    const kakaoAccessToken = req.body.kakaoAccessToken;
+    if(!kakaoAccessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
     if (!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
     // JWT 검증
     if (userIdxFromJWT != userIdx) {
@@ -304,12 +304,12 @@ exports.userUpdateByKakao = async function (req, res) {
             method: "GET",
             url: "https://kapi.kakao.com/v2/user/me",
             headers: {
-              Authorization: `Bearer ${accessToken}`
+              Authorization: `Bearer ${kakaoAccessToken}`
             }
           });
       } catch (error) {
-        console.log(json(error.data));
-        return res.send(errResponse(json(error.data)));
+        cconsole.log(error.response.data);
+        return res.send(errResponse(baseResponse.KAKAO_KAKAO_ERROR));
       }
       const nickName = kakaoProfile.data.kakao_account.profile.nickname;
       const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;  
