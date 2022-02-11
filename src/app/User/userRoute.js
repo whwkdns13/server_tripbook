@@ -14,7 +14,7 @@ module.exports = function(app){
     app.get('/app/users/:userId', user.getUserById);
 
     // 회원 정보 수정 API (JWT 검증 및 Validation - 메소드 체이닝 방식으로 jwtMiddleware 사용)
-    app.patch('/app/users/:userId', jwtMiddleware.jwtMiddleware, user.patchUsers)
+    app.patch('/app/users/:userId', jwtMiddleware, user.patchUsers)
 
 //카카오 로그인 이용한 로그인기능 구현
 
@@ -22,16 +22,16 @@ module.exports = function(app){
     app.post('/app/user/kakao/login', user.kakaoLogin);
 
     //카카오 액세스 토큰 갱신하기 리프레시 토큰
-    app.post('/app/user/kakao/updateTokens', user.updateKakaoTokens);
+    app.post('/app/user/kakao/updateTokens/:userIdx', user.updateKakaoTokens);
     
     //유저 닉네임, 이미지 업데이트 api(카카오 이용)
-    app.post('/app/user/kakao/update/:userIdx', jwtMiddleware.jwtMiddleware, user.userUpdateByKakao); 
+    app.post('/app/user/kakao/update/:userIdx', jwtMiddleware, user.userUpdateByKakao); 
     
     //리프레시 토큰으로 jwt토큰, 리프레시 토큰 갱신하기
-    app.post('/app/user/updateTokens', jwtMiddleware.refreshMiddleware, jwtMiddleware.accessMiddleware, user.updateTokens);
+    app.post('/app/user/updateTokens', jwtMiddleware, user.updateTokens);
 
     //jwt를 이용한 자동 로그인 기능 구현
-    app.get('/app/auto-login', jwtMiddleware.jwtMiddleware, user.check);
+    app.get('/app/auto-login', jwtMiddleware, user.check);
 };
 
 // TODO: 탈퇴하기 API

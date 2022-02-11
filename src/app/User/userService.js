@@ -66,7 +66,7 @@ exports.postSignIn = async function (userIdx) {
             }, // 토큰의 내용(payload)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "1s",
+                expiresIn: "1m",
                 subject: "user",
             } // 유효 기간 1일
         );
@@ -112,11 +112,11 @@ exports.logOut = async function (userIdx) {
 
         //refresh 토큰 DB에 넣기
         const connection = await pool.getConnection(async (conn) => conn);
-        const updateTokensResult = await userDao.updateTokens(connection, userIdx, null, null);
+        const userLogOutResult = await userDao.userLogOut(connection, userIdx);
         connection.release();
 
-        if(updateTokensResult.affectedRows === 2){
-            return response(baseResponse.SUCCESS);
+        if(userLogOutResult.affectedRows === 1){
+            return response(baseResponse.USER_USER_LOGOUT_SUCCESS);
         }
         else return errResponse(baseResponse.USER_USER_NOT_EXIST);
 
@@ -125,6 +125,23 @@ exports.logOut = async function (userIdx) {
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
+exports.editAccessToken = async function (userIdx, accessToken) {
+    try {
+        console.log(userIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editUserResult = await userDao.updateAccessToken(connection, userIdx, accessToken)
+        connection.release();
+        if(editUserResult.affectedRows === 1){
+            return response(baseResponse.TOKEN_ACCESSTOKEN_UPDATE);
+        }
+        else return errResponse(baseResponse.USER_USER_NOT_EXIST);
+
+    } catch (err) {
+        logger.error(`App - editAccessToken Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
 
 exports.editKakaoUser = async function (userIdx, nickName, userImg) {
     try {

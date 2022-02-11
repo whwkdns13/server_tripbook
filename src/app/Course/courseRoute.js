@@ -47,6 +47,6 @@ module.exports = function(app){
     app.patch('/app/course/cardIdx/:userIdx/:courseIdx', course.patchCardIdx);
 
     //region 수정하기 api
-    app.patch('/app/course/region/:userIdx/:courseIdx', jwtMiddleware.jwtMiddleware, course.patchRegion);
+    app.patch('/app/course/region/:userIdx/:courseIdx', jwtMiddleware, course.patchRegion);
 };
 

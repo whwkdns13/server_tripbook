@@ -83,23 +83,53 @@ async function updateKakaoUserInfo(connection, editKakaoUserParams) {
 }
 
 async function updateTokens(connection, userIdx, accessToken, refreshToken) {
-  const updateUserQuery = `
+  const updateTokensQuery = `
     UPDATE user
     SET accessToken = ? , refreshToken = ?
     WHERE userIdx = ? and status = 'ACTIVE';
   `;
-  const updateUserRow = await connection.query(updateUserQuery, [accessToken, refreshToken, userIdx]);
-  return updateUserRow[0];
+  const updateTokensRow = await connection.query(updateTokensQuery, [accessToken, refreshToken, userIdx]);
+  return updateTokensRow[0];
+}
+
+async function userLogOut(connection, userIdx) {
+  const updateTokensQuery = `
+    UPDATE user
+    SET accessToken = null , refreshToken = null, kakaoRefreshToken = null
+    WHERE userIdx = ?;
+  `;
+  const updateTokensRow = await connection.query(updateTokensQuery, userIdx);
+  return updateTokensRow[0];
+}
+
+async function updateAccessToken(connection, userIdx, accessToken) {
+  const updateAccessTokenQuery = `
+    UPDATE user
+    SET accessToken = ?
+    WHERE userIdx = ? and status = 'ACTIVE';
+  `;
+  const updateAccessTokenRow = await connection.query(updateAccessTokenQuery, [accessToken, userIdx]);
+  return updateAccessTokenRow[0];
 }
 
 async function selectRefreshToken(connection, userIdx) {
   const selectRefreshTokenQuery = `
                  SELECT *
                  FROM user
-                 WHERE userIdx = ? and status = 'ACTIVE';
+                 WHERE userIdx = ?;
                  `;
   const [refreshTokenRow] = await connection.query(selectRefreshTokenQuery, userIdx);
   return refreshTokenRow;
+}
+
+async function selectAccessToken(connection, userIdx) {
+  const selectAccessTokenQuery = `
+                 SELECT accessToken
+                 FROM user
+                 WHERE userIdx = ? and status = 'ACTIVE';
+                 `;
+  const [accessTokenRow] = await connection.query(selectAccessTokenQuery, userIdx);
+  return accessTokenRow;
 }
 
 module.exports = {
@@ -111,5 +141,8 @@ module.exports = {
   insertUserProfileInfo,
   updateKakaoUserInfo,
   updateTokens,
-  selectRefreshToken
+  updateAccessToken,
+  selectRefreshToken,
+  selectAccessToken,
+  userLogOut
 };

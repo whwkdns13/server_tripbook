@@ -56,26 +56,68 @@ exports.getUserById = async function (req, res) {
 
 //카카오 리프레시 토큰을 이용해서 kakao토큰들 갱신 (카카오 액세스 토큰 유효기간 검증 후)
 exports.updateKakaoTokens = async function (req, res) {
-    //리프레시 토큰이 있으면 카카오 서버에서 액세스 받아옴
-    const kakaoRefreshToken = req.body.kakaoRefreshToken;
-    if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
-    
-    let kakaoProfile;	
-    try {
-        kakaoProfile = await axios({
-          method: "POST",
-          url: "https://kauth.kakao.com/oauth/token",
-          params: {
-            grant_type: "refresh_token",
-            client_id: "c9ef096f1e3ddc185556eda18530b133",
-            refresh_token: kakaoRefreshToken
-          }
-        });
-      } catch (error) {
-        console.log(error.response.data);
-        return res.send(error.response.data);
-      }
-      return res.send(response(baseResponse.SUCCESS,kakaoProfile.data));
+  //리프레시 토큰이 있으면 카카오 서버에서 액세스 받아옴
+  const kakaoRefreshToken = req.body.kakaoRefreshToken;
+  const userIdx = req.params.userIdx;
+
+  if(!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
+  if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
+
+  const refreshTokenResult = await userProvider.retrieveRefreshToken(userIdx);
+  if(!refreshTokenResult.kakaoRefreshToken)
+    return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_NOT_EXIST));
+  if(refreshTokenResult.kakaoRefreshToken !== kakaoRefreshToken)
+    return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_NOT_MATCH));
+  
+  let isRefreshExpired = false;
+  let isAccessExpired = false;
+  //디비에 있는 리프레시 토큰 유효기간 검증
+  try{
+    const verifyRefreshTokenResult = jwt.verify(refreshTokenResult.refreshToken, secret_config.jwtsecret);
+  }catch(error){
+    if(error.name === 'TokenExpiredError') {
+      isRefreshExpired = true;
+    }
+  }
+  //디비에 있는 액세스 토큰 유효기간 검증
+  try{
+    const verifyResult = jwt.verify(refreshTokenResult.accessToken, secret_config.jwtsecret);
+  }catch(error){
+    if(error.name === 'TokenExpiredError') {
+      isAccessExpired = true;
+    }
+  }
+  //access또는 refresh중 하나라도 만료 x시
+  
+  if(!isAccessExpired || !isRefreshExpired){
+    //만료기간 지나기 전에 업데이트 요청했으므로 탈취가능성 존재
+    //비정상적 접근 -> 로그아웃
+    const logOutReuslt = await userService.logOut(userIdx);
+    return res.send(logOutReuslt);
+  }
+  //둘다 만료되면 정상 진행
+  let kakaoProfile;	
+  try {
+      kakaoProfile = await axios({
+        method: "POST",
+        url: "https://kauth.kakao.com/oauth/token",
+        params: {
+          grant_type: "refresh_token",
+          client_id: "c9ef096f1e3ddc185556eda18530b133",
+          refresh_token: kakaoRefreshToken
+        }
+      });
+    } catch (error) {
+      console.log(error.response.data);
+      return res.send(error.response.data);
+    }
+
+    //갱신된 카카오 리프레시 토큰이 있을 시 저장해줌
+    if(kakaoProfile.data.refreshToken){
+
+    }
+
+    return res.send(response(baseResponse.SUCCESS,kakaoProfile.data));
 }
 
 //jwt없을 때 카카오 액세스 토큰으로 정보 불러와서 로그인
@@ -158,38 +200,51 @@ exports.check = async function (req, res) {
   return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
 };
 
+  /**토큰 보안성 검사 
+    *액세스 토큰 --> jwtmiddleware
+      1. DB, 보내준 액세스 토큰 서로 같은지 확인 
+      1-1. 같을 경우 -> 정상 인증(자동 로그인)
+      1-2. 다를 경우 -> 에러 리스폰스
+    *리프레시 토큰 --> userController.updateTokens
+      2. DB, 보내준 리프레시 토큰 서로 같은지 확인 
+      2-1. DB에 저장된 액세스 토큰 만료 확인 
+      2-2. 만료시 정상적인 접근 재로그인 인정
+      2-3. 만료 안됐을 시 비정상 접근, 둘 모두 파기하고 로그아웃
+      (액세스 만료 안됐는데도 새로 발급 하려 함 ->refresh탈취 가능성 존재)
+  */
+
 //jwt토큰과 리프레시 토큰 갱신
 exports.updateTokens = async function (req, res) {
   
-  const userIdxFromJWT = req.verifiedToken.userIdx;
+  const userIdxFromRefresh = req.verifiedToken.userIdx;
   const refreshToken = req.body.refreshToken;
-  const accessToken = req.headers['x-access-token'] || req.query.token;
-
-  console.log(userIdxFromJWT);
-
-  const refreshTokenResult = await userProvider.retrieveRefreshToken(userIdxFromJWT);
-
+  console.log(userIdxFromRefresh);
+  const refreshTokenResult = await userProvider.retrieveRefreshToken(userIdxFromRefresh);
+  //DB와 받은 리프레시 토큰이 다를 경우
+  if(refreshTokenResult.refreshToken !== refreshToken)     return res.send(errResponse(baseResponse.TOKEN_REFRESHTOKEN_NOT_MATCH));
+  //해당 회원 없을 시
+  if (!refreshTokenResult) 
+    return errResponse(baseResponse.USER_USER_NOT_EXIST);
+  //회원이 삭제되었을 시
+  if (refreshTokenResult.status === "DELETE") 
+    return errResponse(baseResponse.SIGNIN_DELETED_ACCOUNT);
+  //refresh가 null일 시
   if(!refreshTokenResult.refreshToken) return res.send(errResponse(baseResponse.USER_USER_LOGOUT));
 
-  if(refreshTokenResult.refreshToken === refreshToken ) {
-    if(refreshTokenResult.accessToken !== accessToken) return res.send(errResponse(baseResponse.TOKEN_JWTTOKEN_NOT_MATCH));
-    //refreshToken과 accessToken이 DB와 동일하다면 accessToken의 유효기간 확인
-    
-    const jwtExpired = req.jwtExpired;
-    //유효기간 안 지났을 시
-    if(!jwtExpired) {
-      const logOutResult = await userService.logOut(userIdxFromJWT);
-      return res.send(logOutResult);
-    }
-    //유효기간이 만료된 정상적인 갱신요청이라면 postSignIn으로 재로그인
-    else{
-      const refreshTokenSignInResult = await userService.postSignIn(userIdxFromJWT, refreshTokenResult.email);
+  //디비에 있는 액세스 토큰 유효기간 검증
+  try{
+    const verifyResult = jwt.verify(refreshTokenResult.accessToken, secret_config.jwtsecret);
+  }catch(error){
+    if(error.name === 'TokenExpiredError') {
+      //정상적인 접근이므로 토큰들 모두 업데이트 (재로그인)
+      const refreshTokenSignInResult = await userService.postSignIn(userIdxFromRefresh, refreshTokenResult.email);
       return res.send(refreshTokenSignInResult);
     }
   }
-  else
-    return res.send(errResponse(baseResponse.TOKEN_REFRESHTOKEN_NOT_MATCH));
-  
+  //만료기간 지나기 전에 업데이트 요청했으므로 탈취가능성 존재
+  //비정상적 접근 -> 로그아웃
+  const logOutReuslt = await userService.logOut(userIdxFromRefresh);
+  return res.send(logOutReuslt);
 };
 
 //카카오 유저 닉네임, 썸네일 업데이트

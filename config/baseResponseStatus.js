@@ -5,7 +5,9 @@ module.exports = {
     // Success
     SUCCESS: { "isSuccess": true, "code": 1000, "message": "성공" },
     TOKEN_VERIFICATION_SUCCESS: { "isSuccess": true, "code": 1001, "message": "JWT 토큰 검증 성공" },
-
+    TOKEN_ACCESSTOKEN_UPDATE: { "isSuccess": true, "code": 1002, "message": "JWT 토큰 업데이트 성공" },
+    USER_USER_LOGOUT_SUCCESS:{ "isSuccess": true, "code": 1003, "message": "로그아웃 성공" },
+    
     // Common
 
     //TOKEN error 1500~2000
@@ -14,10 +16,11 @@ module.exports = {
     TOKEN_REFRESHTOKEN_EXPIRED: { "isSuccess": false, "code": 1502, "message": "REFRESH 토큰 만료" },
     TOKEN_JWTTOKEN_EXPIRED: { "isSuccess": false, "code": 1503, "message": "JWT 토큰 만료" },
     TOKEN_VERIFICATION_FAILURE: { "isSuccess": false, "code": 1504, "message": "JWT 토큰 검증 실패" },
-    TOKEN_REFRESHTOKEN_NOT_MATCH:{ "isSuccess": false, "code": 1505, "message": "refersh 토큰이 DB와 다릅니다." },
+    TOKEN_REFRESHTOKEN_NOT_MATCH:{ "isSuccess": false, "code": 1505, "message": "refersh 토큰이 DB와 다릅니다. 카카오 로그인을 진행해주세요" },
     TOKEN_TOKEN_NOT_EXPIRED:{ "isSuccess": false, "code": 1506, "message": "jwt토큰의 유효기간이 아직 지나지 않아 보안 이슈로 토큰들이 만료됩니다." },
     TOKEN_JWTTOKEN_NOT_MATCH:{ "isSuccess": false, "code": 1507, "message": "access 토큰이 DB와 다릅니다." },
-    
+    TOKEN_TOKEN_NOT_MATCH:{ "isSuccess": false, "code": 1508, "message": "jwt 토큰이 DB와 다릅니다." },
+    TOKEN_TOKEN_EXPIRED: { "isSuccess": false, "code": 1509, "message": "토큰 만료" },
     //Request error
     SIGNUP_EMAIL_EMPTY: { "isSuccess": false, "code": 2001, "message": "이메일을 입력해주세요" },
     SIGNUP_EMAIL_LENGTH: { "isSuccess": false, "code": 2002, "message": "이메일은 30자리 미만으로 입력해주세요." },
@@ -47,7 +50,11 @@ module.exports = {
     KAKAO_ACCESSTOKEN_EMPTY : {"isSuccess": false, "code": 2050, "message": "kakao accesstoken을 입력해주세요"},
     KAKAO_REFRESHTOKEN_EMPTY :{"isSuccess": false, "code": 2051, "message": "kakao refreshtoken을 입력해주세요"},
     USER_USER_NOT_EXIST : {"isSuccess": false, "code": 2052, "message": "회원 가입이 필요합니다."},
-
+    KAKAO_REFRESHTOKEN_NOT_MATCH:{"isSuccess": false, "code": 2053, "message": "kakao refreshToken이 사용자의 것이 아닙니다."},
+    KAKAO_REFRESHTOKEN_NOT_EXIST:{"isSuccess": false, "code": 2054, "message": "DB에 kakao refreshToken이 없습니다. 카카오 로그인을 진행해주세요."},
+    
+    
+    
     // trip req error 2200~2299
     TRIP_TRIPIDX_EMPTY: { "isSuccess": false, "code": 2100, "message": "tripIdx를 입력해주세요" },
     TRIP_TRIPTITLE_EMPTY: { "isSuccess": false, "code": 2101, "message": "tripTitle를 입력해주세요" },

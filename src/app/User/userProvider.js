@@ -31,3 +31,13 @@ exports.retrieveRefreshToken = async function (userIdx) {
 
   return refreshTokenResult[0]; 
 };
+
+//리프레시 토큰 유저 idx로 가져오는 함수
+exports.retrieveAccessToken = async function (userIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const accessTokenResult = await userDao.selectAccessToken(connection, userIdx);
+
+  connection.release();
+
+  return accessTokenResult[0].accessToken; 
+};
