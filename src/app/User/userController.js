@@ -62,11 +62,12 @@ exports.updateKakaoTokens = async function (req, res) {
   const userIdx = req.params.userIdx;
   if(!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
   if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
-  if (userIdxFromJWT != userIdx) {
-    return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
-  } 
+  //if (userIdxFromJWT != userIdx) {
+  //  return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+  //} 
 
   const refreshTokenResult = await userProvider.retrieveRefreshToken(userIdx);
+
   if(!refreshTokenResult.kakaoRefreshToken)
     return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_NOT_EXIST));
   if(refreshTokenResult.kakaoRefreshToken !== kakaoRefreshToken)
@@ -158,9 +159,7 @@ exports.kakaoSignin = async function (req, res) {
 //카카오 정보로 회원가입 (유저 테이블)
 exports.kakaoSignup = async function (req, res) {
   const kakaoAccessToken = req.body.kakaoAccessToken;
-  const kakaoRefreshToken = req.body.kakaoRefreshToken;
   if(!kakaoAccessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
-  if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
   
   let kakaoProfile;
   try {
@@ -225,7 +224,6 @@ exports.kakaoSignupProfile = async function (req, res) {
     }
   } 
 }    
-
 
 //jwt있을 때 자동 로그인
 exports.check = async function (req, res) {

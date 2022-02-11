@@ -137,7 +137,7 @@ exports.kakaoSignin = async function (userIdx, kakaoRefreshToken) {
         //refresh 토큰 DB에 넣기
         const connection = await pool.getConnection(async (conn) => conn);
         const updateTokensByKakaoSignInParams = [ accessToken, refreshToken, kakaoRefreshToken, userIdx];
-        const updateTokensResult = await userDao.updateTokens(connection, updateTokensByKakaoSignInParams);
+        const updateTokensResult = await userDao.updateTokensByKakaoSignIn(connection, updateTokensByKakaoSignInParams);
         connection.release();
         
         if(updateTokensResult.affectedRows === 1){

@@ -38,7 +38,7 @@ exports.retrieveRefreshToken = async function (userIdx) {
 
   connection.release();
 
-  return refreshTokenResult; 
+  return refreshTokenResult[0]; 
 };
 
 //리프레시 토큰 유저 idx로 가져오는 함수

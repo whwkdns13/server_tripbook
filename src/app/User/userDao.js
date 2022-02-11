@@ -53,13 +53,13 @@ async function selectUserAccount(connection, userIdx) {
   const selectUserAccountQuery = `
           SELECT status, userIdx, email
           FROM user
-          WHERE userIdx = ? and status = 'ACTIVE';
+          WHERE userIdx = ?;
         `;
   const selectUserAccountRow = await connection.query(
       selectUserAccountQuery,
       userIdx
   );
-  return selectUserAccountRow[0];
+  return selectUserAccountRow;
 }
 
 async function updateUserInfo(connection, id, nickName) {
