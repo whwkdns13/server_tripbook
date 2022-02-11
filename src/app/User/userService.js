@@ -66,7 +66,7 @@ exports.SigninByRefreshToken = async function (userIdx) {
             }, // 토큰의 내용(payload)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "1h",
+                expiresIn: "1s",
                 subject: "user",
             } // 유효 기간 1일
         );
@@ -76,7 +76,7 @@ exports.SigninByRefreshToken = async function (userIdx) {
             {userIdx: userInfoRows[0].userIdx}, // 비워놓음 (오버헤드 최소화)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "14d",
+                expiresIn: "1s",
                 subject: "user",
             } // 유효 기간 1일
         );
@@ -119,7 +119,7 @@ exports.kakaoSignin = async function (userIdx, kakaoRefreshToken) {
             }, // 토큰의 내용(payload)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "1h",
+                expiresIn: "1s",
                 subject: "user",
             } // 유효 기간 1시간
         );
@@ -129,7 +129,7 @@ exports.kakaoSignin = async function (userIdx, kakaoRefreshToken) {
             {userIdx: userInfoRows[0].userIdx}, // 이메일 제외 (오버헤드 최소화)
             secret_config.jwtsecret, // 비밀키
             {
-                expiresIn: "14d",
+                expiresIn: "1s",
                 subject: "user",
             } // 유효 기간 14일
         );
@@ -198,14 +198,14 @@ exports.editAccessToken = async function (userIdx, accessToken) {
     }
 }
 
-exports.editKakaoRefreshToken = async function (userIdx, kakaoRefreshToken) {
+exports.editKakaoRefreshToken = async function (userIdx, kakaoRefreshToken, kakaoData) {
     try {
         console.log(userIdx);
         const connection = await pool.getConnection(async (conn) => conn);
         const editUserResult = await userDao.updateKakaoRefreshToken(connection, userIdx, kakaoRefreshToken);
         connection.release();
         if(editUserResult.affectedRows === 1){
-            return response(baseResponse.SUCCESS);
+            return response(baseResponse.SUCCESS, kakaoData);
         }
         else return errResponse(baseResponse.USER_USER_NOT_EXIST);
 

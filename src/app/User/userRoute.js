@@ -28,7 +28,7 @@ module.exports = function(app){
     app.post('/app/kakao/signin', user.kakaoSignin);
 
     //카카오 액세스 토큰 갱신하기 리프레시 토큰
-    app.post('/app/user/kakao/updateTokens/:userIdx', jwtMiddleware, user.updateKakaoTokens);
+    app.post('/app/user/kakao/updateTokens/:userIdx', user.updateKakaoTokens);
     
     //유저 닉네임, 이미지 업데이트 api(카카오 이용)
     app.post('/app/user/kakao/updateUserProfile/:userIdx', jwtMiddleware, user.userUpdateByKakao); 

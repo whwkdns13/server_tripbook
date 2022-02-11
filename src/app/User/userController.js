@@ -4,7 +4,8 @@ const userService = require("../../app/User/userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 const axios = require("axios");
-
+const jwt = require('jsonwebtoken');
+const secret_config = require('../../../config/secret');
 const regexEmail = require("regex-email");
 
 /**
@@ -57,14 +58,11 @@ exports.getUserById = async function (req, res) {
 //카카오 리프레시 토큰을 이용해서 kakao토큰들 갱신 (카카오 액세스 토큰 유효기간 검증 후)
 exports.updateKakaoTokens = async function (req, res) {
   //리프레시 토큰이 있으면 카카오 서버에서 액세스 받아옴
-  const userIdxFromJWT = req.verifiedToken.userIdx;
   const kakaoRefreshToken = req.body.kakaoRefreshToken;
   const userIdx = req.params.userIdx;
   if(!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
   if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
-  //if (userIdxFromJWT != userIdx) {
-  //  return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
-  //} 
+  
 
   const refreshTokenResult = await userProvider.retrieveRefreshToken(userIdx);
 
@@ -79,6 +77,7 @@ exports.updateKakaoTokens = async function (req, res) {
   try{
     const verifyRefreshTokenResult = jwt.verify(refreshTokenResult.refreshToken, secret_config.jwtsecret);
   }catch(error){
+    console.log(error);
     if(error.name === 'TokenExpiredError') {
       isRefreshExpired = true;
     }
@@ -87,18 +86,24 @@ exports.updateKakaoTokens = async function (req, res) {
   try{
     const verifyResult = jwt.verify(refreshTokenResult.accessToken, secret_config.jwtsecret);
   }catch(error){
+    console.log(error);
     if(error.name === 'TokenExpiredError') {
       isAccessExpired = true;
     }
   }
   //access또는 refresh중 하나라도 만료 x시
   
+  console.log(isAccessExpired);
+  console.log(isRefreshExpired);
+
+
+  //만료기간 지나기 전에 업데이트 요청했으므로 탈취가능성 존재
+  //비정상적 접근 -> 로그아웃
   if(!isAccessExpired || !isRefreshExpired){
-    //만료기간 지나기 전에 업데이트 요청했으므로 탈취가능성 존재
-    //비정상적 접근 -> 로그아웃
     const logOutReuslt = await userService.logOut(userIdx);
     return res.send(logOutReuslt);
   }
+
   //둘다 만료되면 정상 진행
   let kakaoProfile;	
   try {
@@ -118,7 +123,8 @@ exports.updateKakaoTokens = async function (req, res) {
 
     //갱신된 카카오 리프레시 토큰이 있을 시 저장해줌
     if(kakaoProfile.data.refreshToken){
-      //########################################
+      const updateKakaoRefreshTokenResult = await userService.editKakaoRefreshToken(userIdx, kakaoProfile.data.refreshToken, kakaoProfile.data)
+      return res.send(updateKakaoRefreshTokenResult);
     }
 
     return res.send(response(baseResponse.SUCCESS,kakaoProfile.data));
@@ -130,6 +136,7 @@ exports.kakaoSignin = async function (req, res) {
     const kakaoRefreshToken = req.body.kakaoRefreshToken;
     let kakaoProfile;
     if(!kakaoAccessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
+    if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
 	try {
         kakaoProfile = await axios({
           method: "GET",
