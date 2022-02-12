@@ -29,7 +29,8 @@ const jwtMiddleware = (req, res, next) => {
 
     // if it has failed to verify, it will return an error message
     const onError = (error) => {
-        if(error.name === 'TokenExpiredError') return res.send(errResponse(baseResponse.TOKEN_TOKEN_EXPIRED));
+        if(error.name === 'TokenExpiredError') 
+            return res.send(errResponse(baseResponse.TOKEN_TOKEN_EXPIRED));
         return res.send(errResponse(baseResponse.TOKEN_VERIFICATION_FAILURE));
     };
 
@@ -37,21 +38,20 @@ const jwtMiddleware = (req, res, next) => {
     p.then(async (verifiedToken)=>{
         if(token === req.headers['x-access-token']){
             //jwt Token은 한명당 한개만 배정되어 있음.
-            const accessTokenFromDB = await userProvider.retrieveAccessToken(verifiedToken.userIdx);
+            const accessTokenFromDBResult = await userProvider.retrieveAccessToken(verifiedToken.userIdx);
             //retrieveAccessToken
-            if(token === accessTokenFromDB) {
+            if(!accessTokenFromDBResult)
+                return res.send(errResponse(baseResponse.USER_USER_LOGOUT));
+            else if(token === accessTokenFromDBResult.accessToken) {
                 req.verifiedToken = verifiedToken;
                 next();
             }
             else
                 return res.send(errResponse(baseResponse.TOKEN_JWTTOKEN_NOT_MATCH));
         }
-        else if(token === req.body.refreshToken){
+        else {
             req.verifiedToken = verifiedToken;
             next();
-        }
-        else{
-            return res.send(errResponse(baseResponse.TOKEN_EMPTY));
         }
     }).catch(onError)
 };

@@ -4,10 +4,10 @@
 // 모든 유저 조회
 async function selectUser(connection) {
   const selectUserListQuery = `
-                SELECT * 
-                FROM user
-                WHERE status = 'ACTIVE';
-                `;
+    SELECT * 
+    FROM user
+    WHERE status = 'ACTIVE';
+    `;
   const [userRows] = await connection.query(selectUserListQuery);
   return userRows;
 }
@@ -15,10 +15,10 @@ async function selectUser(connection) {
 // user 회원 조회
 async function selectUserByEmail(connection, email) {
   const selectUserEmailQuery = `
-                 SELECT *
-                 FROM user
-                 WHERE email = ? and status = 'ACTIVE';
-                 `;
+    SELECT *
+    FROM user
+    WHERE email = ? and status = 'ACTIVE';
+    `;
   const [userRow] = await connection.query(selectUserEmailQuery, email);
   return userRow;
 }
@@ -26,8 +26,8 @@ async function selectUserByEmail(connection, email) {
 // 유저 생성
 async function insertUserInfo(connection, email) {
   const insertUserInfoQuery = `
-        INSERT INTO user(email)
-        VALUES (?);
+      INSERT INTO user(email)
+      VALUES (?);
     `;
   const insertUserInfoRow = await connection.query(
     insertUserInfoQuery,
@@ -38,8 +38,8 @@ async function insertUserInfo(connection, email) {
 
 async function insertUserProfileInfo(connection, kakaoSignUpParams) {
   const insertUserProfileInfoQuery = `
-        INSERT INTO userProfile (userIdx, nickName, userImg)
-        VALUES (?,?,?);
+      INSERT INTO userProfile (userIdx, nickName, userImg)
+      VALUES (?,?,?);
     `;
   const insertUserProfileInfoRow = await connection.query(
     insertUserProfileInfoQuery,
@@ -51,10 +51,10 @@ async function insertUserProfileInfo(connection, kakaoSignUpParams) {
 // 유저 계정 상태 체크 (jwt 생성 위해 id 값도 가져온다.)
 async function selectUserAccount(connection, userIdx) {
   const selectUserAccountQuery = `
-          SELECT status, userIdx, email
-          FROM user
-          WHERE userIdx = ?;
-        `;
+      SELECT status, userIdx, email
+      FROM user
+      WHERE userIdx = ?;
+    `;
   const selectUserAccountRow = await connection.query(
       selectUserAccountQuery,
       userIdx
@@ -114,20 +114,20 @@ async function updateAccessToken(connection, userIdx, accessToken) {
 
 async function selectRefreshToken(connection, userIdx) {
   const selectRefreshTokenQuery = `
-                 SELECT *
-                 FROM user
-                 WHERE userIdx = ? and status = 'ACTIVE' ;
-                 `;
+    SELECT *
+    FROM user
+    WHERE userIdx = ? and status = 'ACTIVE' ;
+    `;
   const [refreshTokenRow] = await connection.query(selectRefreshTokenQuery, userIdx);
   return refreshTokenRow;
 }
 
 async function selectAccessToken(connection, userIdx) {
   const selectAccessTokenQuery = `
-                 SELECT accessToken
-                 FROM user
-                 WHERE userIdx = ? and status = 'ACTIVE';
-                 `;
+    SELECT accessToken
+    FROM user
+    WHERE userIdx = ? and status = 'ACTIVE';
+    `;
   const [accessTokenRow] = await connection.query(selectAccessTokenQuery, userIdx);
   return accessTokenRow;
 }
@@ -155,10 +155,10 @@ async function updateTokensByKakaoSignIn(connection, updateTokensByKakaoSignInPa
 // userProfile 조회
 async function selectUserProfileByIdx(connection, userIdx) {
   const selectUserProfileByIdxQuery = `
-                 SELECT *
-                 FROM userProfile
-                 WHERE userIdx = ? and status = 'ACTIVE';
-                 `;
+    SELECT *
+    FROM userProfile
+    WHERE userIdx = ? and status = 'ACTIVE';
+    `;
   const [userProfileRow] = await connection.query(selectUserProfileByIdxQuery, userIdx);
   return userProfileRow;
 }

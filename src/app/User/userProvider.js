@@ -48,5 +48,5 @@ exports.retrieveAccessToken = async function (userIdx) {
 
   connection.release();
 
-  return accessTokenResult[0].accessToken; 
+  return accessTokenResult[0]; 
 };

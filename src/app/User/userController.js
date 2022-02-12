@@ -63,7 +63,6 @@ exports.updateKakaoTokens = async function (req, res) {
   if(!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
   if(!kakaoRefreshToken) return res.send(errResponse(baseResponse.KAKAO_REFRESHTOKEN_EMPTY));
   
-
   const refreshTokenResult = await userProvider.retrieveRefreshToken(userIdx);
 
   if(!refreshTokenResult.kakaoRefreshToken)
@@ -122,8 +121,8 @@ exports.updateKakaoTokens = async function (req, res) {
     }
 
     //갱신된 카카오 리프레시 토큰이 있을 시 저장해줌
-    if(kakaoProfile.data.refreshToken){
-      const updateKakaoRefreshTokenResult = await userService.editKakaoRefreshToken(userIdx, kakaoProfile.data.refreshToken, kakaoProfile.data)
+    if(kakaoProfile.data.refresh_token){
+      const updateKakaoRefreshTokenResult = await userService.editKakaoRefreshToken(userIdx, kakaoProfile.data.refresh_token, kakaoProfile.data)
       return res.send(updateKakaoRefreshTokenResult);
     }
 
@@ -235,8 +234,11 @@ exports.kakaoSignupProfile = async function (req, res) {
 //jwt있을 때 자동 로그인
 exports.check = async function (req, res) {
   const userIdxResult = req.verifiedToken.userIdx;
+  const userEmailResult = req.verifiedToken.email;
+  if(!userEmailResult) 
+    return res.send(errResponse(baseResponse.TOKEN_EMPTY));
   console.log(userIdxResult);
-  return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
+  return res.send(response(baseResponse.TOKEN_JWTVERIFICATION_SUCCESS, { userIdx : userIdxResult}));
 };
 
   /**토큰 보안성 검사 
@@ -257,28 +259,33 @@ exports.updateTokens = async function (req, res) {
   
   const userIdxFromRefresh = req.verifiedToken.userIdx;
   const refreshToken = req.body.refreshToken;
+  const userIdx = req.params.userIdx;
+  if (userIdxFromRefresh != userIdx)
+    return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+  
   console.log(userIdxFromRefresh);
   const refreshTokenResult = await userProvider.retrieveRefreshToken(userIdxFromRefresh);
   //DB와 받은 리프레시 토큰이 다를 경우
-  if(refreshTokenResult.refreshToken !== refreshToken)     return res.send(errResponse(baseResponse.TOKEN_REFRESHTOKEN_NOT_MATCH));
+  if(refreshTokenResult.refreshToken !== refreshToken)     
+    return res.send(errResponse(baseResponse.TOKEN_REFRESHTOKEN_NOT_MATCH));
   //해당 회원 없을 시
   if (!refreshTokenResult) 
     return errResponse(baseResponse.USER_USER_NOT_EXIST);
-  //회원이 삭제되었을 시
-  if (refreshTokenResult.status === "DELETE") 
-    return errResponse(baseResponse.SIGNIN_DELETED_ACCOUNT);
   //refresh가 null일 시
-  if(!refreshTokenResult.refreshToken) return res.send(errResponse(baseResponse.USER_USER_LOGOUT));
+  if(!refreshTokenResult.refreshToken) 
+    return res.send(errResponse(baseResponse.USER_USER_LOGOUT));
 
   //디비에 있는 액세스 토큰 유효기간 검증
   try{
     const verifyResult = jwt.verify(refreshTokenResult.accessToken, secret_config.jwtsecret);
   }catch(error){
+    console.log(error);
     if(error.name === 'TokenExpiredError') {
       //정상적인 접근이므로 토큰들 모두 업데이트 (재로그인)
       const refreshTokenSignInResult = await userService.SigninByRefreshToken(userIdxFromRefresh);
       return res.send(refreshTokenSignInResult);
     }
+
   }
   //만료기간 지나기 전에 업데이트 요청했으므로 탈취가능성 존재
   //비정상적 접근 -> 로그아웃

@@ -4,9 +4,9 @@ module.exports = {
 
     // Success
     SUCCESS: { "isSuccess": true, "code": 1000, "message": "성공" },
-    TOKEN_VERIFICATION_SUCCESS: { "isSuccess": true, "code": 1001, "message": "JWT 토큰 검증 성공" },
+    TOKEN_JWTVERIFICATION_SUCCESS: { "isSuccess": true, "code": 1001, "message": "JWT 토큰 검증 성공" },
     TOKEN_ACCESSTOKEN_UPDATE: { "isSuccess": true, "code": 1002, "message": "JWT 토큰 업데이트 성공" },
-    USER_USER_LOGOUT_SUCCESS:{ "isSuccess": true, "code": 1003, "message": "로그아웃 성공" },
+    USER_USER_LOGOUT_SUCCESS:{ "isSuccess": true, "code": 1003, "message": "비정상적인 접속으로 인해 로그아웃 되었습니다." },
     SIGNUP_USER_SUCCESS:{ "isSuccess": true, "code": 1004, "message": "유저테이블 생성 성공. 유저 프로필도 생성해주세요." },
     SIGNUP_USERPROFILE_SUCCESS:{ "isSuccess": true, "code": 1005, "message": "회원가입 성공" },
 
@@ -17,8 +17,8 @@ module.exports = {
     TOKEN_REFRESHTOKEN_EMPTY: { "isSuccess": false, "code": 1501, "message": "refresh 토큰을 입력해주세요." },
     TOKEN_REFRESHTOKEN_EXPIRED: { "isSuccess": false, "code": 1502, "message": "REFRESH 토큰 만료" },
     TOKEN_JWTTOKEN_EXPIRED: { "isSuccess": false, "code": 1503, "message": "JWT 토큰 만료" },
-    TOKEN_VERIFICATION_FAILURE: { "isSuccess": false, "code": 1504, "message": "JWT 토큰 검증 실패" },
-    TOKEN_REFRESHTOKEN_NOT_MATCH:{ "isSuccess": false, "code": 1505, "message": "refersh 토큰이 DB와 다릅니다. 카카오 로그인을 진행해주세요" },
+    TOKEN_VERIFICATION_FAILURE: { "isSuccess": false, "code": 1504, "message": "토큰 검증 실패" },
+    TOKEN_REFRESHTOKEN_NOT_MATCH:{ "isSuccess": false, "code": 1505, "message": "refersh 토큰이 DB와 다릅니다. 카카오 액세스 토큰으로 재 로그인 해 주세요." },
     TOKEN_TOKEN_NOT_EXPIRED:{ "isSuccess": false, "code": 1506, "message": "jwt토큰의 유효기간이 아직 지나지 않아 보안 이슈로 토큰들이 만료됩니다." },
     TOKEN_JWTTOKEN_NOT_MATCH:{ "isSuccess": false, "code": 1507, "message": "access 토큰이 DB와 다릅니다." },
     TOKEN_TOKEN_NOT_MATCH:{ "isSuccess": false, "code": 1508, "message": "jwt 토큰이 DB와 다릅니다." },

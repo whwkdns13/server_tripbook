@@ -89,14 +89,14 @@ exports.SigninByRefreshToken = async function (userIdx) {
         if(updateTokensResult.affectedRows === 1){
             return response(baseResponse.SUCCESS, {
                 'userIdx': userIdx, 
-                'jwt': accessToken , 
-                'jwtRefreshToken' : refreshToken
+                'accessToken': accessToken , 
+                'refreshToken' : refreshToken
             });
         }
         else return errResponse(baseResponse.USER_USERIDX_NOT_EXIST);
 
     } catch (err) {
-        logger.error(`App - postSignIn Service error\n: ${err.message} \n${JSON.stringify(err)}`);
+        logger.error(`App - SigninByRefreshToken Service error\n: ${err.message} \n${JSON.stringify(err)}`);
         return errResponse(baseResponse.DB_ERROR);
     }
 };
@@ -143,8 +143,8 @@ exports.kakaoSignin = async function (userIdx, kakaoRefreshToken) {
         if(updateTokensResult.affectedRows === 1){
             return response(baseResponse.SUCCESS, {
                 'userIdx': userIdx, 
-                'jwt': accessToken , 
-                'jwtRefreshToken' : refreshToken
+                'accessToken': accessToken , 
+                'refreshToken' : refreshToken
             });
         }
         else return errResponse(baseResponse.USER_USERIDX_NOT_EXIST);
