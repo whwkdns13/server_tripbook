@@ -295,16 +295,16 @@ exports.updateTokens = async function (req, res) {
 
 //카카오 유저 닉네임, 썸네일 업데이트
 exports.userUpdateByKakao = async function (req, res) {
-    const userIdxFromJWT = req.verifiedToken.userIdx;
+    //const userIdxFromJWT = req.verifiedToken.userIdx;
     const userIdx = req.params.userIdx;
     const kakaoAccessToken = req.body.kakaoAccessToken;
     if(!kakaoAccessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
     if (!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
     // JWT 검증
-    if (userIdxFromJWT != userIdx) {
-      res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
-    } 
-    else {
+    //if (userIdxFromJWT != userIdx) 
+    // return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    
+    
       let kakaoProfile;
       try {
           kakaoProfile = await axios({
@@ -324,7 +324,7 @@ exports.userUpdateByKakao = async function (req, res) {
       const editkakaoUserInfoResult = await userService.editKakaoUser(userIdx, nickName, userImg);
 
       return res.send(editkakaoUserInfoResult);
-    }
+    
 }
 
 /**

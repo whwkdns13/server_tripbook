@@ -199,6 +199,7 @@ exports.createCourseHashTag = async function (courseIdx, hashTagIdx) {
         
     } catch (err) {
         logger.error(`App - createCourseHashTag Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
     }
 };
 
