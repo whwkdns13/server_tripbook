@@ -133,6 +133,21 @@ async function updateTripTheme(connection, editTripThemeParams) {
   return updateTripThemeInfoRow;
 }
 
+// update theme
+async function updateTrip(connection, editTripParams) {
+  const updateTripQuery = `
+    UPDATE trip 
+    SET tripTitle = ?, themeIdx = ?, departureDate = ?, arrivalDate = ?
+    WHERE tripIdx = ?;
+    `;
+  const updateTripInfoRow = await connection.query(
+    updateTripQuery,
+    editTripParams
+  );
+
+  return updateTripInfoRow;
+}
+
 module.exports = {
   selectTrip,
   selectTrips,
@@ -143,5 +158,6 @@ module.exports = {
   updateTripTitle,
   updateDepartureDate,
   updateArrivalDate,
-  updateTripTheme
+  updateTripTheme,
+  updateTrip
 };

@@ -35,8 +35,10 @@ module.exports = function(app){
     app.patch('/app/trip/:tripIdx/arrivaldate',trip.patchArrivalDate);
 
     // 2-7. 여행 테마 수정 API
-    app.patch('/app/trip/:tripIdx/theme',trip.patchTheme);
+    app.patch('/app/trip/:tripIdx/themeidx',trip.patchTheme);
 
+    // 2-8. 여행 수정 API
+    app.patch('/app/trip/:tripIdx',trip.patchTrip);
 
     // 3. PAST TRIPS
     // 3-1. 유저 전체 여행 조회 API

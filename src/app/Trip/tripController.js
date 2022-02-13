@@ -149,8 +149,8 @@ exports.postTrip = async function (req, res) {
     if (!userIdx) return res.send(response(baseResponse.TRIP_USERIDX_EMPTY));
     //TODO USER_USERID_NOEXIST 확인 필요
     //triptitle 길이 체크
-    if (tripTitle.length > 14) return res.send(response(baseResponse.TRIP_TRIPTITLE_LENGTH));
     if (!tripTitle) return res.send(errResponse(baseResponse.TRIP_TRIPTITLE_EMPTY));
+    if (tripTitle.length > 14) return res.send(response(baseResponse.TRIP_TRIPTITLE_LENGTH));
     if (!departureDate) return res.send(errResponse(baseResponse.TRIP_DEPARTUREDATE_EMPTY));
     if (!arrivalDate) return res.send(errResponse(baseResponse.TRIP_ARRIVALDATE_EMPTY));
     if (!themeIdx) return res.send(errResponse(baseResponse.TRIP_THEMEIDX_EMPTY));
@@ -251,29 +251,63 @@ exports.patchArrivalDate = async function (req, res) {
 /**
  * API No. 2-7
  * API Name : 여행 테마 수정 API
- * [PATCH] app/trip/:tripIdx/theme
+ * [PATCH] app/trip/:tripIdx/themeidx
  */
 exports.patchTheme = async function (req, res) {
     /**
      * Path Variable: tripIdx
-     * Body : theme
+     * Body : themeIdx
      */
     const tripIdx = req.params.tripIdx;
-    const theme = req.body.theme;
+    const themeIdx = req.body.themeIdx;
     // errResponse 전달
     if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
-    if (!theme) return res.send(errResponse(baseResponse.TRIP_THEMEIDX_EMPTY));
+    if (!themeIdx) return res.send(errResponse(baseResponse.TRIP_THEMEIDX_EMPTY));
 
     // errResponse 전달 - DELETE된 trip일 때
     const tripBytripIdx = await tripProvider.retrieveTrip(tripIdx);
     if (tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
 
-    // TODO theme가 INT인지?
-
-    const editTripThemeInfo = await tripService.editTripTheme(tripIdx, theme);
+    const editTripThemeInfo = await tripService.editTripTheme(tripIdx, themeIdx);
     return res.send(response(baseResponse.SUCCESS));
 };
 
+
+/**
+ * API No. 2-8
+ * API Name : 여행 수정 API
+ * [PATCH] app/trip/:tripIdx
+ */
+exports.patchTrip = async function (req, res) {
+    /**
+     * Path Variable: tripIdx
+     * Body : tripTitle, departureDate, arrivalDate, themeIdx
+     */
+    const tripIdx = req.params.tripIdx;
+    const {tripTitle, departureDate, arrivalDate, themeIdx} = req.body;
+    // errResponse 전달
+    if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+
+    // errResponse 전달 - DELETE된 trip일 때
+    const tripBytripIdx = await tripProvider.retrieveTrip(tripIdx);
+    if (tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
+
+    // errResponse 전달 - validation
+    if (!tripTitle) return res.send(errResponse(baseResponse.TRIP_TRIPTITLE_EMPTY));
+    if (tripTitle.length > 14) return res.send(response(baseResponse.TRIP_TRIPTITLE_LENGTH));
+    if (!departureDate) return res.send(errResponse(baseResponse.TRIP_DEPARTUREDATE_EMPTY));
+    if (!arrivalDate) return res.send(errResponse(baseResponse.TRIP_ARRIVALDATE_EMPTY));
+    if (!themeIdx) return res.send(errResponse(baseResponse.TRIP_THEMEIDX_EMPTY));
+
+    const patchTripResponse = await tripService.editTrip(
+        tripIdx,
+        tripTitle,
+        departureDate,
+        arrivalDate,
+        themeIdx
+    );
+    return res.send(response(baseResponse.SUCCESS));
+};
 
 // PAST TRIPS
 /**
