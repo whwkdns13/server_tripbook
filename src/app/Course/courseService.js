@@ -29,7 +29,7 @@ exports.createCourse = async function (tripIdx, cardIdx, courseImg, courseDate, 
         //콘솔에 추가된 코스 idx를 출력하고 나옴
         console.log(`추가된 코스idx : ${courseIdxResult[0].insertId}`)
         connection.release();
-        return response(baseResponse.SUCCESS);
+        return response(baseResponse.SUCCESS,courseIdxResult[0].insertId);
 
     } catch (err) {
         logger.error(`App - createCourse Service error\n: ${err.message}`);
