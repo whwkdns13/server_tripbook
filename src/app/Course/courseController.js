@@ -15,7 +15,13 @@ exports.getCourseByIdx = async function (req, res) {
 
     //req : courseIdx
     const courseIdx = req.params.courseIdx;
-    const tripIdx = req.params.tripIdx;
+    //const tripIdx = req.params.tripIdx;
+
+    // JWT 검증
+    const userIdx = req.params.userIdx;
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
 
     // validation
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
@@ -38,6 +44,12 @@ exports.postCourse = async function (req, res) {
      */
     const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx, latitude, longitude} = req.body;
     
+    // JWT 검증
+    const userIdx = req.params.userIdx;
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+
     // 빈 값 체크
     if (!tripIdx) return res.send(errResponse(baseResponse.COURSE_TRIPIDX_EMPTY));
     if (!courseDate) return res.send(errResponse(baseResponse.COURSE_COURSEDATE_EMPTY));
@@ -77,25 +89,22 @@ exports.postCourse = async function (req, res) {
 //date patch 함수
 exports.patchCourseDate = async function (req, res) {
 
-    // jwt - userId, path variable :userId
-
-    //const userIdxFromJWT = req.verifiedToken.userIdx;
+    
 
     const {userIdx, courseIdx} = req.params;
     const courseDate = req.body.courseDate;
     if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
     if (!courseDate) return res.send(errResponse(baseResponse.COURSE_COURSEDATE_EMPTY));
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+
     
     const editCourseDateInfo = await courseService.editCourseDate(courseIdx, courseDate);
     
     return res.send(editCourseDateInfo);
-    // JWT는 이 후 주차에 다룰 내용
-    /*if (userIdxFromJWT != userIdx) {
-        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
-    } else {*/
-
-    //}
 };
 
 //time patch 함수

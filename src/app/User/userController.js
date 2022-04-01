@@ -73,6 +73,7 @@ exports.updateKakaoTokens = async function (req, res) {
   let isRefreshExpired = false;
   let isAccessExpired = false;
   //디비에 있는 리프레시 토큰 유효기간 검증
+  
   try{
     const verifyRefreshTokenResult = jwt.verify(refreshTokenResult.refreshToken, secret_config.jwtsecret);
   }catch(error){
@@ -270,7 +271,7 @@ exports.updateTokens = async function (req, res) {
     return res.send(errResponse(baseResponse.TOKEN_REFRESHTOKEN_NOT_MATCH));
   //해당 회원 없을 시
   if (!refreshTokenResult) 
-    return errResponse(baseResponse.USER_USER_NOT_EXIST);
+    return res.send(errResponse(baseResponse.USER_USER_NOT_EXIST));
   //refresh가 null일 시
   if(!refreshTokenResult.refreshToken) 
     return res.send(errResponse(baseResponse.USER_USER_LOGOUT));
@@ -295,36 +296,36 @@ exports.updateTokens = async function (req, res) {
 
 //카카오 유저 닉네임, 썸네일 업데이트
 exports.userUpdateByKakao = async function (req, res) {
-    //const userIdxFromJWT = req.verifiedToken.userIdx;
     const userIdx = req.params.userIdx;
     const kakaoAccessToken = req.body.kakaoAccessToken;
     if(!kakaoAccessToken) return res.send(errResponse(baseResponse.KAKAO_ACCESSTOKEN_EMPTY));
     if (!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
+    
     // JWT 검증
-    //if (userIdxFromJWT != userIdx) 
-    // return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
     
-    
-      let kakaoProfile;
-      try {
-          kakaoProfile = await axios({
-            method: "GET",
-            url: "https://kapi.kakao.com/v2/user/me",
-            headers: {
-              Authorization: `Bearer ${kakaoAccessToken}`
-            }
+    let kakaoProfile;
+    try {
+        kakaoProfile = await axios({
+          method: "GET",
+          url: "https://kapi.kakao.com/v2/user/me",
+          headers: {
+            Authorization: `Bearer ${kakaoAccessToken}`
+          }
           });
-      } catch (error) {
-        cconsole.log(error.response.data);
-        return res.send(errResponse(baseResponse.KAKAO_KAKAO_ERROR));
-      }
-      const nickName = kakaoProfile.data.kakao_account.profile.nickname;
-      const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;  
-      
-      const editkakaoUserInfoResult = await userService.editKakaoUser(userIdx, nickName, userImg);
+    } catch (error) {
+       cconsole.log(error.response.data);
+       return res.send(errResponse(baseResponse.KAKAO_KAKAO_ERROR));
+    }
 
-      return res.send(editkakaoUserInfoResult);
-    
+    const nickName = kakaoProfile.data.kakao_account.profile.nickname;
+    const userImg = kakaoProfile.data.kakao_account.profile.thumbnail_image_url;  
+      
+    const editkakaoUserInfoResult = await userService.editKakaoUser(userIdx, nickName, userImg);
+
+    return res.send(editkakaoUserInfoResult);
 }
 
 /**

@@ -7,42 +7,40 @@ module.exports = function(app){
     
 
     //1.1 course가져오기 api
-    app.get('/app/course/:courseIdx', course.getCourseByIdx);
+    app.get('/app/course/:userIdx/:courseIdx', jwtMiddleware, course.getCourseByIdx);
     
     //2.1 course등록 api
-    app.post('/app/course', course.postCourse);
+    app.post('/app/course/:userIdx', jwtMiddleware, course.postCourse);
 
     //2.2 courseHashTag 추가하기 api
-    app.post('/app/course/hashTag/:courseIdx/:hashTagIdx',course.postCourseHashTag);
+    app.post('/app/course/hashTag/:courseIdx/:hashTagIdx', jwtMiddleware, course.postCourseHashTag);
 
     //3.1 courseDate 수정하기 API userIdx는 jwt이용에 필요
-    app.patch('/app/course/courseDate/:userIdx/:courseIdx', course.patchCourseDate);
+    app.patch('/app/course/courseDate/:userIdx/:courseIdx', jwtMiddleware, course.patchCourseDate);
 
     //3.2 courseTime 수정하기 API userIdx는 jwt이용에 필요
-    app.patch('/app/course/courseTime/:userIdx/:courseIdx', course.patchCourseTime);
+    app.patch('/app/course/courseTime/:userIdx/:courseIdx', jwtMiddleware, course.patchCourseTime);
 
     //3.3 courseTitle 수정하기 API userIdx는 jwt이용에 필요
-    app.patch('/app/course/courseTitle/:userIdx/:courseIdx', course.patchCourseTitle);
+    app.patch('/app/course/courseTitle/:userIdx/:courseIdx', jwtMiddleware, course.patchCourseTitle);
 
     //3.4 courseImg 수정하기 API userIdx는 jwt이용에 필요
-    app.patch('/app/course/courseImg/:userIdx/:courseIdx', course.patchCourseImg);
+    app.patch('/app/course/courseImg/:userIdx/:courseIdx', jwtMiddleware, course.patchCourseImg);
 
     //3.5 courseComment 수정하기 API userIdx는 jwt이용에 필요
-    app.patch('/app/course/courseComment/:userIdx/:courseIdx', course.patchCourseComment);
+    app.patch('/app/course/courseComment/:userIdx/:courseIdx', jwtMiddleware, course.patchCourseComment);
 
     //3.6 cardIdx 수정하기 API userIdx는 jwt이용에 필요
-    app.patch('/app/course/cardIdx/:userIdx/:courseIdx', course.patchCardIdx);
+    app.patch('/app/course/cardIdx/:userIdx/:courseIdx', jwtMiddleware, course.patchCardIdx);
 
     //3.7 region 수정하기 API userIdx는 jwt이용에 필요
     app.patch('/app/course/region/:userIdx/:courseIdx', jwtMiddleware, course.patchRegion);
 
     //4.1 발자국 삭제 api
-    app.patch('/app/course/deleteCourse/:userIdx/:courseIdx', course.deleteCourse);
-
-
+    app.patch('/app/course/deleteCourse/:userIdx/:courseIdx', jwtMiddleware, course.deleteCourse);
 
     //tripImg업데이트 api
-    app.patch('/app/course/tripImg',course.patchTripImg);
+    app.patch('/app/course/tripImg/:userIdx', jwtMiddleware, course.patchTripImg);
 
 };
 
