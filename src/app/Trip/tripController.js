@@ -32,6 +32,12 @@ exports.getLatestTrip = async function (req, res) {
     // errResponse 전달
     if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
 
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx){
+        return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    }
+
     // 최근 여행 인덱스 조회
     const latestTripIdx = await tripProvider.retrieveLatest(userIdx);
 
@@ -56,6 +62,12 @@ exports.getLatestCourses = async function (req, res) {
     const userIdx = req.params.userIdx;
     // errResponse 전달
     if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
+
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx){
+        return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    }
 
     // 최근 여행 인덱스 조회
     const latestTripIdx = await tripProvider.retrieveLatest(userIdx);
@@ -84,6 +96,12 @@ exports.getTripsCount = async function (req, res) {
     // errResponse 전달
     if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
 
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx){
+        return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    }
+
     const tripsCount = await tripProvider.retrieveTripsCount(userIdx);
     return res.send(response(baseResponse.SUCCESS, tripsCount));
 };
@@ -97,12 +115,26 @@ exports.getTripsCount = async function (req, res) {
  */
 exports.getTrip = async function (req, res) {
     /**
-     * Path Variable: tripIdx
+     * Path Variable: userIdx, tripIdx
      */
 
+    const userIdx = req.params.userIdx;
     const tripIdx = req.params.tripIdx;
+
     // errResponse 전달
     if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
+
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx){
+        return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    }
+    // trip user 검증
+    const verifyTripUserResult = await tripService.verifyUserInTrip(userIdx, tripIdx);
+    if(!verifyTripUserResult.isSuccess){
+        return res.send(verifyTripUserResult);
+    }
 
     const tripBytripIdx = await tripProvider.retrieveTrip(tripIdx);
 
@@ -118,12 +150,26 @@ exports.getTrip = async function (req, res) {
  */
 exports.getTripCourses = async function (req, res) {
     /**
-     * Path Variable: tripIdx
+     * Path Variable: userIdx, tripIdx
      */
 
+    const userIdx = req.params.userIdx;
     const tripIdx = req.params.tripIdx;
+    
     // errResponse 전달
     if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
+
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx){
+        return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    }
+    // trip user 검증
+    const verifyTripUserResult = await tripService.verifyUserInTrip(userIdx, tripIdx);
+    if(!verifyTripUserResult.isSuccess){
+        return res.send(verifyTripUserResult);
+    }
 
     const coursesBytripIdx = await tripProvider.retrieveCourses(tripIdx);
 
@@ -156,6 +202,12 @@ exports.postTrip = async function (req, res) {
     if (!themeIdx) return res.send(errResponse(baseResponse.TRIP_THEMEIDX_EMPTY));
 
     // TODO DATE유효성 검사
+
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx){
+        return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    }
 
     const postTripResponse = await tripService.createTrip(
         userIdx,
@@ -280,13 +332,27 @@ exports.patchTheme = async function (req, res) {
  */
 exports.patchTrip = async function (req, res) {
     /**
-     * Path Variable: tripIdx
+     * Path Variable: userIdx, tripIdx
      * Body : tripTitle, departureDate, arrivalDate, themeIdx
      */
     const tripIdx = req.params.tripIdx;
+    const userIdx = req.params.userIdx;
+
     const {tripTitle, departureDate, arrivalDate, themeIdx} = req.body;
     // errResponse 전달
     if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
+
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx){
+        return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    }
+    // trip user 검증
+    const verifyTripUserResult = await tripService.verifyUserInTrip(userIdx, tripIdx);
+    if(!verifyTripUserResult.isSuccess){
+        return res.send(verifyTripUserResult);
+    }
 
     // errResponse 전달 - DELETE된 trip일 때
     const tripBytripIdx = await tripProvider.retrieveTrip(tripIdx);
@@ -324,6 +390,28 @@ exports.getTrips = async function (req, res) {
     // errResponse 전달
     if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
 
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx){
+        return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    }
+
     const tripsByuserIdx = await tripProvider.retrieveTrips(userIdx);
     return res.send(response(baseResponse.SUCCESS, tripsByuserIdx));
+};
+
+//썸네일 사진 업데이트 (jwt 적용 아직 안됨)
+exports.patchTripImg = async function (req, res) {
+
+    const tripIdx = req.params.tripIdx;
+    const tripImg = req.body.tripImg;
+    const userIdx = req.params.userIdx;
+
+    if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
+    if (!tripIdx) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIDX_EMPTY));
+    if (!tripImg) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIMG_EMPTY));
+
+    const editTripInfo = await tripService.editTripImg(tripIdx, tripImg)
+    return res.send(editTripInfo);
+    
 };
