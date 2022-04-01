@@ -88,9 +88,9 @@ exports.editArrivalDate = async function (tripIdx, arrivalDate) {
 };
 
 // Theme 변경
-exports.editTripTheme = async function (tripIdx, theme) {
+exports.editTripTheme = async function (tripIdx, themeIdx) {
     try {
-        const editTripThemeParams = [theme, tripIdx];
+        const editTripThemeParams = [themeIdx, tripIdx];
 
         const connection = await pool.getConnection(async (conn) => conn);
         const editTripThemeResult = await tripDao.updateTripTheme(connection, editTripThemeParams);
@@ -100,6 +100,23 @@ exports.editTripTheme = async function (tripIdx, theme) {
 
     } catch (err) {
         logger.error(`App - editTripTheme Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+// trip 변경
+exports.editTrip = async function (tripIdx, tripTitle, departureDate, arrivalDate, themeIdx) {
+    try {
+        const editTripParams = [tripTitle, themeIdx, departureDate, arrivalDate, tripIdx];
+
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editTripResult = await tripDao.updateTrip(connection, editTripParams);
+        connection.release();
+
+        return response(baseResponse.SUCCESS, editTripResult);
+
+    } catch (err) {
+        logger.error(`App - editTrip Service error\n: ${err.message}`);
         return errResponse(baseResponse.DB_ERROR);
     }
 };

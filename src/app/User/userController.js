@@ -18,42 +18,28 @@ exports.getTest = async function (req, res) {
 }
 
 /**
- * API No. 2
- * API Name : 유저 조회 API (+ 이메일로 검색 조회)
+ * API Name : 유저 조회 API
+ * [GET] /app/user/:userIdx
+ */
+exports.getUser = async function (req, res) {
+
+    const userIdx = req.params.userIdx;
+
+    const userByUserIdx = await userProvider.retrieveUserProfileByIdx(userIdx);
+    if(!userByUserIdx) return res.send(response(baseResponse.USER_USER_NOT_EXIST));
+    return res.send(response(baseResponse.SUCCESS, userByUserIdx));
+};
+
+/**
+ * API Name : 유저 전체 조회 API
  * [GET] /app/users
  */
 exports.getUsers = async function (req, res) {
 
-    /**
-     * Query String: email
-     */
-    const email = req.query.email;
-
-    if (!email) {
-        // 유저 전체 조회
-        const userListResult = await userProvider.retrieveUserList();
-        // SUCCESS : { "isSuccess": true, "code": 1000, "message":"성공" }, 메세지와 함께 userListResult 호출
-        return res.send(response(baseResponse.SUCCESS, userListResult));
-    } else {
-        // 아메일을 통한 유저 검색 조회
-        const userListByEmail = await userProvider.retrieveUserList(email);
-        return res.send(response(baseResponse.SUCCESS, userListByEmail));
-    }
+  const userList = await userProvider.retrieveUsers();
+  return res.send(response(baseResponse.SUCCESS, userList));
 };
 
-exports.getUserById = async function (req, res) {
-
-    /**
-     * Path Variable: userIdx
-     */
-    const userIdx = req.params.userIdx;
-    // errResponse 전달
-    if (!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
-
-    // userId를 통한 유저 검색 함수 호출 및 결과 저장
-    const userByUserIdx = await userProvider.retrieveUser(userIdx);
-    return res.send(response(baseResponse.SUCCESS, userByUserIdx));
-};
 
 //카카오 리프레시 토큰을 이용해서 kakao토큰들 갱신 (카카오 액세스 토큰 유효기간 검증 후)
 exports.updateKakaoTokens = async function (req, res) {
