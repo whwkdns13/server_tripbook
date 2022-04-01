@@ -120,3 +120,42 @@ exports.editTrip = async function (tripIdx, tripTitle, departureDate, arrivalDat
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
+
+//tripImg(썸네일 사진) update해주는 함수
+exports.editTripImg = async function (tripIdx, tripImg) {
+    try {
+        console.log(tripIdx);
+        const updateTripImgParams = [tripImg, tripIdx];
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editTripImgResult = await tripDao.updateTripImg(connection,updateTripImgParams);
+        
+        connection.release();
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - editTripImg Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+//Trip와 userIdx 일치하는 지 확인
+exports.verifyUserInTrip = async function (userIdx, tripIdx) {
+    try {
+        const connection = await pool.getConnection(async (conn) => conn);
+        const tripUserResult = await tripDao.verifyTripUser(connection,tripIdx);
+        
+        if (!tripUserResult){
+            return errResponse(baseResponse.TRIP_NOT_EXIST);
+        }
+        else if(tripUserResult.userIdx != userIdx){
+            return errResponse(baseResponse.TRIP_TRIPUSER_NOT_MATCH);
+        }
+        connection.release();
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - verifyUserInTrip Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
