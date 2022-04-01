@@ -15,13 +15,18 @@ exports.getCourseByIdx = async function (req, res) {
 
     //req : courseIdx
     const courseIdx = req.params.courseIdx;
-    //const tripIdx = req.params.tripIdx;
 
     // JWT 검증
     const userIdx = req.params.userIdx;
+    if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
     const userIdxFromJWT = req.verifiedToken.userIdx;
     if (userIdxFromJWT != userIdx) 
       return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+
+    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
+    if(!verifyCourseUserResult.isSuccess){
+      return res.send(verifyCourseUserResult);
+    }
 
     // validation
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
@@ -46,9 +51,15 @@ exports.postCourse = async function (req, res) {
     
     // JWT 검증
     const userIdx = req.params.userIdx;
+    if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
     const userIdxFromJWT = req.verifiedToken.userIdx;
     if (userIdxFromJWT != userIdx) 
       return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+
+    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
+    if(!verifyCourseUserResult.isSuccess){
+      return res.send(verifyCourseUserResult);
+    }
 
     // 빈 값 체크
     if (!tripIdx) return res.send(errResponse(baseResponse.COURSE_TRIPIDX_EMPTY));
@@ -89,8 +100,6 @@ exports.postCourse = async function (req, res) {
 //date patch 함수
 exports.patchCourseDate = async function (req, res) {
 
-    
-
     const {userIdx, courseIdx} = req.params;
     const courseDate = req.body.courseDate;
     if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
@@ -101,6 +110,10 @@ exports.patchCourseDate = async function (req, res) {
     if (userIdxFromJWT != userIdx) 
       return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
 
+    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
+    if(!verifyCourseUserResult.isSuccess){
+      return res.send(verifyCourseUserResult);
+    }    
     
     const editCourseDateInfo = await courseService.editCourseDate(courseIdx, courseDate);
     
@@ -110,57 +123,54 @@ exports.patchCourseDate = async function (req, res) {
 //time patch 함수
 exports.patchCourseTime = async function (req, res) {
 
-    // jwt - userId, path variable :userId
-
-    //const userIdxFromJWT = req.verifiedToken.userIdx;
-
     const {userIdx, courseIdx} = req.params;
     const courseTime = req.body.courseTime;
     if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
     if (!courseTime) return res.send(errResponse(baseResponse.COURSE_COURSETIME_EMPTY));
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
     
+    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
+    if(!verifyCourseUserResult.isSuccess){
+      return res.send(verifyCourseUserResult);
+    }
+
     const editCourseTimeInfo = await courseService.editCourseTime(courseIdx, courseTime);
     
     return res.send(editCourseTimeInfo);
-    // JWT는 이 후 주차에 다룰 내용
-    /*if (userIdxFromJWT != userIdx) {
-        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
-    } else {*/
-
-    //}
+    
 };
 
 //title patch 함수
 exports.patchCourseTitle = async function (req, res) {
-
-    // jwt - userId, path variable :userId
-
-    //const userIdxFromJWT = req.verifiedToken.userIdx;
 
     const {userIdx, courseIdx} = req.params;
     const courseTitle = req.body.courseTitle;
     if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
     if (!courseTitle) return res.send(errResponse(baseResponse.COURSE_COURSETITLE_EMPTY));
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
     
+    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
+    if(!verifyCourseUserResult.isSuccess){
+      return res.send(verifyCourseUserResult);
+    }
+
+
     const editCourseTitleInfo = await courseService.editCourseTitle(courseIdx, courseTitle);
     
     return res.send(editCourseTitleInfo);
-    // JWT는 이 후 주차에 다룰 내용
-    /*if (userIdxFromJWT != userIdx) {
-        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
-    } else {*/
-
-    //}
+    
 };
 
 //img patch 함수
 exports.patchCourseImg = async function (req, res) {
-
-    // jwt - userId, path variable :userId
-
-    //const userIdxFromJWT = req.verifiedToken.userIdx;
 
     const {userIdx, courseIdx} = req.params;
     const courseImg = req.body.courseImg;
@@ -168,23 +178,24 @@ exports.patchCourseImg = async function (req, res) {
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
     if (!courseImg) return res.send(errResponse(baseResponse.COURSE_COURSEIMG_EMPTY));
     
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+
+    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
+    if(!verifyCourseUserResult.isSuccess){
+      return res.send(verifyCourseUserResult);
+    }
+
+
     const editCourseImgInfo = await courseService.editCourseImg(courseIdx, courseImg);
     
     return res.send(editCourseImgInfo);
-    // JWT는 이 후 주차에 다룰 내용
-    /*if (userIdxFromJWT != userIdx) {
-        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
-    } else {*/
-
-    //}
 };
 
 //comment patch 함수
 exports.patchCourseComment = async function (req, res) {
-
-    // jwt - userId, path variable :userId
-
-    //const userIdxFromJWT = req.verifiedToken.userIdx;
 
     const {userIdx, courseIdx} = req.params;
     const courseComment = req.body.courseComment;
@@ -192,23 +203,24 @@ exports.patchCourseComment = async function (req, res) {
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
     if (!courseComment) return res.send(errResponse(baseResponse.COURSE_COURSECOMMENT_EMPTY));
     
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    
+    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
+    if(!verifyCourseUserResult.isSuccess){
+      return res.send(verifyCourseUserResult);
+    }
+
     const editCourseCommentInfo = await courseService.editCourseComment(courseIdx, courseComment);
     
     return res.send(editCourseCommentInfo);
-    // JWT는 이 후 주차에 다룰 내용
-    /*if (userIdxFromJWT != userIdx) {
-        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
-    } else {*/
 
-    //}
 };
 
 //cardIdx patch 함수
 exports.patchCardIdx = async function (req, res) {
-
-    // jwt - userId, path variable :userId
-
-    //const userIdxFromJWT = req.verifiedToken.userIdx;
 
     const {userIdx, courseIdx} = req.params;
     const cardIdx = req.body.cardIdx;
@@ -216,34 +228,41 @@ exports.patchCardIdx = async function (req, res) {
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
     if (!cardIdx) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
     
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+
+    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
+    if(!verifyCourseUserResult.isSuccess){
+      return res.send(verifyCourseUserResult);
+    }
+
+
     const editCardIdxInfo = await courseService.editCardIdx(courseIdx, cardIdx);
     
     return res.send(editCardIdxInfo);
-    // JWT는 이 후 주차에 다룰 내용
-    /*if (userIdxFromJWT != userIdx) {
-        res.send(errResponse(baseResponse.USER_ID_NOT_MATCH));
-    } else {*/
-
-    //}
 };
 
 //latitude, longitude patch 함수
 exports.patchRegion = async function (req, res) {
 
-    // jwt - userIdx, path variable :userId
-    //const userIdxFromJWT = req.verifiedToken.userIdx;
     const {userIdx, courseIdx} = req.params;
     const {latitude, longitude} = req.body;
     if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
     if (!latitude) return res.send(errResponse(baseResponse.COURSE_LATITUDE_EMPTY));
     if (!longitude) return res.send(errResponse(baseResponse.COURSE_LONGITUDE_EMPTY));
-
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
     
+    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
+    if(!verifyCourseUserResult.isSuccess){
+      return res.send(verifyCourseUserResult);
+    }
 
-    //if (userIdxFromJWT != userIdx) 
-    //    return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
-    
     const editRegionInfo = await courseService.editRegion(courseIdx, latitude, longitude);
     return res.send(editRegionInfo);
     
@@ -251,8 +270,20 @@ exports.patchRegion = async function (req, res) {
 
 //hashTag 입력
 exports.postCourseHashTag = async function(req, res){
+
+    // JWT 검증
+    const userIdx = req.params.userIdx;
+    if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+
+    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
+    if(!verifyCourseUserResult.isSuccess){
+      return res.send(verifyCourseUserResult);
+    }
+
     const {courseIdx, hashTagIdx} = req.params;
-    
     // 빈 값 체크
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
     if (!hashTagIdx) return res.send(errResponse(baseResponse.COURSE_HASHTAGIDX_EMPTY));
@@ -273,6 +304,16 @@ exports.deleteCourse = async function (req, res) {
     // validation
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
     if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
+    
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx) 
+      return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+
+    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
+    if(!verifyCourseUserResult.isSuccess){
+      return res.send(verifyCourseUserResult);
+    }
 
     const eraseCourseInfo = await courseService.eraseCourse(courseIdx);
 
@@ -284,25 +325,17 @@ exports.deleteCourse = async function (req, res) {
 //썸네일 사진 업데이트 (jwt 적용 아직 안됨)
 exports.patchTripImg = async function (req, res) {
 
-    // jwt - tripIdx, path variable :tripIdx, tripImg
-
-    //const tripIdxFromJWT = req.verifiedToken.tripIdx
-
-    //const tripIdx = req.params.tripIdx;
-    const tripIdx = req.body.tripIdx;
+    const tripIdx = req.params.tripIdx;
     const tripImg = req.body.tripImg;
+    const userIdx = req.params.userIdx;
+
+    if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
     if (!tripIdx) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIDX_EMPTY));
     if (!tripImg) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIMG_EMPTY));
 
-    // JWT는 이 후 주차에 다룰 내용
-    /*
-    if (tripIdxFromJWT != tripIdx) {
-        res.send(errResponse(baseResponse.TRIP_IDX_NOT_MATCH));
-    } else {*/
-
-        const editTripInfo = await courseService.editTripImg(tripIdx, tripImg)
-        return res.send(editTripInfo);
-    //}
+    const editTripInfo = await courseService.editTripImg(tripIdx, tripImg)
+    return res.send(editTripInfo);
+    
 };
 
 
