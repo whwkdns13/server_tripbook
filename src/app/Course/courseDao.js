@@ -23,21 +23,6 @@ async function selectCourseIdx(connection, courseIdx) {
     return insertCourseInfoRow;
   }
 
- // 썸네일(대표사진)설정
-async function updateTripImg(connection, updateTripImgParams) {
-  const updateTripImgQuery = `
-        UPDATE trip
-        SET tripImg = ?
-        WHERE tripIdx = ? AND status = 'ACTIVE';
-    `;
-  const updateTripImgInfoRow = await connection.query(
-    updateTripImgQuery,
-    updateTripImgParams
-  );
-
-  return updateTripImgInfoRow;
-}
-
 async function selectCourseTag(connection, courseIdx) {
   const selectCourseTagQuery = `
         SELECT courseTagIdxRelationships.relationIdx, hashtag.tagName, hashtag.tagType
@@ -162,7 +147,6 @@ module.exports = {
     updateCourseImg,
     updateCourseComment,
     updateCardIdx,
-    updateTripImg,
     updateRegion,
     selectCourseTag,
     insertCourseHashTagInfo,

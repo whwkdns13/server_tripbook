@@ -203,23 +203,6 @@ exports.createCourseHashTag = async function (courseIdx, hashTagIdx) {
     }
 };
 
-//tripImg(썸네일 사진) update해주는 함수
-exports.editTripImg = async function (tripIdx, tripImg) {
-    try {
-        console.log(tripIdx);
-        const updateTripImgParams = [tripImg, tripIdx];
-        const connection = await pool.getConnection(async (conn) => conn);
-        const editTripImgResult = await courseDao.updateTripImg(connection,updateTripImgParams);
-        
-        connection.release();
-        return response(baseResponse.SUCCESS);
-
-    } catch (err) {
-        logger.error(`App - editTripImg Service error\n: ${err.message}`);
-        return errResponse(baseResponse.DB_ERROR);
-    }
-};
-
 
 //Course와 userIdx 일치하는 지 확인
 exports.verifyUserInCourse = async function (userIdx, courseIdx) {

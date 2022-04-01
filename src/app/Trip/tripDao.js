@@ -148,6 +148,31 @@ async function updateTrip(connection, editTripParams) {
   return updateTripInfoRow;
 }
 
+async function verifyTripUser(connection, tripIdx) {
+  const selectTripUserQuery = `
+        SELECT userIdx
+        FROM trip
+        WHERE tripIdx = ? AND trip.status = 'ACTIVE';
+        `;
+  const [tripUser] = await connection.query(selectTripUserQuery, tripIdx);
+  return tripUser[0];
+}
+
+ // 썸네일(대표사진)설정
+async function updateTripImg(connection, updateTripImgParams) {
+  const updateTripImgQuery = `
+        UPDATE trip
+        SET tripImg = ?
+        WHERE tripIdx = ? AND status = 'ACTIVE';
+    `;
+  const updateTripImgInfoRow = await connection.query(
+    updateTripImgQuery,
+    updateTripImgParams
+  );
+
+  return updateTripImgInfoRow;
+}
+
 module.exports = {
   selectTrip,
   selectTrips,
@@ -159,5 +184,7 @@ module.exports = {
   updateDepartureDate,
   updateArrivalDate,
   updateTripTheme,
-  updateTrip
+  updateTrip,
+  verifyTripUser,
+  updateTripImg
 };

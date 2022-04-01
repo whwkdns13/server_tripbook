@@ -1,6 +1,7 @@
 const jwtMiddleware = require("../../../config/jwtMiddleware");
 const courseProvider = require("../../app/Course/courseProvider");
 const courseService = require("../../app/Course/courseService");
+const tripService = require("../../app/Trip/tripService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 
@@ -56,9 +57,9 @@ exports.postCourse = async function (req, res) {
     if (userIdxFromJWT != userIdx) 
       return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
 
-    const verifyCourseUserResult = await courseService.verifyUserInCourse(userIdx, courseIdx);
-    if(!verifyCourseUserResult.isSuccess){
-      return res.send(verifyCourseUserResult);
+    const verifyTripUserResult = await tripService.verifyUserInTrip(userIdx, tripIdx);
+    if(!verifyTripUserResult.isSuccess){
+      return res.send(verifyTripUserResult);
     }
 
     // 빈 값 체크
@@ -322,20 +323,5 @@ exports.deleteCourse = async function (req, res) {
     
 };
 
-//썸네일 사진 업데이트 (jwt 적용 아직 안됨)
-exports.patchTripImg = async function (req, res) {
-
-    const tripIdx = req.params.tripIdx;
-    const tripImg = req.body.tripImg;
-    const userIdx = req.params.userIdx;
-
-    if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
-    if (!tripIdx) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIDX_EMPTY));
-    if (!tripImg) return res.send(errResponse(baseResponse.TRIPIMG_TRIPIMG_EMPTY));
-
-    const editTripInfo = await courseService.editTripImg(tripIdx, tripImg)
-    return res.send(editTripInfo);
-    
-};
 
 

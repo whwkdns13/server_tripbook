@@ -71,6 +71,8 @@ module.exports = {
     TRIP_LATEST_NOT_EXIST: { "isSuccess": false, "code": 2107, "message": "latestTrip이 존재하지 않습니다." },
     TRIP_COURSE_NOT_EXIST: { "isSuccess": false, "code": 2108, "message": "course가 존재하지 않습니다." },
     TRIP_DELETE_TRIP: { "isSuccess": false, "code": 2109, "message": "삭제 된 여행입니다." },
+    TRIP_NOT_EXIST: { "isSuccess": false, "code": 2110, "message": "해당 tripIdx를 가진 여행이 존재하지 않습니다." },
+    TRIP_TRIPUSER_NOT_MATCH: { "isSuccess": false, "code": 2111, "message": "해당 여행이 user의 것이 아닙니다." },
 
     // course req error 2200~2299
     COURSE_COURSEIDX_EMPTY: { "isSuccess": false, "code": 2200, "message": "courseIdx를 입력해주세요." },
@@ -90,6 +92,7 @@ module.exports = {
     COURSE_LATITUDE_EMPTY :    { "isSuccess": false, "code": 2214, "message": "latitude를 입력해주세요" },
     COURSE_LONGITUDE_EMPTY :{ "isSuccess": false, "code": 2215, "message": "longitude를 입력해주세요" },
     COURSE_COURSE_NOT_EXIST :{ "isSuccess": false, "code": 2216, "message": "해당 courseIdx를 가진 코스가 존재하지 않습니다." },
+    COURSE_COURSEUSER_NOT_MATCH:{ "isSuccess": false, "code": 2217, "message": "해당 발자국이 user의 것이 아닙니다." },
     
     // Response error
     SIGNUP_REDUNDANT_EMAIL: { "isSuccess": false, "code": 3001, "message": "중복된 이메일입니다." },
