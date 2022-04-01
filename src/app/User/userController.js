@@ -316,7 +316,7 @@ exports.userUpdateByKakao = async function (req, res) {
           }
           });
     } catch (error) {
-       cconsole.log(error.response.data);
+       console.log(error.response.data);
        return res.send(errResponse(baseResponse.KAKAO_KAKAO_ERROR));
     }
 
