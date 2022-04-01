@@ -29,7 +29,7 @@ exports.createCourse = async function (tripIdx, cardIdx, courseImg, courseDate, 
         //콘솔에 추가된 코스 idx를 출력하고 나옴
         console.log(`추가된 코스idx : ${courseIdxResult[0].insertId}`)
         connection.release();
-        return response(baseResponse.SUCCESS,courseIdxResult[0].insertId);
+        return response(baseResponse.SUCCESS, courseIdxResult[0].insertId);
 
     } catch (err) {
         logger.error(`App - createCourse Service error\n: ${err.message}`);
@@ -221,3 +221,25 @@ exports.editTripImg = async function (tripIdx, tripImg) {
 };
 
 
+//Course와 userIdx 일치하는 지 확인
+exports.verifyUserInCourse = async function (userIdx, courseIdx) {
+    try {
+        console.log(userIdx);
+        console.log(courseIdx);
+        const connection = await pool.getConnection(async (conn) => conn);
+        const courseUserResult = await courseDao.verifyCourseUser(connection,courseIdx);
+        
+        if (!courseUserResult){
+            return errResponse(baseResponse.COURSE_COURSE_NOT_EXIST);
+        }
+        else if(courseUserResult.userIdx != userIdx){
+            return errResponse(baseResponse.COURSE_COURSEUSER_NOT_MATCH);
+        }
+        connection.release();
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - verifyUserInCourse Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};

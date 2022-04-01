@@ -141,6 +141,17 @@ async function updateRegion(connection, courseIdx, latitude, longitude) {
   return updateCardIdxRow[0];
 }
 
+async function verifyCourseUser(connection, courseIdx) {
+  const selectCourseUserQuery = `
+        SELECT userIdx
+        FROM tripCourse
+        JOIN trip ON trip.tripIdx = tripCourse.tripIdx
+        WHERE courseIdx = ? AND tripCourse.status = 'ACTIVE';
+        `;
+  const [courseUser] = await connection.query(selectCourseUserQuery, courseIdx);
+  return courseUser[0];
+}
+
 module.exports = {
     changeCourseStatusDelete,
     selectCourseIdx,
@@ -154,5 +165,6 @@ module.exports = {
     updateTripImg,
     updateRegion,
     selectCourseTag,
-    insertCourseHashTagInfo
+    insertCourseHashTagInfo,
+    verifyCourseUser
 };

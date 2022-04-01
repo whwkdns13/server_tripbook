@@ -67,7 +67,7 @@ exports.SigninByRefreshToken = async function (userIdx) {
             secret_config.jwtsecret, // 비밀키
             {
                 expiresIn: "1h",
-                subject: "user",
+                subject: "userAT",
             } // 유효 기간 1일
         );
 
@@ -77,7 +77,7 @@ exports.SigninByRefreshToken = async function (userIdx) {
             secret_config.jwtsecret, // 비밀키
             {
                 expiresIn: "14d",
-                subject: "user",
+                subject: "userRT",
             } // 유효 기간 1일
         );
 
