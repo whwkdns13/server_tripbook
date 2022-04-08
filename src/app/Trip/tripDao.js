@@ -152,7 +152,7 @@ async function verifyTripUser(connection, tripIdx) {
   const selectTripUserQuery = `
         SELECT userIdx
         FROM trip
-        WHERE tripIdx = ? AND trip.status = 'ACTIVE';
+        WHERE tripIdx = ?;
         `;
   const [tripUser] = await connection.query(selectTripUserQuery, tripIdx);
   return tripUser[0];
@@ -177,7 +177,7 @@ async function updateTripImg(connection, updateTripImgParams) {
 async function deleteTrip(connection, tripIdx) {
   const deleteTripQuery = `
       UPDATE trip t
-      JOIN tripCourse tC ON t.tripIdx = tC.tripIdx
+      LEFT JOIN tripCourse tC ON t.tripIdx = tC.tripIdx
       SET t.status = 'DELETE', tC.status = 'DELETE'
       WHERE t.tripIdx = ?;
     `;

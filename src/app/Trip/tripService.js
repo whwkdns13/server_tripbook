@@ -144,7 +144,6 @@ exports.verifyUserInTrip = async function (userIdx, tripIdx) {
     try {
         const connection = await pool.getConnection(async (conn) => conn);
         const tripUserResult = await tripDao.verifyTripUser(connection,tripIdx);
-        
         if (!tripUserResult){
             return errResponse(baseResponse.TRIP_NOT_EXIST);
         }
