@@ -173,6 +173,22 @@ async function updateTripImg(connection, updateTripImgParams) {
   return updateTripImgInfoRow;
 }
 
+ // 썸네일(대표사진)설정
+async function deleteTrip(connection, tripIdx) {
+  const deleteTripQuery = `
+      UPDATE trip t
+      JOIN tripCourse tC ON t.tripIdx = tC.tripIdx
+      SET t.status = 'DELETE', tC.status = 'DELETE'
+      WHERE t.tripIdx = ?;
+    `;
+  const deleteTripInfo = await connection.query(
+    deleteTripQuery,
+    tripIdx
+  );
+
+  return deleteTripInfo;
+}
+
 module.exports = {
   selectTrip,
   selectTrips,
@@ -186,5 +202,6 @@ module.exports = {
   updateTripTheme,
   updateTrip,
   verifyTripUser,
-  updateTripImg
+  updateTripImg,
+  deleteTrip
 };

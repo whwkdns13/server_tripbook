@@ -43,6 +43,9 @@ module.exports = function(app){
     //tripImg업데이트 api
     app.patch('/app/trip/tripImg/:userIdx', jwtMiddleware, trip.patchTripImg);
 
+    // 2-9. 여행 삭제 API
+    app.patch('/app/trip/deleteTrip/:userIdx/:tripIdx',jwtMiddleware, trip.deleteTrip);
+    
     // 3. PAST TRIPS
     // 3-1. 유저 전체 여행 조회 API
     app.get('/app/trips/:userIdx',jwtMiddleware,trip.getTrips);

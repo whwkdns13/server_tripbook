@@ -375,6 +375,44 @@ exports.patchTrip = async function (req, res) {
     return res.send(response(baseResponse.SUCCESS));
 };
 
+
+/**
+ * API No. 2-9
+ * API Name : 여행 삭제 API
+ * [PATCH] /app/trip/deleteTrip/:userIdx/:tripIdx
+ */
+exports.deleteTrip = async function (req, res) {
+    /**
+     * Path Variable: userIdx, tripIdx
+     */
+    const userIdx = req.params.userIdx;
+    const tripIdx = req.params.tripIdx;
+    // errResponse 전달
+    if (!tripIdx) return res.send(errResponse(baseResponse.TRIP_TRIPIDX_EMPTY));
+    if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
+
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx){
+        return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    }
+    // trip user 검증
+    const verifyTripUserResult = await tripService.verifyUserInTrip(userIdx, tripIdx);
+    if(!verifyTripUserResult.isSuccess){
+        return res.send(verifyTripUserResult);
+    }
+
+    // errResponse 전달 - DELETE된 trip일 때
+    const tripBytripIdx = await tripProvider.retrieveTrip(tripIdx);
+    if (tripBytripIdx.status == 'DELETE') return res.send(response(baseResponse.TRIP_DELETE_TRIP));
+
+    // TODO
+    // course를 삭제했던것들은 어떻게 할지
+
+    const deleteTripInfo = await tripService.deleteTrip(tripIdx);
+    return res.send(response(baseResponse.SUCCESS));
+};
+
 // PAST TRIPS
 /**
  * API No. 3-1
