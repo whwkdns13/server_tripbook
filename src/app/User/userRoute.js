@@ -37,6 +37,7 @@ module.exports = function(app){
     
     //jwt를 이용한 자동 로그인 기능 구현
     app.get('/app/autoSignin', jwtMiddleware, user.check);
-};
 
-// TODO: 탈퇴하기 API
+    // user 삭제 --> status :ACTIVE -> DELETE
+    app.patch('/app/user/delete/:userIdx', jwtMiddleware, user.deleteUser)
+};
