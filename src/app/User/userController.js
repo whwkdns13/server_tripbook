@@ -341,3 +341,29 @@ exports.patchUsers = async function (req, res) {
     }
 };
 
+
+/**
+ * API No.
+ * API Name : user 삭제
+ * [PATCH] /app/user/delete/:userIdx
+ * path variable : userIdx
+ */
+exports.deleteUser = async function (req, res) {
+
+  /**
+     * Path Variable: userIdx
+     */
+  const userIdx = req.params.userIdx;
+   // errResponse 전달
+  if (!userIdx) return res.send(errResponse(baseResponse.USER_USERIDX_EMPTY));
+
+   // JWT 검증
+  const userIdxFromJWT = req.verifiedToken.userIdx;
+  if (userIdxFromJWT != userIdx){
+    return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+  }
+
+  const deleteUserInfo = await userService.deleteUser(userIdx);
+  return res.send(response(baseResponse.SUCCESS));
+};
+

@@ -163,6 +163,18 @@ async function selectUserProfileByIdx(connection, userIdx) {
   return userProfileRow;
 }
 
+// deleteUser
+async function deleteUser(connection, userIdx) {
+  const deleteUserQuery = `
+    UPDATE user u
+    LEFT JOIN userProfile uP ON u.userIdx = uP.userIdx
+    SET u.status = 'DELETE', uP.status = 'DELETE'
+    WHERE uP.userIdx = ? AND uP.status ='ACTIVE';
+    `;
+  const [deleteUserInfo] = await connection.query(deleteUserQuery, userIdx);
+  return deleteUserInfo;
+}
+
 module.exports = {
   selectUser,
   selectUserByEmail,
@@ -178,5 +190,6 @@ module.exports = {
   userLogOut,
   updateKakaoRefreshToken,
   updateTokensByKakaoSignIn,
-  selectUserProfileByIdx
+  selectUserProfileByIdx,
+  deleteUser
 };

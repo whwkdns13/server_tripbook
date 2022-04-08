@@ -247,3 +247,17 @@ exports.editUser = async function (id, nickname) {
         return errResponse(baseResponse.DB_ERROR);
     }
 }
+
+exports.deleteUser = async function (userIdx) {
+    try {
+        const connection = await pool.getConnection(async (conn) => conn);
+        const deleteUserResult = await userDao.deleteUser(connection, userIdx)
+        connection.release();
+
+        return response(baseResponse.SUCCESS);
+
+    } catch (err) {
+        logger.error(`App - deleteUser Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+}
