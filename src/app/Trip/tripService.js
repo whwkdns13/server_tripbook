@@ -159,3 +159,18 @@ exports.verifyUserInTrip = async function (userIdx, tripIdx) {
         return errResponse(baseResponse.DB_ERROR);
     }
 };
+
+// Delete Trip
+exports.deleteTrip = async function (tripIdx) {
+    try {
+        const connection = await pool.getConnection(async (conn) => conn);
+        const deleteTripResult = await tripDao.deleteTrip(connection,tripIdx);
+        
+        connection.release();
+        return response(baseResponse.SUCCESS,deleteTripResult);
+
+    } catch (err) {
+        logger.error(`App - deleteTrip Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
