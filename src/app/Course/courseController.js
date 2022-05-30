@@ -100,10 +100,10 @@ exports.postCourse = async function (req, res) {
 };
 
 //course전체 patch 함수
-exports.patchCourseDate = async function (req, res) {
+exports.patchCourse = async function (req, res) {
 
   const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx, latitude, longitude} = req.body;
-
+  const courseIdx = req.params.courseIdx;
   // JWT 검증
   const userIdx = req.params.userIdx;
   if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
@@ -112,6 +112,7 @@ exports.patchCourseDate = async function (req, res) {
     return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
 
   // 빈 값 체크
+  if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
   if (!tripIdx) return res.send(errResponse(baseResponse.COURSE_TRIPIDX_EMPTY));
   if (!courseDate) return res.send(errResponse(baseResponse.COURSE_COURSEDATE_EMPTY));
   if (!courseTime) return res.send(errResponse(baseResponse.COURSE_COURSETIME_EMPTY));
@@ -135,6 +136,7 @@ if (courseComment.length > 254)
 
   // createCourse 함수 실행을 통한 결과 값을 postCourseResponse에 저장
   const editCourseInfo = await courseService.editCourse(
+    courseIdx,
     cardIdx,
     courseImg, 
     courseDate, 

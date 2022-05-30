@@ -16,7 +16,7 @@ module.exports = function(app){
     app.post('/app/course/hashTag/:userIdx/:courseIdx/:hashTagIdx', jwtMiddleware, course.postCourseHashTag);
 
     //3.0 course 전체 수정하기 API, userIdx는 jwt이용에 필요
-    app.patch('/app/course/courseDate/:userIdx/:courseIdx', jwtMiddleware, course.patchCourseDate);
+    app.patch('/app/course/:userIdx/:courseIdx', jwtMiddleware, course.patchCourse);
 
     //3.1 courseDate 수정하기 API userIdx는 jwt이용에 필요
     app.patch('/app/course/courseDate/:userIdx/:courseIdx', jwtMiddleware, course.patchCourseDate);
