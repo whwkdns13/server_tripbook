@@ -15,6 +15,9 @@ module.exports = function(app){
     //2.2 courseHashTag 추가하기 api
     app.post('/app/course/hashTag/:userIdx/:courseIdx/:hashTagIdx', jwtMiddleware, course.postCourseHashTag);
 
+    //3.0 course 전체 수정하기 API, userIdx는 jwt이용에 필요
+    app.patch('/app/course/courseDate/:userIdx/:courseIdx', jwtMiddleware, course.patchCourseDate);
+
     //3.1 courseDate 수정하기 API userIdx는 jwt이용에 필요
     app.patch('/app/course/courseDate/:userIdx/:courseIdx', jwtMiddleware, course.patchCourseDate);
 
@@ -39,7 +42,6 @@ module.exports = function(app){
     //4.1 발자국 삭제 api
     app.patch('/app/course/deleteCourse/:userIdx/:courseIdx', jwtMiddleware, course.deleteCourse);
 
-    
 
 };
 

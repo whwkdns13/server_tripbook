@@ -57,11 +57,6 @@ exports.postCourse = async function (req, res) {
     if (userIdxFromJWT != userIdx) 
       return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
 
-    const verifyTripUserResult = await tripService.verifyUserInTrip(userIdx, tripIdx);
-    if(!verifyTripUserResult.isSuccess){
-      return res.send(verifyTripUserResult);
-    }
-
     // 빈 값 체크
     if (!tripIdx) return res.send(errResponse(baseResponse.COURSE_TRIPIDX_EMPTY));
     if (!courseDate) return res.send(errResponse(baseResponse.COURSE_COURSEDATE_EMPTY));
@@ -72,6 +67,12 @@ exports.postCourse = async function (req, res) {
     if (!cardIdx) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
     //if (!latitude) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
     //if (!longitude) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
+
+    // 트립과 유저 매치되는지 확인
+    const verifyTripUserResult = await tripService.verifyUserInTrip(userIdx, tripIdx);
+    if(!verifyTripUserResult.isSuccess){
+      return res.send(verifyTripUserResult);
+    }
 
     // 길이 체크
     if (courseTitle.length > 99)
@@ -96,6 +97,56 @@ exports.postCourse = async function (req, res) {
     // postCourseResponse 값을 json으로 전달
     return res.send(postCourseResponse);
     
+};
+
+//course전체 patch 함수
+exports.patchCourseDate = async function (req, res) {
+
+  const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx, latitude, longitude} = req.body;
+
+  // JWT 검증
+  const userIdx = req.params.userIdx;
+  if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
+  const userIdxFromJWT = req.verifiedToken.userIdx;
+  if (userIdxFromJWT != userIdx) 
+    return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+
+  // 빈 값 체크
+  if (!tripIdx) return res.send(errResponse(baseResponse.COURSE_TRIPIDX_EMPTY));
+  if (!courseDate) return res.send(errResponse(baseResponse.COURSE_COURSEDATE_EMPTY));
+  if (!courseTime) return res.send(errResponse(baseResponse.COURSE_COURSETIME_EMPTY));
+  if (!courseTitle) return res.send(errResponse(baseResponse.COURSE_COURSETITLE_EMPTY));
+  if (!courseImg) return res.send(errResponse(baseResponse.COURSE_COURSEIMAGE_EMPTY));
+  if (!courseComment) return res.send(errResponse(baseResponse.COURSE_COURSECOMMENT_EMPTY));
+  if (!cardIdx) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
+  
+  // 트립과 유저 매치되는지 확인
+  const verifyTripUserResult = await tripService.verifyUserInTrip(userIdx, tripIdx);
+  if(!verifyTripUserResult.isSuccess){
+    return res.send(verifyTripUserResult);
+  }
+
+  // 길이 체크
+  if (courseTitle.length > 99)
+  return res.send(response(baseResponse.COURSE_COURSETITLE_LENGTH));
+  
+if (courseComment.length > 254)
+  return res.send(response(baseResponse.COURSE_COURSECOMMENT_LENGTH));
+
+  // createCourse 함수 실행을 통한 결과 값을 postCourseResponse에 저장
+  const editCourseInfo = await courseService.editCourse(
+    cardIdx,
+    courseImg, 
+    courseDate, 
+    courseTime, 
+    courseTitle, 
+    courseComment,
+    latitude,
+    longitude
+  );
+
+  // editCourseDateInfo 값을 json으로 전달
+  return res.send(editCourseInfo);
 };
 
 //date patch 함수
