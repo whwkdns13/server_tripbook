@@ -23,6 +23,16 @@ async function insertCourseInfo(connection, insertCourseInfoParams) {
   return insertCourseInfoRow;
 }
 
+//course SET DAO
+async function updateCourse(connection, editCourseInfoParams) {
+  const updateCourseQuery = `
+  UPDATE tripCourse
+  SET cardIdx = ?, courseImg = ? , courseDate = ?, courseTime = ?, courseTitle = ?, courseComment = ?,  latitude = ?, longitude = ?
+  WHERE courseIdx = ? AND status = 'ACTIVE';`;
+  const updateCourseRow = await connection.query(updateCourseQuery, editCourseInfoParams);
+  return updateCourseRow[0];
+}
+
 async function selectCourseTag(connection, courseIdx) {
 const selectCourseTagQuery = `
       SELECT courseTagIdxRelationships.relationIdx, hashtag.tagName, hashtag.tagType
@@ -141,6 +151,7 @@ module.exports = {
   changeCourseStatusDelete,
   selectCourseIdx,
   insertCourseInfo,
+  updateCourse,
   updateCourseDate,
   updateCourseTime,
   updateCourseTitle,

@@ -37,6 +37,29 @@ exports.createCourse = async function (tripIdx, cardIdx, courseImg, courseDate, 
     }
 };
 
+//course 수정 함수
+exports.editCourse = async function (courseIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment,  latitude, longitude) {
+    try {
+        console.log(courseIdx);
+        // 쿼리문에 사용할 변수 값을 배열 형태로 전달
+        const editCourseInfoParams = [cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment,  latitude, longitude, courseIdx];
+
+        const connection = await pool.getConnection(async (conn) => conn);
+        const editCourseResult = await courseDao.updateCourse(connection, editCourseInfoParams);
+        connection.release();
+        
+        if(editCourseResult.affectedRows != 0){
+            return response(baseResponse.SUCCESS);
+        }
+        else return errResponse(baseResponse.COURSE_COURSE_NOT_EXIST);
+
+    } catch (err) {
+        logger.error(`App - editCourse Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+    }
+};
+
+
 //course status를 DELETE로 변경해주는 함수
 exports.eraseCourse = async function (courseIdx) {
     try {
