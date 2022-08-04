@@ -30,7 +30,7 @@ module.exports = function(app){
     
     //유저 닉네임, 이미지 업데이트 api(카카오 이용)
     //app.post('/app/user/kakao/updateUserProfile/:userIdx', jwtMiddleware, user.userUpdateByKakao); 
-    app.post('/app/user/kakao/updateUserProfile/:userIdx', user.userUpdateByKakao);
+    app.post('/app/user/kakao/updateUserProfile/:userIdx', jwtMiddleware, user.userUpdateByKakao);
 
     //리프레시 토큰으로 jwt토큰, 리프레시 토큰 갱신하기
     app.post('/app/user/updateTokens/:userIdx', jwtMiddleware, user.updateTokens);
