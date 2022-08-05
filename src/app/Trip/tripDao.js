@@ -14,7 +14,7 @@ async function selectTrip(connection, tripIdx) {
 // userIdx -> trips
 async function selectTrips(connection, userIdx) {
   const selectTripsQuery = `
-    SELECT tripIdx, userIdx, themeIdx, tripImg, tripTitle, DATE_FORMAT(departureDate,'%Y-%m-%d') AS departureDate, DATE_FORMAT(arrivalDate,'%Y-%m-%d') AS arrivalDate, status
+    SELECT tripIdx, userIdx, themeIdx, tripImg, tripTitle, DATE_FORMAT(departureDate,'%Y-%m-%d') AS departureDate, DATE_FORMAT(arrivalDate,'%Y-%m-%d') AS arrivalDate, status, DATE_FORMAT(createAt,'%Y-%m-%d') AS createdDate, DATE_FORMAT(updateAt,'%Y-%m-%d') AS lastModifiedDate
     FROM trip
     WHERE userIdx = ? AND status = 'ACTIVE'
     ORDER BY arrivalDate DESC, departureDate DESC;
