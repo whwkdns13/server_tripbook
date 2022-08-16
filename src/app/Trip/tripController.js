@@ -216,6 +216,7 @@ exports.postTrip = async function (req, res) {
         arrivalDate,
         themeIdx
     );
+    
     return res.send(postTripResponse);
 };
 
@@ -436,6 +437,30 @@ exports.getTrips = async function (req, res) {
 
     const tripsByuserIdx = await tripProvider.retrieveTrips(userIdx);
     return res.send(response(baseResponse.SUCCESS, tripsByuserIdx));
+};
+
+/**
+ * API No. 3-2
+ * API Name : 유저 History 조회 API
+ * [GET] /app/trips/history/:userIdx
+ */
+exports.getHistorys = async function (req, res) {
+    /**
+     * Path Variable: userIdx
+     */
+
+    const userIdx = req.params.userIdx;
+    // errResponse 전달
+    if (!userIdx) return res.send(errResponse(baseResponse.TRIP_USERIDX_EMPTY));
+
+    // JWT 검증
+    const userIdxFromJWT = req.verifiedToken.userIdx;
+    if (userIdxFromJWT != userIdx){
+        return res.send(errResponse(baseResponse.USER_IDX_NOT_MATCH));
+    }
+
+    const historysByuserIdx = await tripProvider.retrieveHistorys(userIdx);
+    return res.send(response(baseResponse.SUCCESS, historysByuserIdx));
 };
 
 //썸네일 사진 업데이트 (jwt 적용 아직 안됨)

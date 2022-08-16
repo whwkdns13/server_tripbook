@@ -73,6 +73,20 @@ async function insertTripInfo(connection, insertTripInfoParams) {
   return insertPostInfoRow;
 }
 
+// create TripHistory
+async function insertTripHistory(connection, insertTripHistoryParams) {
+  const insertTripHistoryQuery = `
+        INSERT INTO userHistory(userIdx, tripIdx, type, eventCount, departureDate, arrivalDate)
+        VALUES (?, ?, ?, ?, ?, ?);
+    `;
+  const insertPostInfoRow = await connection.query(
+    insertTripHistoryQuery,
+    insertTripHistoryParams
+  );
+
+  return insertPostInfoRow;
+}
+
 // update tripTitle
 async function updateTripTitle(connection, editTripTitleParams) {
   const updateTripTitleQuery = `
@@ -173,7 +187,7 @@ async function updateTripImg(connection, updateTripImgParams) {
   return updateTripImgInfoRow;
 }
 
- // 썸네일(대표사진)설정
+ // deleteTrip
 async function deleteTrip(connection, tripIdx) {
   const deleteTripQuery = `
       UPDATE trip t
@@ -189,6 +203,37 @@ async function deleteTrip(connection, tripIdx) {
   return deleteTripInfo;
 }
 
+// delete TripHistory
+async function deleteTripHistory(connection, deleteTripHistoryParams) {
+  const deleteTripHistoryQuery = `
+        INSERT INTO userHistory(userIdx, tripIdx, type, eventCount, departureDate, arrivalDate)
+        VALUES (?, ?, ?, ?, ?, ?);
+    `;
+  const deletePostInfoRow = await connection.query(
+    deleteTripHistoryQuery,
+    deleteTripHistoryParams
+  );
+
+  return deletePostInfoRow;
+}
+
+// userIdx -> historys
+async function selectHistorys(connection, userIdx) {
+  const selectHistorysQuery = `
+      SELECT userHistoryIdx, tripIdx, type, DATE_FORMAT(departureDate, '%Y-%m-%d') AS departureDate, 
+      DATE_FORMAT(arrivalDate, '%Y-%m-%d') AS arrivalDate, DATE_FORMAT(createAt, '%Y-%m-%d') AS createdDate, status
+      FROM userHistory
+      WHERE userIdx = ?
+      ORDER BY createdDate;
+    `;
+  const [historysInfoRow] = await connection.query(
+    selectHistorysQuery,
+    userIdx
+  );
+
+  return historysInfoRow;
+}
+
 module.exports = {
   selectTrip,
   selectTrips,
@@ -196,6 +241,7 @@ module.exports = {
   selectLatestTrip,
   selectTripsCount,
   insertTripInfo,
+  insertTripHistory,
   updateTripTitle,
   updateDepartureDate,
   updateArrivalDate,
@@ -203,5 +249,7 @@ module.exports = {
   updateTrip,
   verifyTripUser,
   updateTripImg,
-  deleteTrip
+  deleteTrip,
+  deleteTripHistory,
+  selectHistorys
 };
