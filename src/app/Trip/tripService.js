@@ -25,9 +25,21 @@ exports.createTrip = async function (userIdx, tripTitle, departureDate, arrivalD
         const connection = await pool.getConnection(async (conn) => conn);
 
         const tripResult = await tripDao.insertTripInfo(connection, insertTripInfoParams);
-        console.log(`tripIdx : ${tripResult[0].insertId}`);
+        const insertTripIdx = tripResult[0].insertId;
+        const tripCountResult = await tripDao.selectTripsCount(connection, userIdx);
+        
+        const insertTripHistoryParams = [userIdx, insertTripIdx, "create", null, departureDate, arrivalDate];
+        const inserttripHistoryResult = await tripDao.insertTripHistory(connection, insertTripHistoryParams);
+        
+        if(tripCountResult%10 == 0){
+            //10번째 단위
+            eventCount = tripCountResult/10;
+            const insertEventHistoryParams = [userIdx, insertTripIdx, "event", eventCount, departureDate, arrivalDate];
+            const insertEventHistoryResult = await tripDao.insertTripHistory(connection, insertEventHistoryParams);
+        }
+
         connection.release();
-        return response(baseResponse.SUCCESS, tripResult[0].insertId);
+        return response(baseResponse.SUCCESS, insertTripIdx);
 
     } catch (err) {
         logger.error(`App - createTrip Service error\n: ${err.message}`);
@@ -164,6 +176,11 @@ exports.deleteTrip = async function (tripIdx) {
     try {
         const connection = await pool.getConnection(async (conn) => conn);
         const deleteTripResult = await tripDao.deleteTrip(connection,tripIdx);
+        
+        const tempResult = await tripDao.selectTrip(connection,tripIdx);
+
+        const deleteTripHistoryParams = [tempResult.userIdx, tempResult.tripIdx, "delete", null, tempResult.departureDate, tempResult.arrivalDate];
+        const deletetripHistoryResult = await tripDao.deleteTripHistory(connection, deleteTripHistoryParams);
         
         connection.release();
         return response(baseResponse.SUCCESS,deleteTripResult);

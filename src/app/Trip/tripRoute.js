@@ -49,4 +49,7 @@ module.exports = function(app){
     // 3. PAST TRIPS
     // 3-1. 유저 전체 여행 조회 API
     app.get('/app/trips/:userIdx',jwtMiddleware,trip.getTrips);
+
+    // 3-2. 유저 History 조회 API
+    app.get('/app/trips/history/:userIdx',jwtMiddleware,trip.getHistorys);
 }

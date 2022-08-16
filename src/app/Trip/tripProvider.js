@@ -55,4 +55,14 @@ exports.retrieveTrips = async function (userIdx){
     return tripsResult;
 }
 
+// 유저 전체 여행 조회
+exports.retrieveHistorys = async function (userIdx){
+
+    const connection = await pool.getConnection(async (conn) => conn);
+    const historysResult = await tripDao.selectHistorys(connection, userIdx);
+    connection.release();
+
+    return historysResult;
+}
+
 // 쿼리문에 여러개의 인자를 전달할 때 selectUserPasswordParams와 같이 사용합니다.
