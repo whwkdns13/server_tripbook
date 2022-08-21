@@ -89,11 +89,15 @@ module.exports = {
     COURSE_CARDIDX_EMPTY: { "isSuccess": false, "code": 2211, "message": "cardIdx를 입력해주세요" },
     COURSE_COURSEIDX_NOT_EXIST: { "isSuccess": false, "code": 2212, "message": "해당 courseIdx를 가진 발자국이 존재하지 않습니다." },
     COURSE_HASHTAGIDX_EMPTY: { "isSuccess": false, "code": 2213, "message": "hashTagIdx를 입력해주세요" },
-    COURSE_LATITUDE_EMPTY :    { "isSuccess": false, "code": 2214, "message": "latitude를 입력해주세요" },
-    COURSE_LONGITUDE_EMPTY :{ "isSuccess": false, "code": 2215, "message": "longitude를 입력해주세요" },
+    COURSE_REGION1_EMPTY :    { "isSuccess": false, "code": 2214, "message": "region1를 입력해주세요" },
+    COURSE_REGION2_EMPTY :    { "isSuccess": false, "code": 2215, "message": "region2를 입력해주세요" },
     COURSE_COURSE_NOT_EXIST :{ "isSuccess": false, "code": 2216, "message": "해당 courseIdx를 가진 코스가 존재하지 않습니다." },
     COURSE_COURSEUSER_NOT_MATCH:{ "isSuccess": false, "code": 2217, "message": "해당 발자국이 user의 것이 아닙니다." },
-    
+    COURSE_REGION3_EMPTY :    { "isSuccess": false, "code": 2218, "message": "region3를 입력해주세요" },
+    COURSE_COURSETITLE_LENGTH :    { "isSuccess": false, "code": 2219, "message": "제목을 길이에 맞게 입력해주세요" },
+    COURSE_COURSECOMMENT_LENGTH :    { "isSuccess": false, "code": 2220, "message": "코멘트를 길이에 맞게 입력해주세요" },
+    COURSE_region_LENGTH:    { "isSuccess": false, "code": 2221, "message": "region1, 2, 3을 길이에 맞게 입력해주세요" },
+
     // Response error
     SIGNUP_REDUNDANT_EMAIL: { "isSuccess": false, "code": 3001, "message": "중복된 이메일입니다." },
     SIGNUP_REDUNDANT_NICKNAME: { "isSuccess": false, "code": 3002, "message": "중복된 닉네임입니다." },

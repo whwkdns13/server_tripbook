@@ -13,7 +13,7 @@ async function selectCourseIdx(connection, courseIdx) {
 
 async function insertCourseInfo(connection, insertCourseInfoParams) {
   const insertCourseInfoQuery = `
-    INSERT INTO tripCourse (tripIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, latitude, longitude) 
+    INSERT INTO tripCourse (tripIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, region1, region2, region3) 
     VALUE (?,?,?,?,?,?,?,?,?);
     `;
   const insertCourseInfoRow = await connection.query(
@@ -27,7 +27,7 @@ async function insertCourseInfo(connection, insertCourseInfoParams) {
 async function updateCourse(connection, editCourseInfoParams) {
   const updateCourseQuery = `
   UPDATE tripCourse
-  SET cardIdx = ?, courseImg = ? , courseDate = ?, courseTime = ?, courseTitle = ?, courseComment = ?,  latitude = ?, longitude = ?
+  SET cardIdx = ?, courseImg = ? , courseDate = ?, courseTime = ?, courseTitle = ?, courseComment = ?,  region1 = ?, region2 = ?, region3 = ?
   WHERE courseIdx = ? AND status = 'ACTIVE';`;
   const updateCourseRow = await connection.query(updateCourseQuery, editCourseInfoParams);
   return updateCourseRow[0];
@@ -127,12 +127,14 @@ WHERE courseIdx = ? AND status = 'ACTIVE';`;
 const updateCardIdxRow = await connection.query(updateCardIdxQuery, [cardIdx, courseIdx]);
 return updateCardIdxRow[0];
 }
-async function updateRegion(connection, courseIdx, latitude, longitude) {
+
+// region edit
+async function updateRegion(connection, courseIdx, region1, region2, region3) {
 const updateRegionQuery = `
 UPDATE tripCourse 
-SET latitude = ?, longitude = ?
+SET region1 = ?, region2 = ?, region3 = ?
 WHERE courseIdx = ? AND status = 'ACTIVE';`;
-const updateCardIdxRow = await connection.query(updateRegionQuery, [latitude, longitude, courseIdx]);
+const updateCardIdxRow = await connection.query(updateRegionQuery, [region1, region2, region3, courseIdx]);
 return updateCardIdxRow[0];
 }
 
