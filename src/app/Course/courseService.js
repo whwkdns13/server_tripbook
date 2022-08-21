@@ -18,10 +18,10 @@ const crypto = require("crypto");
 // Service: Create, Update, Delete 비즈니스 로직 처리
 
 //Course 변수들을 받아서 course를 등록해주는 기능
-exports.createCourse = async function (tripIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment,  latitude, longitude) {
+exports.createCourse = async function (tripIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, region1, region2, region3) {
     try {
         // 쿼리문에 사용할 변수 값을 배열 형태로 전달
-        const insertCourseInfoParams = [tripIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment,  latitude, longitude];
+        const insertCourseInfoParams = [tripIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment,  region1, region2, region3];
 
         const connection = await pool.getConnection(async (conn) => conn);
         const courseIdxResult = await courseDao.insertCourseInfo(connection, insertCourseInfoParams);
@@ -38,11 +38,11 @@ exports.createCourse = async function (tripIdx, cardIdx, courseImg, courseDate, 
 };
 
 //course 수정 함수
-exports.editCourse = async function (courseIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment,  latitude, longitude) {
+exports.editCourse = async function (courseIdx, cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment,  region1, region2, region3) {
     try {
         console.log(courseIdx);
         // 쿼리문에 사용할 변수 값을 배열 형태로 전달
-        const editCourseInfoParams = [cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment,  latitude, longitude, courseIdx];
+        const editCourseInfoParams = [cardIdx, courseImg, courseDate, courseTime, courseTitle, courseComment,  region1, region2, region3, courseIdx];
 
         const connection = await pool.getConnection(async (conn) => conn);
         const editCourseResult = await courseDao.updateCourse(connection, editCourseInfoParams);
@@ -189,11 +189,11 @@ exports.editCardIdx = async function (courseIdx, cardIdx) {
 };
 
 //region 변경
-exports.editRegion = async function (courseIdx, latitude, longitude) {
+exports.editRegion = async function (courseIdx, region1, region2, region3) {
     try {
         console.log(courseIdx);
         const connection = await pool.getConnection(async (conn) => conn);
-        const editRegionResult = await courseDao.updateRegion(connection, courseIdx, latitude, longitude);
+        const editRegionResult = await courseDao.updateRegion(connection, courseIdx, region1, region2, region3);
         connection.release();
         if(editRegionResult.affectedRows != 0){
             return response(baseResponse.SUCCESS);

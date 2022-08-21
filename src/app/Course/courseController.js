@@ -79,6 +79,10 @@ exports.postCourse = async function (req, res) {
     if (courseComment.length > 254)
         return res.send(response(baseResponse.COURSE_COURSECOMMENT_LENGTH));
 
+    if(region1.length >49 || region2.length >49 || region3.length >49)
+      return res.send(response(baseResponse.COURSE_region_LENGTH));
+
+
     // createCourse 함수 실행을 통한 결과 값을 postCourseResponse에 저장
     const postCourseResponse = await courseService.createCourse(
         tripIdx, 
@@ -308,6 +312,10 @@ exports.patchRegion = async function (req, res) {
     if (!region1) return res.send(errResponse(baseResponse.COURSE_REGION1_EMPTY));
     if (!region2) return res.send(errResponse(baseResponse.COURSE_REGION2_EMPTY));
     if (!region3) return res.send(errResponse(baseResponse.COURSE_REGION3_EMPTY));
+    if(region1.length >49 || region2.length >49 || region3.length >49)
+      return res.send(response(baseResponse.COURSE_region_LENGTH));
+
+    
     // JWT 검증
     const userIdxFromJWT = req.verifiedToken.userIdx;
     if (userIdxFromJWT != userIdx) 
