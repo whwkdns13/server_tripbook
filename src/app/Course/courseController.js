@@ -48,7 +48,7 @@ exports.postCourse = async function (req, res) {
     /**
      * Body: tripIdx, courseImage, courseDate, courseTime, courseTitle, courseComment
      */
-    const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx, latitude, longitude} = req.body;
+    const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx, region1, region2, region3} = req.body;
     
     // JWT 검증
     const userIdx = req.params.userIdx;
@@ -65,8 +65,6 @@ exports.postCourse = async function (req, res) {
     if (!courseImg) return res.send(errResponse(baseResponse.COURSE_COURSEIMAGE_EMPTY));
     if (!courseComment) return res.send(errResponse(baseResponse.COURSE_COURSECOMMENT_EMPTY));
     if (!cardIdx) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
-    //if (!latitude) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
-    //if (!longitude) return res.send(errResponse(baseResponse.COURSE_CARDIDX_EMPTY));
 
     // 트립과 유저 매치되는지 확인
     const verifyTripUserResult = await tripService.verifyUserInTrip(userIdx, tripIdx);
@@ -90,8 +88,9 @@ exports.postCourse = async function (req, res) {
         courseTime, 
         courseTitle, 
         courseComment,
-        latitude,
-        longitude
+        region1,
+        region2,
+        region3
     );
 
     // postCourseResponse 값을 json으로 전달
@@ -102,7 +101,7 @@ exports.postCourse = async function (req, res) {
 //course전체 patch 함수
 exports.patchCourse = async function (req, res) {
 
-  const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx, latitude, longitude} = req.body;
+  const {tripIdx, courseImg, courseDate, courseTime, courseTitle, courseComment, cardIdx, region1, region2, region3} = req.body;
   const courseIdx = req.params.courseIdx;
   // JWT 검증
   const userIdx = req.params.userIdx;
@@ -143,8 +142,9 @@ if (courseComment.length > 254)
     courseTime, 
     courseTitle, 
     courseComment,
-    latitude,
-    longitude
+    region1,
+    region2,
+    region3
   );
 
   // editCourseDateInfo 값을 json으로 전달
@@ -298,15 +298,16 @@ exports.patchCardIdx = async function (req, res) {
     return res.send(editCardIdxInfo);
 };
 
-//latitude, longitude patch 함수
+//region1,2,3 patch 함수
 exports.patchRegion = async function (req, res) {
 
     const {userIdx, courseIdx} = req.params;
-    const {latitude, longitude} = req.body;
+    const {region1, region2, region3} = req.body;
     if (!userIdx) return res.send(errResponse(baseResponse.COURSE_USERIDX_EMPTY));
     if (!courseIdx) return res.send(errResponse(baseResponse.COURSE_COURSEIDX_EMPTY));
-    if (!latitude) return res.send(errResponse(baseResponse.COURSE_LATITUDE_EMPTY));
-    if (!longitude) return res.send(errResponse(baseResponse.COURSE_LONGITUDE_EMPTY));
+    if (!region1) return res.send(errResponse(baseResponse.COURSE_REGION1_EMPTY));
+    if (!region2) return res.send(errResponse(baseResponse.COURSE_REGION2_EMPTY));
+    if (!region3) return res.send(errResponse(baseResponse.COURSE_REGION3_EMPTY));
     // JWT 검증
     const userIdxFromJWT = req.verifiedToken.userIdx;
     if (userIdxFromJWT != userIdx) 
@@ -317,7 +318,7 @@ exports.patchRegion = async function (req, res) {
       return res.send(verifyCourseUserResult);
     }
 
-    const editRegionInfo = await courseService.editRegion(courseIdx, latitude, longitude);
+    const editRegionInfo = await courseService.editRegion(courseIdx, region1, region2, region3);
     return res.send(editRegionInfo);
     
 };
