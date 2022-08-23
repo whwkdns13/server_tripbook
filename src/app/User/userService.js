@@ -223,7 +223,7 @@ exports.editKakaoUser = async function (userIdx, nickName, userImg) {
         const editKakaoUserResult = await userDao.updateKakaoUserInfo(connection, editKakaoUserParams);
         connection.release();
         if(editKakaoUserResult.affectedRows === 1){
-            return response(baseResponse.SUCCESS);
+            return response(baseResponse.SUCCESS, editKakaoUserParams);
         }
         else return errResponse(baseResponse.USER_USERIDX_NOT_EXIST);
 
