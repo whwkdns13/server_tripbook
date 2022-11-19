@@ -26,7 +26,7 @@ async function selectTrips(connection, userIdx) {
 // tripIdx -> tripCourses
 async function selectCourses(connection, tripIdx) {
   const selectCoursesQuery = `
-    SELECT courseIdx, tripIdx, cardIdx, courseImg, DATE_FORMAT(courseDate, '%Y-%m-%d') AS courseDate, courseTime, courseTitle, courseComment, latitude, longitude, status
+    SELECT courseIdx, tripIdx, cardIdx, courseImg, DATE_FORMAT(courseDate, '%Y-%m-%d') AS courseDate, courseTime, region1, region2, region3, status
     FROM tripCourse
     WHERE tripIdx = ? AND status = 'ACTIVE'
     ORDER BY cardIdx;
