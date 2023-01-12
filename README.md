@@ -1,6 +1,6 @@
 # 여행 코스형 다이어리 저장&공유 앱 “트립북”
-<img width="276" alt="image" src="https://user-images.githubusercontent.com/81955861/212009688-0aa232c6-fa4f-4fa1-aa74-5dac4074f578.png">
 
+![프로젝트 썸네일](https://user-images.githubusercontent.com/81955861/212009924-632b0590-1302-4bc3-9a60-b8ecb87b130d.png)
 
 
 ![Frame 25.png](%E1%84%8B%E1%85%A7%E1%84%92%E1%85%A2%E1%86%BC%20%E1%84%8F%E1%85%A9%E1%84%89%E1%85%B3%E1%84%92%E1%85%A7%E1%86%BC%20%E1%84%83%E1%85%A1%E1%84%8B%E1%85%B5%E1%84%8B%E1%85%A5%E1%84%85%E1%85%B5%20%E1%84%8C%E1%85%A5%E1%84%8C%E1%85%A1%E1%86%BC&%E1%84%80%E1%85%A9%E1%86%BC%E1%84%8B%E1%85%B2%20%E1%84%8B%E1%85%A2%E1%86%B8%20%E2%80%9C%E1%84%90%E1%85%B3%E1%84%85%E1%85%B5%E1%86%B8%E1%84%87%E1%85%AE%E1%86%A8%E2%80%9D%2068dc77b4f84b4d46aeac8ea5c18dbb00/Frame_25.png)
